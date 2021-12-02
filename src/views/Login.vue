@@ -1,0 +1,122 @@
+<template>
+<main>
+    <img src="../assets/images/lokoda-logo-reverse.svg" alt="lokoda logo">
+    <h1>Log In</h1>
+    <p>Welcome back</p>
+
+    <form @submit.prevent="submitForm">
+      <base-input class="dark" inputId="email" inputType="email" v-model="email" :isRequired="false" >
+      <template #label>Email</template>
+      </base-input>
+      <password-input class="dark" inputId="password" v-model="password" :isRequired="false" >
+      <template #label>Password</template>
+      </password-input>
+      <router-link to="/password-reset">Forgot password?</router-link>
+      <base-button buttonType="submit" mode="cta cta--primary">Log In</base-button>
+    </form>
+    <span class="registration-text">Not got an account? <router-link to="/registration">Sign up now</router-link></span>
+    
+    
+
+</main>
+</template>
+<script>
+import PasswordInput from '../components/UI/PasswordInput.vue';
+import BaseInput from '../components/UI/BaseInput.vue';
+export default {
+  components: {
+    PasswordInput,
+    BaseInput
+  },
+  data(){
+    return{
+      email:'',
+      password:''
+    }
+  },
+  methods: {
+    submitForm() {
+       console.log(this.email);
+       console.log(this.password);
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+  main{
+    background-image: url("../assets/images/lokoda-bg-image.jpg");
+    background-repeat: no-repeat;
+    background-position: center; 
+    background-size: cover;
+    background-color: $mid-grey;
+    padding:$spacing-m $spacing-s;
+
+    @media(min-width:$desktop){
+      padding:$spacing-l $spacing-s;
+    }
+  }
+
+  img{
+    max-width:rem(180);
+    margin: 0 auto;
+    display:block;
+
+    @media(min-width:$desktop){
+      max-width:rem(290);
+    }
+  }
+
+  h1{
+    color: #fff;
+    text-align: center;
+    margin-top:$spacing-l;
+  }
+
+  p,span{
+    text-align: center;
+    color: #fff;
+    margin-top:$spacing-s;
+    display: block;
+  }
+
+  form{
+    width:100%;
+    max-width: rem(500);
+    margin: $spacing-l auto 0 auto;
+
+    a{
+      text-align: right;
+      margin-top:$spacing-s;
+      display: block;
+      font-size: $copy-mobile-s;
+
+      @media(min-width:$desktop){
+        font-size: $copy-desktop-s;
+      }
+    }
+  }
+
+  a{
+    color: #fff;
+  }
+
+  .cta{
+    margin: $spacing-m auto 0 auto;
+    display: block;
+  }
+
+  .registration-text{
+    margin-top: $spacing-m;
+    font-size: $copy-mobile-s;
+
+    @media(min-width:$desktop){
+        margin-top: $spacing-l;
+        font-size: $copy-desktop-s;
+      }
+  }
+
+  
+</style>
+
+

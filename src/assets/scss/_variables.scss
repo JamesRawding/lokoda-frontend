@@ -1,0 +1,104 @@
+//Functions
+//rem function
+$browser-context: 16; // Default
+
+@function rem($pixels, $context: $browser-context) {
+  @return #{$pixels/$context}rem;
+}
+
+//Breakpoints
+
+$mobile: 320px;
+$tablet: 740px;
+$desktop: 980px;
+$wide: 1300px;
+
+//Colors
+$primary: #45D5B4;
+$copy: #333333;
+$dark-green:#2A8470;
+$mid-grey: #805959;
+$lightgrey: #E8E8E8;
+$form-field-grey: #F8F8F8;
+$link: #187BA5;
+$rag-red: #EC0442;
+$rag-amber: #F28E13;
+$rag-green: $primary;
+
+$border-radius-reg: rem(5);
+$box-shadow: 0px 0px 3px rgba(128, 89, 89, 0.2);
+$ease-in-out: all .25s ease-in-out;
+
+//Font Sizes
+$copy-line-height: 1.5;
+$heading-line-height: 1.2;
+$copy-mobile-xs: rem(12);
+$copy-mobile-s: rem(14);
+$copy-mobile: rem(18);
+$copy-mobile-m: rem(23);
+$copy-mobile-l: rem(29);
+$copy-mobile-xl: rem(37);
+
+$copy-desktop-xs: rem(14);
+$copy-desktop-s: rem(17);
+$copy-desktop: rem(21);
+$copy-desktop-m: rem(27);
+$copy-desktop-l: rem(34);
+$copy-desktop-xl: rem(43);
+
+
+//Spacing
+$spacing-xxxs: rem(2);
+$spacing-xxs: rem(4);
+$spacing-xs: rem(8);
+$spacing-s: rem(16);
+$spacing-m: rem(32);
+$spacing-l: rem(64);
+$spacing-xl: rem(128);
+
+
+//Mixins
+
+
+//Forms
+
+@mixin baseInput{
+  border: rem(1) solid $lightgrey;
+  border-radius:$border-radius-reg;
+  background-color:$form-field-grey;
+  font-family: inherit;
+  font-size: inherit;
+  padding: rem(10) $spacing-xs;
+  width:100%;
+
+  @media(min-width:$desktop){
+    padding: rem(12) $spacing-s;
+  }
+}
+
+@mixin baseLabel{
+  display: block;
+  font-weight: bold;
+  margin-bottom: $spacing-xs;
+
+  span{
+    margin-left:$spacing-s;
+    font-size: $copy-mobile-s;
+    color:$mid-grey;
+    font-weight: normal;
+    @media(min-width:$desktop){
+      font-size: $copy-desktop-s;
+    }
+  }
+}
+
+@mixin baseLabelHelper{
+  display: block;
+  color:$mid-grey;
+  font-size: $copy-mobile-s;
+  margin-bottom: $spacing-xs;
+
+  @media(min-width:$desktop){
+    font-size: $copy-desktop-s;
+  }
+}
