@@ -6,12 +6,14 @@
 
     <form @submit.prevent="submitForm">
       <base-input class="dark" inputId="email" inputType="email" v-model="email" :isRequired="false" >
-      <template #label>Email</template>
+        <template #label>Email</template>
       </base-input>
       <password-input class="dark" inputId="password" v-model="password" :isRequired="false" >
-      <template #label>Password</template>
+        <template #label>Password</template>
       </password-input>
-      <router-link to="/password-reset">Forgot password?</router-link>
+      <div class="link-container">
+        <router-link to="/password-reset">Forgot password?</router-link>
+      </div>
       <base-button buttonType="submit" mode="cta cta--primary">Log In</base-button>
     </form>
     <span class="registration-text">Not got an account? <router-link to="/registration">Sign up now</router-link></span>
@@ -85,10 +87,13 @@ export default {
     max-width: rem(500);
     margin: $spacing-l auto 0 auto;
 
-    a{
+    .link-container{
       text-align: right;
+    }
+
+    a{
+      display: inline-block;
       margin-top:$spacing-s;
-      display: block;
       font-size: $copy-mobile-s;
 
       @media(min-width:$desktop){

@@ -23,11 +23,16 @@ export default {
       padding: rem(9) rem(20);
     }
 
+
     &--default{
       border-color: $dark-green;
       color: $dark-green;
 
       &:hover{
+        background-color: $dark-green;
+        color:#fff;
+      }
+      &.pill-button--selected{
         background-color: $dark-green;
         color:#fff;
       }
@@ -38,6 +43,11 @@ export default {
       color: #fff;
 
       &:hover{
+        background-color: #fff;
+        color:$copy;
+      }
+
+      &.pill-button--selected{
         background-color: #fff;
         color:$copy;
       }

@@ -6,17 +6,26 @@ const routes = [
   {
     path: '/',
     name: 'Login',
-    component: Login
+    component: Login,
+    meta: {
+      title: 'Log In',
+    }
   },
   {
     path: '/registration',
     name: 'Registration',
-    component: () => import('../views/Registration.vue')
+    component: () => import('../views/Registration.vue'),
+    meta: {
+      title: 'Registration',
+    }
   },
   {
     path: '/password-reset',
     name: 'PasswordReset',
-    component: () => import('../views/PasswordReset.vue')
+    component: () => import('../views/PasswordReset.vue'),
+    meta: {
+      title: 'Reset Password',
+    }
   },
   {
     path: '/design-system',
@@ -25,9 +34,18 @@ const routes = [
   },
 ]
 
+
+
+
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+
+router.afterEach((to) => {
+  if (to.meta && to.meta.title) {
+    document.title = to.meta.title + ' | Lokoda';
+  }
+});
 
 export default router

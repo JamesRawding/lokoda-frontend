@@ -70,6 +70,8 @@ $spacing-xl: rem(128);
   font-size: inherit;
   padding: rem(10) $spacing-xs;
   width:100%;
+  margin-top: $spacing-xs;
+
 
   @media(min-width:$desktop){
     padding: rem(12) $spacing-s;
@@ -79,7 +81,6 @@ $spacing-xl: rem(128);
 @mixin baseLabel{
   display: block;
   font-weight: bold;
-  margin-bottom: $spacing-xs;
 
   span{
     margin-left:$spacing-s;
@@ -94,11 +95,12 @@ $spacing-xl: rem(128);
 
 @mixin baseLabelHelper{
   display: block;
+  line-height: 1.2;
   color:$mid-grey;
-  font-size: $copy-mobile-s;
-  margin-bottom: $spacing-xs;
+  font-size: $copy-mobile-xs;
+  margin-top: $spacing-xs;
 
   @media(min-width:$desktop){
-    font-size: $copy-desktop-s;
+    font-size: $copy-desktop-xs;
   }
 }

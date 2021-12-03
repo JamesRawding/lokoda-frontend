@@ -3,8 +3,18 @@
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link>
   </div> -->
-  <router-view/>
+  <router-view v-slot="slotProps">
+    <transition name="fade" mode="out-in">
+      <component :is="slotProps.Component"></component>
+    </transition>
+  </router-view>
 </template>
+
+<script>
+export default {
+ 
+}
+</script>
 
 <style lang="scss">
 /* http://meyerweb.com/eric/tools/css/reset/ 
@@ -168,5 +178,13 @@ a{
     transition: $ease-in-out;
     font-family: inherit;
   }
+
+  .fade-enter-active, .fade-leave-active {
+    opacity: 1;
+    transition: opacity .25s;
+  }
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
 </style>
 

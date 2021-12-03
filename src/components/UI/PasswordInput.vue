@@ -11,9 +11,9 @@
     :type="type" 
     :id="inputId" 
     autocomplete="on"
-    aria-required="true" 
     required>
-    <base-icon-button @click="showPassword" buttonType="button" mode="icon-button icon-button--new-message">{{btnText}}</base-icon-button>
+    <base-icon-button v-if="type === 'password'" @click="showPassword" buttonType="button" mode="icon-button icon-button--show-password">Show Password</base-icon-button>
+    <base-icon-button v-else @click="showPassword" buttonType="button" mode="icon-button icon-button--hide-password">Hide Password</base-icon-button>
 
 </div>
 <div v-else>
