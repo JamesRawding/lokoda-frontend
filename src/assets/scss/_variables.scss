@@ -78,6 +78,18 @@ $spacing-xl: rem(128);
   }
 }
 
+::-webkit-input-placeholder { /* Edge */
+  color: $copy;
+}
+
+:-ms-input-placeholder { /* Internet Explorer */
+  color: $copy;
+}
+
+::placeholder {
+  color: $copy;
+}
+
 @mixin baseLabel{
   display: block;
   font-weight: bold;

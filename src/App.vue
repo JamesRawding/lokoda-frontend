@@ -160,6 +160,10 @@ h3{
   }
 }
 
+strong{
+  font-weight: bold;
+}
+
 a{
   color: $link;
   cursor: pointer;
@@ -177,14 +181,26 @@ a{
     cursor:pointer;
     transition: $ease-in-out;
     font-family: inherit;
+    padding:0;
   }
 
   .fade-enter-active, .fade-leave-active {
     opacity: 1;
     transition: opacity .25s;
   }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
-}
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
+  }
+
+  .page-container{
+    max-width: rem(1200);
+    margin: 0 auto;
+    width:100%;
+    padding: $spacing-s;
+
+    @media(min-width:$desktop){
+      padding: $spacing-m;
+    }
+  }
 </style>
 

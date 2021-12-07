@@ -37,7 +37,12 @@
 </template>
 
 <script>
+import BaseIconButton from '../UI/BaseIconButton.vue';
+
 export default {
+  components:{
+    BaseIconButton
+  },
   props: ['inputId', 'isRequired','modelValue'],
   data(){
     return {

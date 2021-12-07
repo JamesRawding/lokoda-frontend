@@ -28,6 +28,14 @@ const routes = [
     }
   },
   {
+    path: '/discover',
+    name: 'Discover',
+    component: () => import('../views/Discover.vue'),
+    meta: {
+      title: 'Discover',
+    }
+  },
+  {
     path: '/design-system',
     name: 'DesignSystem',
     component: () => import('../views/DesignSystem.vue')

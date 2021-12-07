@@ -11,20 +11,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .icon-button{
-    width:rem(44);
-    height: rem(44);
+  .text-icon-button{
     border: none;
     background-color:transparent;
-    text-indent: -10000px;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: inherit;
+    color: $copy;
+    height: rem(44);
 
     &:before{
-      text-indent: 0;
       font-family: "Font Awesome 5 Pro";
       font-weight: 300;
+      margin-right: $spacing-xs;
+
+      @media(min-width:$desktop){
+        margin-right: $spacing-s;
+      }
     }
 
     @media(min-width:$desktop){
@@ -33,24 +37,9 @@ export default {
       }
     }
 
-    &--new-message{
+    &--filter{
       &:before{
-        content:'\f4a8';
-        font-size: rem(30);
-      }
-    }
-
-    &--ellipsis{
-      &:before{
-        content:'\f141';
-        font-size: rem(30);
-      }
-    }
-
-     &--user{
-      &:before{
-        content:'\f007';
-        font-size: rem(30);
+        content:'\f0b0';
       }
     }
   }

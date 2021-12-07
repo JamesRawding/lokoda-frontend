@@ -25,10 +25,12 @@
 <script>
 import PasswordInput from '../components/UI/PasswordInput.vue';
 import BaseInput from '../components/UI/BaseInput.vue';
+import BaseButton from '../components/UI/BaseButton.vue';
 export default {
   components: {
     PasswordInput,
-    BaseInput
+    BaseInput,
+    BaseButton,
   },
   data(){
     return{

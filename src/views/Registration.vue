@@ -65,11 +65,13 @@
 import PasswordInput from '../components/UI/PasswordInput.vue';
 import BaseInput from '../components/UI/BaseInput.vue';
 import BasePillButton from '../components/UI/BasePillButton.vue';
+import BaseButton from '../components/UI/BaseButton.vue';
 export default {
   components: {
     PasswordInput,
     BaseInput,
-    BasePillButton
+    BasePillButton,
+    BaseButton  
   },
   data(){
     return{
