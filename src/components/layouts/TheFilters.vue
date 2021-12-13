@@ -4,18 +4,19 @@
       <search-bar @searched="searchValue" searchId="artistSearch" searchPlaceholder="e.g Sheffield, Johnny Band name">
       <template #label>Search</template>
     </search-bar>
-    <base-dropdown @changed="dropdownValue" dropdownId="genreDropdown" v-model="genreDropdown" :isRequired="false" >
+    <base-dropdown @changed="genreValue" dropdownId="genreDropdown" v-model="genreDropdown" :isRequired="false" >
       <template #label>Genre</template>
       <template #options>
         <option v-for="genre in genres" :key="genre" :value="genre">{{genre}}</option>
       </template>
     </base-dropdown>
-    <base-dropdown @changed="dropdownValue" dropdownId="distanceDropdown" v-model="distanceDropdown" :isRequired="false" >
+    <base-dropdown @changed="distanceValue" dropdownId="distanceDropdown" v-model="distanceDropdown" :isRequired="false" >
       <template #label>Distance</template>
       <template #options>
         <option v-for="distance in distances" :key="distance" :value="distance">{{distance}} miles</option>
       </template>
     </base-dropdown>
+    <base-button @click="filtersVisible = !filtersVisible" mode="cta cta--secondary" buttonType="button">View Results</base-button>
   </div>
 </template>
 
@@ -23,27 +24,36 @@
 import BaseDropdown from '../UI/BaseDropdown.vue';
 import BaseTextIconButton from '../UI/BaseTextIconButton.vue';
 import SearchBar from '../UI/SearchBar.vue';
+import BaseButton from '../UI/BaseButton.vue';
 export default {
   components: {
     BaseDropdown,
     SearchBar,
-    BaseTextIconButton
+    BaseTextIconButton,
+    BaseButton
   },
+  emits:['changedGenre', 'changedDistance', 'changedSearch'],
   data(){
     return{
       genres:['Any', 'Alternative', 'Rock', 'Punk'],
       genreDropdown: 'Any',
       distances:['0 - 15', '15 - 20', '20 - 30', '30 - 40'],
       distanceDropdown: '0 - 15',
-      filtersVisible: false
+      filtersVisible: false,
     }
   },
   methods:{
-    dropdownValue(value){
-      console.log(value) 
+    genreValue(value){
+      const genreValue = value;
+      this.$emit('changedGenre', genreValue)
+    },
+    distanceValue(value){
+      const distanceValue = value;
+      this.$emit('changedDistance', distanceValue)
     },
     searchValue(value){
-      console.log(value) 
+      const searchValue = value;
+      this.$emit('changedSearch', searchValue)
     }
   }
 }
@@ -54,15 +64,17 @@ export default {
   .filters-container{
     height: 0;
     overflow: hidden;
-    transition: .25s height ease-in-out;
+    transition: .25s all ease-in-out;
     margin-top:$spacing-s;
     margin-left:rem(-16);
     margin-right:rem(-16);
-    padding: $spacing-s;
+    padding: 0 $spacing-s;
 
     @media(min-width:$desktop){
       height: auto;
       display: grid;
+      margin: $spacing-m 0 0 0;
+      padding: 0;
       grid-column-gap: rem(32);
       grid-template-columns: 1fr 1fr 1fr;
       box-shadow: none;
@@ -70,7 +82,17 @@ export default {
 
     &--active{
       box-shadow: $box-shadow;
-      height: 392px;
+      height: 442px;
+      padding:$spacing-s
+    }
+
+    .cta{
+      margin: $spacing-m auto 0 auto;
+      display: block;
+
+      @media(min-width:$desktop){
+        display: none;
+      }
     }
   }
 

@@ -31,6 +31,7 @@
 
 <script>
 export default {
+  emits:['changed'],
   props: ['dropdownId', 'isRequired','modelValue'],
   methods: {
     onChange(event) {

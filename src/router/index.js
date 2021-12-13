@@ -36,6 +36,14 @@ const routes = [
     }
   },
   {
+    path: '/:profileURL',
+    name: 'Profile',
+    component: () => import('../views/Profile.vue'),
+    meta: {
+      title: 'Profile',
+    }
+  },
+  {
     path: '/design-system',
     name: 'DesignSystem',
     component: () => import('../views/DesignSystem.vue')

@@ -25,6 +25,7 @@ export default {
   components:{
     BaseIconButton
   },
+  emits:['searched'],
   props: ['searchId','searchPlaceholder'],
   data(){
     return{

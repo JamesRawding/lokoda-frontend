@@ -162,6 +162,7 @@ h3{
 
 strong{
   font-weight: bold;
+  line-height: 1.5;
 }
 
 a{
@@ -182,6 +183,10 @@ a{
     transition: $ease-in-out;
     font-family: inherit;
     padding:0;
+  }
+
+  img{
+    max-width: 100%;
   }
 
   .fade-enter-active, .fade-leave-active {
