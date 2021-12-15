@@ -105,6 +105,10 @@ body {
   }
 }
 
+*:focus{
+  outline-color: $focus;
+}
+
 body{
   font-family: 'Montserrat', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -191,7 +195,7 @@ a{
 
   .fade-enter-active, .fade-leave-active {
     opacity: 1;
-    transition: opacity .25s;
+    transition: opacity .25s ease-in-out;
   }
   .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
     opacity: 0;
@@ -201,7 +205,8 @@ a{
     max-width: rem(1200);
     margin: 0 auto;
     width:100%;
-    padding: $spacing-s;
+    padding: $spacing-s $spacing-s rem(90) $spacing-s;
+
 
     @media(min-width:$desktop){
       padding: $spacing-m;

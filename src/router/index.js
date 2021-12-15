@@ -36,6 +36,14 @@ const routes = [
     }
   },
   {
+    path: '/account-settings',
+    name: 'AccountSettings',
+    component: () => import('../views/AccountSettings.vue'),
+    meta: {
+      title: 'Account Settings',
+    }
+  },
+  {
     path: '/:profileURL',
     name: 'Profile',
     component: () => import('../views/Profile.vue'),

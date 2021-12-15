@@ -1,10 +1,10 @@
 <template>
   <main class="page-container">
     <the-header></the-header>
-    <div class="discover-intro">
+    <section class="discover-intro">
       <h1>Discover</h1>
       <p>Find artists/promoters in your area. Search by <strong>city/postcode</strong> or by <strong>name</strong>.</p>
-    </div>
+    </section>
     <div class="segmented-controls">
       <base-button :class="{'segmented-control--active': artistsVisible}" mode="cta cta--secondary" buttonType="button" @click="showResultType('artist')">Artists</base-button>
       <base-button :class="{'segmented-control--active': promotersVisible}" mode="cta cta--secondary" buttonType="button" @click="showResultType('promoter')">Promoters</base-button>
@@ -271,7 +271,6 @@ export default {
     grid-column-gap: $spacing-m;
     grid-row-gap: $spacing-m;
     margin-top:$spacing-m;
-    margin-bottom: rem(92);
 
     @media(min-width: $mobile-landscape){
       grid-template-columns: 1fr 1fr;

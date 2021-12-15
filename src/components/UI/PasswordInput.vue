@@ -93,13 +93,13 @@ export default {
     bottom:0;
     right: 0;
     color: $copy;
-    background-color: #fff;
 
     @media(min-width:$desktop){
       bottom: rem(4);
     }
 
     &--show-password{
+      background-color: transparent;
       &:before{
         content:'\f06e';
         font-size: rem(25);
@@ -107,6 +107,7 @@ export default {
     }
 
     &--hide-password{
+      background-color: transparent;
       &:before{
         content:'\f070';
         font-size: rem(25);

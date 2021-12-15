@@ -1,24 +1,45 @@
 <template>
-  <dialog 
-  open>
+<focus-trap>
+  <dialog :class="mode" open>
     <div v-click-outside="clickToClose" class="dialog-inner">
+      <base-icon-button mode="icon-button icon-button--close" @click="clickToClose">Close dialog</base-icon-button>
       <slot></slot>
     </div>
   </dialog>
+  </focus-trap>
 </template>
 
 <script>
 import vClickOutside from 'click-outside-vue3'
+import BaseIconButton from '../UI/BaseIconButton.vue';
+
 export default {
+  props:['mode'],
+  components:{
+    BaseIconButton,
+  },
+  data(){
+    return{
+      dialogIsActive: true
+    }
+  },
   emits:['closeDialog'],
   methods:{
     clickToClose(){
+      this.dialogIsActive = true;
       this.$emit('closeDialog', true)
     },
   },
   directives: {
     clickOutside: vClickOutside.directive
-  }
+  },
+  created() {
+    document.addEventListener('keydown', (evt) => {
+      if (evt.key === 'Escape') {
+          return this.$emit('closeDialog', true)
+      }
+    });
+  },
 }
 
 </script>
@@ -56,9 +77,60 @@ export default {
     width: 100%;
     padding: $spacing-s;
     color: $copy;
+    position: relative;
 
     @media(min-width:$desktop){
       padding: $spacing-m;
     }
   }
+
+  .warning-dialog{
+    @media(min-width:$desktop){
+      background-color: rgba(51,51,51,.85);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      border: none;
+      border-radius: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding:0;
+      z-index: 1;
+
+      .dialog-inner{
+        width: auto;
+        border-radius: $border-radius-reg;
+        text-align: center;
+      }
+    }
+  }
+  
+
+  .icon-button--close{
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    height: 1px;
+    width: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+
+    &:focus{
+      clip: unset;
+      clip-path: unset;
+      height: rem(44);
+      width: rem(44);
+      margin:0;
+      right: 0;
+      top:0;
+    }
+  }
+  
 </style>

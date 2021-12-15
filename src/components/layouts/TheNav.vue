@@ -2,13 +2,14 @@
   <nav>
     <div v-if="loggedIn">
       <router-link class="header-link header-link--profile" to="/profile">user profile</router-link>
-      <router-link class="header-link header-link--discover" to="/discover">Discover</router-link>
-      <router-link v-if="messageCount < 1" class="header-link header-link--messages" to="/messages">Messages</router-link>
-      <router-link v-else class="header-link header-link--message" to="/messages"><span>{{messageCount}}</span> Messages</router-link>
+      <router-link class="header-link header-link--discover" to="/discover"><span class="header-link__text">Discover</span></router-link>
+      <router-link v-if="messageCount < 1" class="header-link header-link--messages" to="/messages"><span class="header-link__text">Messages</span></router-link>
+      <router-link v-else class="header-link header-link--message" to="/messages"><span class="header-link__message-count">{{messageCount}}</span><span class="header-link__text">Messages</span></router-link>
     </div>
     <div v-else>
       <router-link class="header-link header-link--home" to="/">log in</router-link>
-      <router-link class="header-link header-link--discover" to="/discover">Discover</router-link>
+      <router-link class="header-link header-link--discover" to="/discover"><span class="header-link__text">Discover</span></router-link>
+      <router-link class="header-link header-link--login" to="/"><span class="header-link__text">Log In</span></router-link>
     </div>
   </nav>
 </template>
@@ -16,9 +17,9 @@
 <script>
 
 export default {
+  props:['loggedIn'],
   data(){
     return {
-      loggedIn: true,
       messageCount: 0
     }
   },
@@ -34,6 +35,7 @@ export default {
     right:0;
     background-color: #fff;
     padding:$spacing-xs;
+    z-index: 1;
 
     @media(min-width:$desktop){
       position: relative;
@@ -89,6 +91,13 @@ export default {
       }
     }
 
+    &--login{
+      &::before{
+        content: '\f2f6';
+        font-size: rem(30);
+      }
+    }
+
     &--profile{
       &::before{
         content: '\f007';
@@ -107,7 +116,7 @@ export default {
         font-size: rem(30);
       }
 
-      span{
+      .header-link__message-count{
         position: absolute;
         right: 0;
         top:0;
@@ -123,9 +132,7 @@ export default {
         font-size: $copy-mobile-s;
 
         @media(min-width:$desktop){
-          position: relative;
-          order:2;
-          margin-left: $spacing-xs;
+          left: rem(18);
         }
       }
     }
@@ -136,6 +143,32 @@ export default {
         font-size: rem(30);
       }
     }
+
+    &__text{
+      position: relative;
+      &:after{
+        content: '';
+        position: absolute;
+        left:0;
+        right:0;
+        bottom: rem(-4);
+        height: rem(2);
+        background-color: transparent;
+        border-radius: $border-radius-reg;
+        transition: .25s background-color ease-in-out;
+      }
+
+      &:hover:after{
+        background-color: $dark-green;
+      }
+    } 
   }
+
+  .router-link-active{
+    .header-link__text:after{
+        background-color: $dark-green;
+      }
+    }
+  
 
 </style>

@@ -15,7 +15,7 @@ export default {
     width:rem(44);
     height: rem(44);
     border: none;
-    background-color:transparent;
+    background-color:#fff;
     text-indent: -10000px;
     display: flex;
     align-items: center;
@@ -25,12 +25,17 @@ export default {
       text-indent: 0;
       font-family: "Font Awesome 5 Pro";
       font-weight: 300;
+      text-align: center;
     }
 
     @media(min-width:$desktop){
       &:hover{
         box-shadow: $box-shadow;
       }
+    }
+
+    &--round{
+      border-radius:100%;
     }
 
     &--new-message{
@@ -51,6 +56,21 @@ export default {
       &:before{
         content:'\f007';
         font-size: rem(30);
+      }
+    }
+
+    &--close{
+      &:before{
+        content:'\f00d';
+        font-size: rem(30);
+      }
+    }
+
+    &--edit{
+      &:before{
+        content:'\f044';
+        font-size: rem(18);
+        padding-left: rem(3);
       }
     }
   }

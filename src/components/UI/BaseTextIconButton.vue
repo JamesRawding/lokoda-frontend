@@ -16,7 +16,6 @@ export default {
     background-color:transparent;
     display: flex;
     align-items: center;
-    justify-content: center;
     font-size: inherit;
     color: $copy;
     height: rem(44);
@@ -25,21 +24,82 @@ export default {
       font-family: "Font Awesome 5 Pro";
       font-weight: 300;
       margin-right: $spacing-xs;
+      width: rem(25);
+      text-align: center;
 
       @media(min-width:$desktop){
         margin-right: $spacing-s;
       }
     }
 
-    @media(min-width:$desktop){
-      &:hover{
-        box-shadow: $box-shadow;
-      }
-    }
-
     &--filter{
       &:before{
         content:'\f0b0';
+      }
+    }
+
+    &--qr:before{
+      content:'\f029'
+    }
+
+    &--logout:before{
+      content:'\f2f5'
+    }
+    &--profile:before{
+      content: '\f007';
+    }
+
+    &--photo:before{
+      content: '\f302';
+    }
+
+    &--key:before{
+      content: '\f084';
+    }
+
+    &--marker:before{
+      content: '\f3c5';
+    }
+
+    &--tag:before{
+      content: '\f02b';
+    }
+
+    &--trash:before{
+      content: '\f2ed';
+    }
+
+    &--plus:before{
+      content: '\f067';
+    }
+  }
+
+  dialog .text-icon-button{
+   margin-top:$spacing-xs;
+
+   @media(min-width:$desktop){
+      margin-left: rem(-32);
+      margin-right: rem(-32);
+      padding-left: rem(32);
+      padding-right: rem(32);
+      width:calc(100% + 4rem);
+
+      &:hover{
+        background-color: $lightgrey;
+      }
+    }
+  }
+
+  .sidebar-nav .text-icon-button{
+    @media(min-width:$desktop){
+      margin-left: rem(-32);
+      margin-right: rem(-32);
+      padding-left: rem(32);
+      padding-right: rem(32);
+      width:calc(100% + 4rem);
+      &:hover,
+      &--active{
+        background-color: $lightgrey;
       }
     }
   }

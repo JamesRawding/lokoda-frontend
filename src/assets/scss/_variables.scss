@@ -25,9 +25,10 @@ $link: #187BA5;
 $rag-red: #EC0442;
 $rag-amber: #F28E13;
 $rag-green: $primary;
+$focus: #3DB0E3;
 
 $border-radius-reg: rem(5);
-$box-shadow: 0px 0px 3px rgba(128, 89, 89, 0.2);
+$box-shadow: 0px 0px 4px rgba(128, 89, 89, 0.2);
 $ease-in-out: all .25s ease-in-out;
 
 //Font Sizes
@@ -115,5 +116,66 @@ $spacing-xl: rem(128);
 
   @media(min-width:$desktop){
     font-size: $copy-desktop-xs;
+  }
+}
+
+//Buttons
+
+@mixin cta{
+  font-weight:bold;
+  border-style: solid;
+  border-width: rem(2);
+  border-radius: $border-radius-reg;
+  padding: rem(11) rem(28);
+  font-size: inherit;
+  transition: all .25s ease-in-out;
+
+  @media(min-width:$desktop){
+    padding:rem(12) rem(32);
+  }
+}
+
+@mixin cta--primary{
+  border-color: $primary;
+  background-color: $primary;
+  color:$copy;
+
+  
+  @media(min-width:$desktop){
+    &:hover,
+    &:focus{
+      border-color: $dark-green;
+      background-color: $dark-green;
+      color:#fff;
+    }
+  }
+}
+
+@mixin cta--secondary{
+  border-color: $dark-green;
+  background-color: transparent;
+  color:$dark-green;
+
+  @media(min-width:$desktop){
+    &:hover,
+    &:focus{
+      border-color: $dark-green;
+      background-color: $dark-green;
+      color:#fff;
+    }
+  }
+}
+
+@mixin cta--warning{
+  border-color: $rag-red;
+  background-color: $rag-red;
+  color:#fff;
+
+  @media(min-width:$desktop){
+    &:hover,
+    &:focus{
+      border-color: $mid-grey;
+      background-color: $mid-grey;
+    }
   }
 }

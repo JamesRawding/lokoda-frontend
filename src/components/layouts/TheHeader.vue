@@ -3,7 +3,7 @@
     <router-link v-if="loggedIn" to="/profile"><img src="../../assets/images/lokoda-logo.svg" alt="lokoda logo">user profile</router-link>
     <router-link v-else to="/"><img src="../../assets/images/lokoda-logo.svg" alt="lokoda logo">Log in</router-link>
     <div class="header-nav-items">
-      <header-nav></header-nav>
+      <header-nav :loggedIn="loggedIn"></header-nav>
       <button @click="showProfileDialog" class="profile-settings-button" v-if="loggedIn && isProfileDialogDisplayed">
         View profile settings
         <profile-pic v-if="loggedIn"></profile-pic>
@@ -18,9 +18,10 @@
     <transition name="fade" mode="out-in">
       <base-dialog  @closeDialog="hideProfileDialog" v-if="isProfileDialogDisplayed">
         <strong>Profile Options</strong>
-        <router-link class="text-icon-link text-icon-link--account" to="/account">Account Details</router-link>
+        <base-text-icon-link mode="text-icon-link text-icon-link--profile" path="/profile">View Profile</base-text-icon-link>
+        <base-text-icon-link mode="text-icon-link text-icon-link--account" path="/account-settings">Account Settings</base-text-icon-link>
         <base-text-icon-button mode="text-icon-button text-icon-button--qr">Print QR Code</base-text-icon-button>
-        <base-text-icon-button mode="text-icon-button text-icon-button--logout">Log Out</base-text-icon-button>
+        <base-text-icon-button @click="logout" mode="text-icon-button text-icon-button--logout">Log Out</base-text-icon-button>
       </base-dialog>
     </transition>
     
@@ -34,14 +35,17 @@ import HeaderNav from '../layouts/TheNav.vue';
 import ProfilePic from '../UI/ProfilePic.vue';
 import BaseDialog from '../UI/BaseDialog.vue';
 import BaseTextIconButton from '../UI/BaseTextIconButton.vue';
+import BaseTextIconLink from '../UI/BaseTextIconLink.vue';
 
 export default {
   components:{
     HeaderNav,
     ProfilePic,
     BaseDialog,
-    BaseTextIconButton
+    BaseTextIconButton,
+    BaseTextIconLink
   },
+  emits:['loggedOut'],
   data(){
     return {
       loggedIn: true,
@@ -55,6 +59,10 @@ export default {
     hideProfileDialog(){
       this.isProfileDialogDisplayed = false
     },
+    logout(){
+      this.loggedIn = false;
+      this.isProfileDialogDisplayed = false
+    }
   },
   directives: {
     clickOutside: vClickOutside.directive
@@ -94,7 +102,24 @@ export default {
     padding:0;
     display:flex;
     margin-left:$spacing-l;
-    font-size: rem(22);  
+    font-size: rem(22); 
+    position: relative;
+    
+    &:after{
+      content:'';
+      border-radius: 100%;
+      border: rem(2) solid transparent;
+      position: absolute;
+      left: rem(-4);
+      right: rem(-4);
+      top: rem(-4);
+      bottom: rem(-4);
+      transition: .25s all ease-in-out;
+    }
+
+    &:hover:after{
+      border-color: $dark-green;
+    }
   }
 
   dialog{
@@ -102,43 +127,6 @@ export default {
       right: 0;
       left: auto;
       top: rem(60);
-    }
-  }
-
-  .text-icon-link{
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    text-indent: 0;
-    height:rem(44);
-    align-items: center;
-    margin-top: $spacing-s;
-
-    &:before{
-      font-family: "Font Awesome 5 Pro";
-      font-weight: 300;
-      margin-right: $spacing-xs;
-
-      @media(min-width:$desktop){
-        margin-right: $spacing-s;
-      }
-    }
-
-  &--account:before{
-    content: '\f013';
-  }
-
-  }
-
-  .text-icon-button{
-    margin-top:$spacing-xs;
-
-    &--qr:before{
-      content:'\f029'
-    }
-
-    &--logout:before{
-      content:'\f2f5'
     }
   }
 
