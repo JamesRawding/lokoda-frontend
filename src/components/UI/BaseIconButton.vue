@@ -28,14 +28,28 @@ export default {
       text-align: center;
     }
 
-    @media(min-width:$desktop){
-      &:hover{
-        box-shadow: $box-shadow;
-      }
-    }
 
     &--round{
       border-radius:100%;
+      box-shadow: $box-shadow;
+
+      @media(min-width:$desktop){
+        &:after{
+          content:'';
+          border-radius: 100%;
+          border: rem(2) solid transparent;
+          position: absolute;
+          left: rem(-4);
+          right: rem(-4);
+          top: rem(-4);
+          bottom: rem(-4);
+          transition: .25s all ease-in-out;
+        }
+
+        &:hover:after{
+          border-color: $dark-green;
+        }
+      }
     }
 
     &--new-message{
@@ -70,8 +84,13 @@ export default {
       &:before{
         content:'\f044';
         font-size: rem(18);
-        padding-left: rem(3);
+        padding-left: rem(4);
       }
+    }
+
+    &--trash:before{
+      content: '\f2ed';
+      font-size: rem(20);
     }
   }
 </style>

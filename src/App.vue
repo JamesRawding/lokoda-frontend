@@ -212,5 +212,13 @@ a{
       padding: $spacing-m;
     }
   }
+
+  .full-width{
+    width: 100%;
+  }
+
+  .display-block{
+    display: block;
+  }
 </style>
 

@@ -81,10 +81,11 @@ export default {
 
     @media(min-width:$desktop){
       padding: $spacing-m;
+      min-width: rem(300);
     }
   }
 
-  .warning-dialog{
+  .modal-dialog{
     @media(min-width:$desktop){
       background-color: rgba(51,51,51,.85);
       position: fixed;
@@ -105,8 +106,15 @@ export default {
 
       .dialog-inner{
         width: auto;
+        max-width: rem(500);
+        width: 100%;
         border-radius: $border-radius-reg;
-        text-align: center;
+      }
+
+      &--warning{
+        .dialog-inner{
+          text-align: center;
+        }
       }
     }
   }

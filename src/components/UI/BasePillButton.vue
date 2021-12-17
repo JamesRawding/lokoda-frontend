@@ -28,10 +28,15 @@ export default {
       border-color: $dark-green;
       color: $dark-green;
 
-      &:hover{
-        background-color: $dark-green;
-        color:#fff;
+      @media(min-width:$desktop){
+        &:hover{
+          background-color: $dark-green;
+          color:#fff;
+        }
       }
+
+      
+
       &.pill-button--selected{
         background-color: $dark-green;
         color:#fff;
@@ -42,15 +47,25 @@ export default {
       border-color: #fff;
       color: #fff;
 
-      &:hover{
-        background-color: #fff;
-        color:$copy;
+      @media(min-width:$desktop){
+        &:hover{
+          background-color: #fff;
+          color:$copy;
+        }
       }
+      
 
       &.pill-button--selected{
         background-color: #fff;
         color:$copy;
       }
     }
+
+    .modal-dialog &{
+      margin-right: $spacing-s;
+      margin-top: $spacing-s;
+    }
   }
+
+  
 </style>

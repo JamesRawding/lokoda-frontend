@@ -63,18 +63,18 @@
                 <base-button buttonType="submit" mode="cta cta--primary">Save</base-button>
               </form>
             </base-dialog>
-            <base-dialog mode="warning-dialog" v-if="deleteAccountDialogVisible"  @closeDialog="hideSettingsDialog('Delete Account')">
+            <base-dialog mode="modal-dialog modal-dialog--warning" v-if="deleteAccountDialogVisible"  @closeDialog="hideSettingsDialog('Delete Account')">
               <strong>Delete Account</strong>
               <p>Are you sure? This cant be undone!</p>
-                <div class="cta-container">
-                  <base-button @click="hideSettingsDialog('Delete Account')" buttonType="button" mode="cta cta--secondary">Cancel</base-button>
-                  <base-button @click="displaySettingsDialog('Confirm Delete')" buttonType="button" mode="cta cta--warning">Delete</base-button>
-                </div>
+              <div class="dialog-cta-container">
+                <base-button @click="hideSettingsDialog('Delete Account')" buttonType="button" mode="cta cta--secondary">Cancel</base-button>
+                <base-button @click="displaySettingsDialog('Confirm Delete')" buttonType="button" mode="cta cta--warning">Delete</base-button>
+              </div>
             </base-dialog>
-            <base-dialog mode="warning-dialog" v-if="confirmDeleteAccountDialogVisible"  @closeDialog="hideSettingsDialog('Confirm Delete')">
+            <base-dialog mode="modal-dialog" v-if="confirmDeleteAccountDialogVisible"  @closeDialog="hideSettingsDialog('Confirm Delete')">
               <strong>Delete Account</strong>
               <p>Last chance, no turning back...</p>
-                <div class="cta-container">
+                <div class="dialog-cta-container">
                   <base-button @click="hideSettingsDialog('Confirm Delete')" buttonType="button" mode="cta cta--secondary">Cancel</base-button>
                   <base-button @click="displaySettingsDialog('Confirm Delete')" buttonType="button" mode="cta cta--warning">Delete</base-button>
                 </div>
@@ -271,7 +271,7 @@ export default {
     }
   }
 
-  .cta-container{
+  .dialog-cta-container{
     margin-top:$spacing-m;
 
     .cta:first-of-type{

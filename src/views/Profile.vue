@@ -2,15 +2,15 @@
   <main class="page-container">
     <the-header></the-header>
     <section class="hero-section">
-      <div class="hero-section__image">
-        <div v-if="profileImageURL">
+      <div class="hero-section__image-block">
+        <div class="hero-section__image-container" v-if="profileImageURL">
           <img src="../assets/images/dummy-hero-img.jpg" alt="profile image">
           <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Hero Image')" mode="icon-button icon-button--edit icon-button--round">Edit Image</base-icon-button>
         </div>
-        <div v-else>
+        <div v-else-if="loggedIn">
           <base-text-icon-button @click="displaySettingsDialog('Hero Image')" mode="text-icon-button text-icon-button--plus">Add Image</base-text-icon-button>
         </div>
-        <base-dialog v-if="heroDialogVisible"  @closeDialog="hideSettingsDialog('Hero Image')">
+        <base-dialog mode="modal-dialog" v-if="heroDialogVisible"  @closeDialog="hideSettingsDialog('Hero Image')">
           <strong>Select Image</strong>
           <div v-if="profileImageURL" class="hero-image-thumb">
             <img src="../assets/images/dummy-hero-img.jpg" alt="profile image">
@@ -20,16 +20,149 @@
               Choose New Image
             </choose-file-button>
             <base-text-icon-button @click="displaySettingsDialog('Delete Hero')" mode="text-icon-button text-icon-button--trash" buttonType="button">Delete Image</base-text-icon-button>
-
             <base-button buttonType="submit" mode="cta cta--primary">Save</base-button>
           </form>
         </base-dialog>
       </div>
+
       <div class="hero-section__details">
         <h1>{{profileName}}</h1>
         <p>{{profileLocation}}</p>
+
+        <div class="hero-section__genres" v-if="profileGenres.length">
+          <base-pill v-for="genre in profileGenres" :key="genre + profileName">
+            {{genre}}
+          </base-pill>
+          <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Genres')" mode="icon-button icon-button--edit icon-button--round">Edit Genres</base-icon-button>
+        </div>
+        <div class="hero-section__genres" v-else-if="loggedIn">
+          <base-text-icon-button  @click="displaySettingsDialog('Genres')" mode="text-icon-button text-icon-button--plus">Add Genres</base-text-icon-button>
+        </div>
+        <base-dialog mode="modal-dialog" v-if="genresDialogVisible"  @closeDialog="hideSettingsDialog('Genres')">
+          <strong class="display-block">Select Genres</strong>
+          <base-pill-button buttonType="button" @click="selectGenres(genre)" :class="{'pill-button--selected': this.profileGenres.includes(genre)}" mode="pill-button pill-button--default" v-for="genre in allGenres" :key="genre">
+            {{genre}}
+          </base-pill-button>
+          <base-button @click="hideSettingsDialog('Genres')" buttonType="button" mode="cta cta--primary">Save</base-button>
+        </base-dialog>
       </div> 
     </section>
+
+    <div class="profile-body">
+
+      <section class="player-embed-block" v-if="profilePlayerEmbed">
+        <h2>there is a player</h2>
+        <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Embed Player')" mode="icon-button icon-button--edit icon-button--round">Edit Player Embed</base-icon-button>
+      </section>
+      <div class="add-player-embed" v-else-if="loggedIn">
+        <base-text-icon-button @click="displaySettingsDialog('Embed Player')" mode="text-icon-button text-icon-button--plus">Embed Music Player</base-text-icon-button>
+        <span>e.g. Spotify, Soundcloud, Bandcamp etc</span>
+      </div>
+      <base-dialog mode="modal-dialog" v-if="embedDialogVisible"  @closeDialog="hideSettingsDialog('Embed Player')">
+        <base-input inputId="playerEmbed" inputType="text" v-model="profilePlayerEmbed" :isRequired="false" >
+          <template #label>Embed Music Player</template>
+          <template #helpertext>Enter embed code From Soundcloud, Bandcamp, Spotify etc</template>
+        </base-input>
+        <base-button @click="hideSettingsDialog('Embed Player')" buttonType="button" mode="cta cta--primary">Save</base-button>
+      </base-dialog>
+
+      <section class="upcoming-shows" v-if="profileShows.length">
+        <h2>Upcoming Shows</h2>
+        <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Manage Shows')" buttonType="button" mode="icon-button icon-button--edit icon-button--round">Edit shows</base-icon-button>
+        <show-card @editThisShow="editShow(show)" @deleteThisShow="deleteShow(show)" v-for="show in profileShowsResults" :key="show" :loggedIn=this.loggedIn>
+          <template #month>{{show.showMonth}}</template>
+          <template #day>{{show.showDay}}</template>
+          <template #year>{{show.showYear}}</template>
+          <template #city>{{show.showCity}}</template>
+          <template #venue>{{show.showVenue}}</template>
+        </show-card>
+        <base-text-icon-button v-if="profileShows.length > 3" @click="toggleShowListings" mode="text-icon-button text-icon-button--list" buttonType="button"> <span v-if="fullListingVisible">Hide Full Listing</span><span v-else>View Full Listing</span></base-text-icon-button>
+
+      </section>
+      <div class="add-upcoming-shows" v-else-if="loggedIn">
+        <base-text-icon-button @click="displaySettingsDialog('Manage Shows')" buttonType="button" mode="text-icon-button text-icon-button--plus">Add and edit shows</base-text-icon-button>
+      </div>
+
+
+
+      <base-dialog mode="modal-dialog" v-if="showsDialogVisible"  @closeDialog="hideSettingsDialog('Manage Shows')">
+        <strong>Manage Shows</strong>
+        <base-text-icon-button @click="displaySettingsDialog('Add Show')" mode="text-icon-button text-icon-button--plus" buttonType="button">Add Show</base-text-icon-button>
+        <div class="show-container">
+          <show-card @editThisShow="editShow(show)" @deleteThisShow="deleteShow(show)" v-for="show in profileShowsResults" :key="show" :loggedIn=this.loggedIn>
+            <template #month>{{show.showMonth}}</template>
+            <template #day>{{show.showDay}}</template>
+            <template #year>{{show.showYear}}</template>
+            <template #city>{{show.showCity}}</template>
+            <template #venue>{{show.showVenue}}</template>
+          </show-card>
+        </div>
+        <base-text-icon-button v-if="profileShows.length > 3" @click="toggleShowListings" mode="text-icon-button text-icon-button--list" buttonType="button"> <span v-if="fullListingVisible">Hide Full Listing</span><span v-else>View Full Listing</span></base-text-icon-button>
+
+        <base-button @click="hideSettingsDialog('Manage Shows')" buttonType="button" mode="cta cta--primary">Save</base-button>
+      </base-dialog>
+
+      <base-dialog mode="modal-dialog modal-dialog--add-show" v-if="addShowDialogVisible"  @closeDialog="hideSettingsDialog('Add Show')">
+        <strong>Enter Show Details</strong>
+        <form @submit.prevent="submitShowForm">
+          <base-input inputId="showCity" inputType="text" v-model="showCity" :isRequired="true" >
+            <template #label>City</template>
+          </base-input>
+          <base-input inputId="showVenue" inputType="text" v-model="showVenue" :isRequired="true" >
+            <template #label>Venue</template>
+          </base-input>
+          <fieldset class="add-show-date-fields">
+            <legend>Select Date <span>(required)</span></legend>
+            <base-input inputId="showDay" inputType="text" v-model="showDay" :isRequired="true" >
+              <template #label>Day</template>
+            </base-input>
+            <base-input inputId="showMonth" inputType="text" v-model="showMonth" :isRequired="true" >
+              <template #label>Month</template>
+            </base-input>
+            <base-input inputId="showYear" inputType="text" v-model="showYear" :isRequired="true" >
+              <template #label>Year</template>
+            </base-input>
+          </fieldset>
+          <base-button buttonType="submit" mode="cta cta--primary">Save Show</base-button>
+        </form>
+      </base-dialog>
+
+      <base-dialog mode="modal-dialog modal-dialog--add-show" v-if="editShowDialogVisible"  @closeDialog="hideSettingsDialog('Edit Show')">
+        <strong>Edit Show Details</strong>
+        <form @submit.prevent="submitEditShowForm">
+          <base-input inputId="editShowCity" inputType="text" v-model="selectedShow.showCity" :isRequired="true" >
+            <template #label>City</template>
+          </base-input>
+          <base-input inputId="editShowVenue" inputType="text" v-model="selectedShow.showVenue" :isRequired="true" >
+            <template #label>Venue</template>
+          </base-input>
+          <fieldset class="add-show-date-fields">
+            <legend>Select Date <span>(required)</span></legend>
+            <base-input inputId="editShowDay" inputType="text" v-model="selectedShow.showDay" :isRequired="true" >
+              <template #label>Day</template>
+            </base-input>
+            <base-input inputId="editShowMonth" inputType="text" v-model="selectedShow.showMonth" :isRequired="true" >
+              <template #label>Month</template>
+            </base-input>
+            <base-input inputId="editShowYear" inputType="text" v-model="selectedShow.showYear" :isRequired="true" >
+              <template #label>Year</template>
+            </base-input>
+          </fieldset>
+          <base-button buttonType="submit" mode="cta cta--primary">Save Show</base-button>
+        </form>
+      </base-dialog>
+
+      <base-dialog mode="modal-dialog modal-dialog--warning modal-dialog--delete-show" v-if="deleteShowDialogVisible"  @closeDialog="hideSettingsDialog('Delete Show')">
+        <strong>Are you sure you want to delete this show?</strong>
+        <p><span class="display-block">{{selectedShow.showVenue}}</span>
+        <span class="display-block">{{selectedShow.showDay}} {{selectedShow.showMonth}} {{selectedShow.showYear}}</span></p>
+        <div class="dialog-cta-container">
+          <base-button @click="hideSettingsDialog('Delete Show')" buttonType="button" mode="cta cta--secondary">Cancel</base-button>
+          <base-button @click="confirmDeleteShow" buttonType="button" mode="cta cta--warning">Delete</base-button>
+        </div>
+      </base-dialog>
+    </div>
+
   </main>
 </template>
 
@@ -41,7 +174,10 @@ import BaseDialog from '../components/UI/BaseDialog.vue';
 import ChooseFileButton from '../components/UI/ChooseFileButton.vue';
 import BaseButton from '../components/UI/BaseButton.vue';
 import BaseIconButton from '../components/UI/BaseIconButton.vue';
-// import BaseInput from '../components/UI/BaseInput.vue';
+import BasePill from '../components/UI/BasePill.vue';
+import BasePillButton from '../components/UI/BasePillButton.vue';
+import BaseInput from '../components/UI/BaseInput.vue';
+import ShowCard from '../components/UI/ShowCard.vue';
 export default {
   components:{
     TheHeader,
@@ -49,8 +185,11 @@ export default {
     BaseDialog,
     ChooseFileButton,
     BaseButton,
-    BaseIconButton
-    // BaseInput
+    BaseIconButton,
+    BasePill,
+    BasePillButton,
+    BaseInput,
+    ShowCard
   },
   data() {
     return{
@@ -58,11 +197,17 @@ export default {
       profileName: '',
       profileLocation: '',
       profileImageURL: true,
+      profileGenres: [],
+      profileShows: [],
+      profilePlayerEmbed: '',
       profiles:[
         {
           profileURL: 'down-to-folk',
+          profileImageURL: '../assets/images/dummy-hero-img.jpg',
           profileName: 'Down to Folk',
-          profileLocation: 'Sheffield'
+          profileLocation: 'Sheffield',
+          profileGenres: [],
+          profileShows: [],
         },
         {
           profileURL: 'goldie-lookin-chain',
@@ -70,7 +215,22 @@ export default {
           profileLocation: 'Hull'
         }
       ],
+      allGenres:['Alternative', 'Blues', 'Classic Rock', 'Country', 'Emo', 'Folk', 'Grime','Grunge', 'Hardcore', 'Hip Hop', 'Metal', 'Pop'],
       heroDialogVisible: false,
+      genresDialogVisible: false,
+      embedDialogVisible: false,
+      showsDialogVisible: false,
+      deleteShowDialogVisible: false,
+      addShowDialogVisible: false,
+      editShowDialogVisible: false,
+      fullListingVisible: false,
+      selectedShow: '',
+      selectedShowIndex: '',
+      showDay: '',
+      showMonth: '',
+      showYear: '',
+      showCity: '',
+      showVenue: '',
     }
     
   },
@@ -79,19 +239,130 @@ export default {
       if(evt == 'Hero Image'){
         this.heroDialogVisible = true
       }
+      if(evt == 'Genres'){
+        this.genresDialogVisible = true
+      }
+      if(evt == 'Embed Player'){
+        this.embedDialogVisible = true
+      }
+      if(evt == 'Manage Shows'){
+        this.showsDialogVisible = true
+      }
+      if(evt == 'Add Show'){
+        this.addShowDialogVisible = true;
+        this.showsDialogVisible = false
+      }
     },
     hideSettingsDialog(evt){
       if(evt == 'Hero Image'){
         this.heroDialogVisible = false
       }
+      if(evt == 'Genres'){
+        this.genresDialogVisible = false
+      }
+      if(evt == 'Embed Player'){
+        this.embedDialogVisible = false
+      }
+      if(evt == 'Manage Shows'){
+        this.showsDialogVisible = false
+      }
+      if(evt == 'Delete Show'){
+        this.deleteShowDialogVisible = false
+      }
+      if(evt == 'Add Show'){
+        this.addShowDialogVisible = false
+      }
+      if(evt == 'Edit Show'){
+        this.editShowDialogVisible = false;
+      }
     },
+    selectGenres(evt){
+      const genre = evt
+      const selectedGenres = this.profiles.find(profile => profile.profileName).profileGenres;
+      const index = selectedGenres.indexOf(evt);
+      
+      
+      if(selectedGenres.includes(genre)){
+        if (index > -1) {
+          selectedGenres.splice(index, 1);
+        }
+      }else{
+        selectedGenres.push(genre);
+      }
+    },
+    submitShowForm(){
+      const shows = this.profiles.find(profile => profile.profileName).profileShows;
+      const newShow = {
+        showDay: this.showDay,
+        showMonth: this.showMonth,
+        showYear: this.showYear,
+        showCity: this.showCity,
+        showVenue: this.showVenue,
+      }
+
+      shows.unshift(newShow);
+      this.showDay = '';
+      this.showMonth = '';
+      this.showYear = '';
+      this.showCity = '';
+      this.showVenue = '';
+      this.addShowDialogVisible = false
+    },
+    toggleShowListings(){
+      this.fullListingVisible = !this.fullListingVisible
+    },
+    submitEditShowForm(){
+      this.editShowDialogVisible = false
+    },
+    editShow(evt){
+      const show = evt
+      const shows = this.profiles.find(profile => profile.profileName).profileShows;
+      const index = shows.indexOf(evt);
+      this.selectedShow = show;
+      this.selectedShowIndex = index;
+      this.editShowDialogVisible = true;
+      this.showsDialogVisible = false
+    },
+    deleteShow(evt){
+      const show = evt
+      const shows = this.profiles.find(profile => profile.profileName).profileShows;
+      const index = shows.indexOf(evt);
+      this.selectedShow = show;
+      this.selectedShowIndex = index;
+      this.deleteShowDialogVisible = true;
+      this.showsDialogVisible = false
+    },
+    confirmDeleteShow(){
+      const shows = this.profiles.find(profile => profile.profileName).profileShows;
+
+      if(shows.includes(this.selectedShow)){
+        if (this.selectedShowIndex > -1) {
+          shows.splice(this.selectedShowIndex, 1);
+        }
+      }
+      this.deleteShowDialogVisible = false;
+      this.selectedShow = '';
+      this.selectedShowIndex = ''
+    }
+  },
+  computed:{
+    profileShowsResults(){
+      if(this.fullListingVisible == false){
+        return this.profileShows.slice(0,3)
+      }else{
+        return this.profileShows
+      }
+    }
   },
   created(){
     
     const url = this.$route.params.profileURL;
     const selectedUser = this.profiles.find(profile => profile.profileURL === url);
     this.profileName = selectedUser.profileName;
+    //this.profileImageURL = selectedUser.profileImageURL;
+    this.profileGenres = selectedUser.profileGenres;
     this.profileLocation = selectedUser.profileLocation;
+    this.profileShows = selectedUser.profileShows;
 
   },
   directives: {
@@ -106,22 +377,41 @@ export default {
     width:calc(100% + $spacing-m);
     margin: $spacing-s rem(-16) 0 rem(-16);
 
+    @media(min-width:$desktop){
+      margin: $spacing-m 0 0 0;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 5fr 7fr;
+      border-radius: $border-radius-reg;
+    }
+
     &__details{
       padding: $spacing-s;
+
+      @media(min-width:$desktop){
+        padding:$spacing-l;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
     }
 
     h1,p{
       color: #fff;
     }
 
-    &__image{
+    &__image-block{
       background-color: $lightgrey;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: rem(200);
-      overflow:hidden;
       position: relative;
+      height: rem(200);
+
+      @media(min-width:$desktop){
+        order: 2;
+        height: auto;
+      }
 
       .icon-button{
         position:absolute;
@@ -129,11 +419,201 @@ export default {
         right:$spacing-s;
       }
     }
+
+    &__image-container{
+      width:100%;
+      img{
+        width: 100%;
+        vertical-align: bottom;
+      }
+    }
+
+    &__genres{
+      margin-top:$spacing-s;
+      width: 100%;
+      position: relative;
+
+      .icon-button{
+        position: absolute;
+        bottom: 0;
+        right:0;
+
+        @media(min-width:$desktop){
+          right: rem(-32);
+        }
+      }
+      
+      .text-icon-button{
+        color: #fff;
+      }
+    }
+  }
+
+  .profile-body{
+    @media(min-width:$desktop){
+      display: grid;
+      grid-template-columns: 8fr 4fr;
+      grid-column-gap: $spacing-m;
+    }
+  }
+
+  .add-player-embed{
+    background-color: $lightgrey;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    position: relative;
+    height: rem(200);
+    width:calc(100% + $spacing-m);
+    margin: 0 rem(-16);
+    padding: $spacing-s;
+
+    @media(min-width:$desktop){
+      order:2;
+      margin: $spacing-m 0 0 0;
+      padding: $spacing-m;
+      width: 100%;
+      border-radius: $border-radius-reg;
+    }
+
+    span{
+      font-size: $copy-mobile-s;
+      line-height: 1.5;
+      @media(min-width:$desktop){
+        font-size: $copy-desktop-s;
+      }
+    }
+  }
+
+  .player-embed-block{
+    position: relative;
+    padding: $spacing-m 0;
+    @media(min-width:$desktop){
+      order:2;
+    }
+
+    .icon-button{
+      position: absolute;
+      top: $spacing-m;
+      right:0;
+    }
+  }
+
+  .add-upcoming-shows{
+    background-color: $lightgrey;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    position: relative;
+    height: rem(200);
+    width:calc(100% + $spacing-m);
+    margin: 0 rem(-16);
+    padding: $spacing-s;
+    border-top: rem(1) solid $dark-green;
+
+    @media(min-width:$desktop){
+      border-top:none;
+      margin: $spacing-m 0 0 0;
+      padding: $spacing-m;
+      width: 100%;
+      border-radius: $border-radius-reg;
+    }
+  }
+
+   .modal-dialog--add-show{
+    .input-container:first-of-type{
+      margin-top:$spacing-m; 
+    }
+  }
+
+  .add-show-date-fields{
+    margin-top:$spacing-m;
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-column-gap: $spacing-m;
+
+    legend{
+      font-weight: bold;
+      span{
+        font-size: $copy-mobile-s;
+        font-weight: normal;
+        margin-left: $spacing-s;
+
+        @media(min-width:$desktop){
+          font-size: $copy-desktop-s;
+        }
+      }
+    }
+
+    label span{
+      display: none;
+    }
+  }
+
+  .show-container{
+    max-height: rem(280);
+    overflow: auto;
+
+    @media(min-width:$desktop){
+      max-height: rem(400);
+    }
+  }
+
+  .upcoming-shows{
+    position: relative;
+    margin-top: $spacing-m;
+
+    .icon-button{
+      position: absolute;
+      top: 0;
+      right:0;
+    }
+
+    .text-icon-button--list{
+      margin-top:$spacing-m;
+    }
   }
 
   dialog .cta--primary{
     margin: 2rem auto 0 auto;
     display: block;
+  }
+
+  .dialog-inner{
+    .text-icon-button--list{
+      margin-top:$spacing-s;
+    }
+  }
+
+  .dialog-cta-container{
+    margin-top:$spacing-m;
+
+    .cta:first-of-type{
+      margin-right: $spacing-s;
+    }
+
+    @media(min-width:$desktop){
+      .cta:last-of-type{
+        margin-left: $spacing-s;
+      }
+    }
+  }
+
+  .modal-dialog--delete-show{
+
+    strong{
+      @media(min-width:$desktop){
+        display: block;
+        padding: 0 $spacing-m;
+      } 
+    }
+    p{
+      margin-top:$spacing-s;
+    }
   }
 
   .hero-image-thumb{

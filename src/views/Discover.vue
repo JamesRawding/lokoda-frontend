@@ -313,13 +313,6 @@ export default {
     line-height: 1.5;
     margin-top: rem(-8);
   }
-
-  .pill{
-    margin-top:$spacing-s;
-    margin-right: $spacing-xs;
-    display: inline-block;
-    width: auto;
-  }
 </style>
 
 

@@ -72,6 +72,10 @@ export default {
     &--plus:before{
       content: '\f067';
     }
+
+    &--list:before{
+      content: '\f03a';
+    }
   }
 
   dialog .text-icon-button{

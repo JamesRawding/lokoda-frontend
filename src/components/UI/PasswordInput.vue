@@ -1,5 +1,5 @@
 <template>
-<div v-if="isRequired">
+<div class="input-container" v-if="isRequired">
   <label :for="inputId">
     <slot name="label"></slot>
     <span>(required)</span>
@@ -16,7 +16,7 @@
     <base-icon-button v-else @click="showPassword" buttonType="button" mode="icon-button icon-button--hide-password">Hide Password</base-icon-button>
 
 </div>
-<div v-else>
+<div class="input-container" v-else>
   <label :for="inputId">
     <slot name="label"></slot>
   </label>

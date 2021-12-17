@@ -26,6 +26,8 @@ export default {
     font-size: inherit;
     color: $copy;
     height: rem(44);
+    cursor: pointer;
+    transition: all .25s ease-in-out;
 
     &:before{
       font-family: "Font Awesome 5 Pro";
@@ -43,5 +45,15 @@ export default {
 
   dialog label{
     margin-top:$spacing-s;
+    @media(min-width:$desktop){
+      width: calc(100% + 4rem);
+      margin-left: -2rem;
+      margin-right: -2rem;
+      padding-left: 2rem;
+      padding-right: 2rem;
+      &:hover{
+        background-color: $lightgrey;
+      }
+    }
   }
 </style>

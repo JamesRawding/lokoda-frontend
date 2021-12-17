@@ -1,5 +1,5 @@
 <template>
-<div v-if="isRequired">
+<div class="input-container" v-if="isRequired">
   <label :for="inputId">
     <slot name="label"></slot>
     <span>(required)</span>
@@ -13,7 +13,7 @@
     aria-required="true" 
     required>
 </div>
-<div v-else>
+<div class="input-container" v-else>
   <label :for="inputId">
     <slot name="label"></slot>
   </label>
@@ -34,7 +34,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  div{
+  .input-container{
     margin-top: $spacing-m;
   }
 
@@ -54,5 +54,13 @@ export default {
     label,span{
       color: #fff;
     }
+  }
+
+  dialog .input-container:first-of-type{
+    margin-top: 0;
+  }
+
+  .add-show-date-fields label span{
+    display: none;
   }
 </style>

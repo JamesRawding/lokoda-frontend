@@ -1,8 +1,14 @@
 <template>
-  <div class="card">
+  <div class="card" :class="mode">
     <slot></slot>
   </div>
 </template>
+
+<script>
+export default {
+  props:['mode']
+}
+</script>
 
 <style lang="scss" scoped>
   div {
