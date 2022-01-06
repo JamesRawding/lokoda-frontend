@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="search-bar-container">
   <label :for="searchId">
     <slot name="label"></slot>
   </label>
@@ -9,7 +9,8 @@
     type="search" 
     :id="searchId"
     v-model="searchValue"
-    :placeholder="searchPlaceholder">
+    :placeholder="searchPlaceholder"
+    :aria-label="ariaLabel">
     
     <base-icon-button @click="onClick"  buttonType="button" mode="icon-button icon-button--search">Submit search</base-icon-button>
 
@@ -26,7 +27,7 @@ export default {
     BaseIconButton
   },
   emits:['searched'],
-  props: ['searchId','searchPlaceholder'],
+  props: ['searchId','searchPlaceholder', 'ariaLabel'],
   data(){
     return{
       searchValue:''
@@ -44,7 +45,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  div{
+  .search-bar-container{
     margin-top: $spacing-m;
     position: relative;
   }
@@ -80,7 +81,7 @@ export default {
     bottom:0;
     right: 0;
     color: $copy;
-    
+    background-color: transparent;
 
     @media(min-width:$desktop){
       bottom: rem(4);

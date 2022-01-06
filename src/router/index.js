@@ -36,6 +36,14 @@ const routes = [
     }
   },
   {
+    path: '/messages',
+    name: 'Messages',
+    component: () => import('../views/Messages.vue'),
+    meta: {
+      title: 'Messages',
+    }
+  },
+  {
     path: '/account-settings',
     name: 'AccountSettings',
     component: () => import('../views/AccountSettings.vue'),

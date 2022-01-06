@@ -9,7 +9,10 @@
     :value="modelValue" 
     @input="$emit('update:modelValue', $event.target.value)" 
     :type="inputType" 
-    :id="inputId" 
+    :id="inputId"
+    :aria-label="ariaLabel"
+    :pattern="inputPattern"
+    :inputmode="inputMode" 
     aria-required="true" 
     required>
 </div>
@@ -22,14 +25,17 @@
     :value="modelValue" 
     @input="$emit('update:modelValue', $event.target.value)" 
     :type="inputType" 
-    :id="inputId">
+    :id="inputId"
+    :aria-label="ariaLabel"
+    :pattern="inputPattern"
+    :inputmode="inputMode">
 </div>
   
 </template>
 
 <script>
 export default {
-  props: ['inputType', 'inputId', 'isRequired','modelValue']
+  props: ['inputType', 'inputId', 'isRequired', 'inputPattern' , 'inputMode' ,'modelValue', 'ariaLabel']
 }
 </script>
 

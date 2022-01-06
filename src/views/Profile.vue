@@ -4,7 +4,7 @@
     <section class="hero-section">
       <div class="hero-section__image-block">
         <div class="hero-section__image-container" v-if="profileImageURL">
-          <img src="../assets/images/dummy-hero-img.jpg" alt="profile image">
+          <img src="../assets/images/dummy-hero-img.jpg" :alt="profileName + ' profile image'">
           <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Hero Image')" mode="icon-button icon-button--edit icon-button--round">Edit Image</base-icon-button>
         </div>
         <div v-else-if="loggedIn">
@@ -13,7 +13,7 @@
         <base-dialog mode="modal-dialog" v-if="heroDialogVisible"  @closeDialog="hideSettingsDialog('Hero Image')">
           <strong>Select Image</strong>
           <div v-if="profileImageURL" class="hero-image-thumb">
-            <img src="../assets/images/dummy-hero-img.jpg" alt="profile image">
+            <img src="../assets/images/dummy-hero-img.jpg" :alt="profileName + ' profile image'">
           </div>
           <form @submit.prevent="submitForm">
             <choose-file-button mode="test" fileUploadID="uploadImage" fileUploadName="filename">
@@ -112,16 +112,19 @@
             <template #label>Venue</template>
           </base-input>
           <fieldset class="add-show-date-fields">
-            <legend>Select Date <span>(required)</span></legend>
-            <base-input inputId="showDay" inputType="text" v-model="showDay" :isRequired="true" >
+            <legend>Select Date<span>(required)</span></legend>
+            <span class="legend-helper">e.g. 02/08/2022</span>
+            <div class="add-show-date-fields__inner">
+              <base-input inputId="showDay" inputType="text" inputPattern="[0-9]*" inputMode="numeric" v-model="showDay" :isRequired="true" >
               <template #label>Day</template>
-            </base-input>
-            <base-input inputId="showMonth" inputType="text" v-model="showMonth" :isRequired="true" >
-              <template #label>Month</template>
-            </base-input>
-            <base-input inputId="showYear" inputType="text" v-model="showYear" :isRequired="true" >
-              <template #label>Year</template>
-            </base-input>
+              </base-input>
+              <base-input inputId="showMonth" inputType="text" inputPattern="[0-9]*" inputMode="numeric" v-model="showMonth" :isRequired="true" >
+                <template #label>Month</template>
+              </base-input>
+              <base-input inputId="showYear" inputType="text" inputPattern="[0-9]*" inputMode="numeric" v-model="showYear" :isRequired="true" >
+                <template #label>Year</template>
+              </base-input>
+            </div>
           </fieldset>
           <base-button buttonType="submit" mode="cta cta--primary">Save Show</base-button>
         </form>
@@ -138,15 +141,18 @@
           </base-input>
           <fieldset class="add-show-date-fields">
             <legend>Select Date <span>(required)</span></legend>
-            <base-input inputId="editShowDay" inputType="text" v-model="selectedShow.showDay" :isRequired="true" >
-              <template #label>Day</template>
-            </base-input>
-            <base-input inputId="editShowMonth" inputType="text" v-model="selectedShow.showMonth" :isRequired="true" >
-              <template #label>Month</template>
-            </base-input>
-            <base-input inputId="editShowYear" inputType="text" v-model="selectedShow.showYear" :isRequired="true" >
-              <template #label>Year</template>
-            </base-input>
+            <span class="legend-helper">e.g. 02/08/2022</span>
+            <div class="add-show-date-fields__inner">
+              <base-input inputId="editShowDay" inputType="text" inputPattern="[0-9]*" inputMode="numeric"  v-model="selectedShow.showDay" :isRequired="true" >
+                <template #label>Day</template>
+              </base-input>
+              <base-input inputId="editShowMonth" inputType="text" inputPattern="[0-9]*" inputMode="numeric"  v-model="selectedShow.showMonth" :isRequired="true" >
+                <template #label>Month</template>
+              </base-input>
+              <base-input inputId="editShowYear" inputType="text" inputPattern="[0-9]*" inputMode="numeric"  v-model="selectedShow.showYear" :isRequired="true" >
+                <template #label>Year</template>
+              </base-input>
+            </div>
           </fieldset>
           <base-button buttonType="submit" mode="cta cta--primary">Save Show</base-button>
         </form>
@@ -292,6 +298,54 @@ export default {
     },
     submitShowForm(){
       const shows = this.profiles.find(profile => profile.profileName).profileShows;
+      
+      if(this.showDay.startsWith('0')){
+        this.showDay = this.showDay.substring(1)
+      }
+      
+      const month = this.showMonth;
+      switch (month){
+        case '01':
+          this.showMonth = "Jan";
+          break;
+        case '02':
+          this.showMonth = "Feb";
+          break;
+        case '03':
+          this.showMonth = "Mar";
+          break;
+        case '04':
+          this.showMonth = "Apr";
+          break;
+        case '05':
+          this.showMonth = "May";
+          break;
+        case '06':
+          this.showMonth = "Jun";
+          break;
+        case '07':
+          this.showMonth = "Jul";
+          break;
+        case '08':
+          this.showMonth = "Aug";
+          break;
+        case '09':
+          this.showMonth = "Sep";
+          break;
+        case '10':
+          this.showMonth = "Oct";
+          break;
+        case '11':
+          this.showMonth = "Nov";
+          break;
+        case '12':
+          this.showMonth = "Dec";
+      }
+
+      if(!this.showYear.startsWith('20') && this.showYear.length != 3){
+        this.showYear = '20'+this.showYear
+      }
+
       const newShow = {
         showDay: this.showDay,
         showMonth: this.showMonth,
@@ -311,17 +365,106 @@ export default {
     toggleShowListings(){
       this.fullListingVisible = !this.fullListingVisible
     },
-    submitEditShowForm(){
-      this.editShowDialogVisible = false
-    },
+    
     editShow(evt){
       const show = evt
       const shows = this.profiles.find(profile => profile.profileName).profileShows;
       const index = shows.indexOf(evt);
       this.selectedShow = show;
       this.selectedShowIndex = index;
+      if(!show.showDay.startsWith('0') && show.showDay.length == 1){
+        show.showDay = '0'+show.showDay
+      }
+      const month = show.showMonth;
+      switch (month){
+        case 'Jan':
+          show.showMonth = "01";
+          break;
+        case 'Feb':
+          show.showMonth = "02";
+          break;
+        case 'Mar':
+          show.showMonth = "03";
+          break;
+        case 'Apr':
+          show.showMonth = "04";
+          break;
+        case 'May':
+          show.showMonth = "05";
+          break;
+        case 'Jun':
+          show.showMonth = "06";
+          break;
+        case 'Jul':
+          show.showMonth = "07";
+          break;
+        case 'Aug':
+          show.showMonth = "08";
+          break;
+        case 'Sep':
+          show.showMonth = "09";
+          break;
+        case 'Oct':
+          show.showMonth = "10";
+          break;
+        case 'Nov':
+          show.showMonth = "11";
+          break;
+        case 'Dec':
+          show.showMonth = "12";
+      }
+
       this.editShowDialogVisible = true;
       this.showsDialogVisible = false
+    },
+    submitEditShowForm(){
+       if(this.selectedShow.showDay.startsWith('0')){
+        this.selectedShow.showDay = this.selectedShow.showDay.substring(1)
+      }
+      
+      const month = this.selectedShow.showMonth;
+      switch (month){
+        case '01':
+          this.selectedShow.showMonth = "Jan";
+          break;
+        case '02':
+          this.selectedShow.showMonth = "Feb";
+          break;
+        case '03':
+          this.selectedShow.showMonth = "Mar";
+          break;
+        case '04':
+          this.selectedShow.showMonth = "Apr";
+          break;
+        case '05':
+          this.selectedShow.showMonth = "May";
+          break;
+        case '06':
+          this.selectedShow.showMonth = "Jun";
+          break;
+        case '07':
+          this.selectedShow.showMonth = "Jul";
+          break;
+        case '08':
+          this.selectedShow.showMonth = "Aug";
+          break;
+        case '09':
+          this.selectedShow.showMonth = "Sep";
+          break;
+        case '10':
+          this.selectedShow.showMonth = "Oct";
+          break;
+        case '11':
+          this.selectedShow.showMonth = "Nov";
+          break;
+        case '12':
+          this.selectedShow.showMonth = "Dec";
+      }
+
+      if(!this.selectedShow.showYear.startsWith('20') && this.selectedShow.showYear.length != 3){
+        this.selectedShow.showYear = '20'+this.selectedShow.showYear
+      }
+      this.editShowDialogVisible = false
     },
     deleteShow(evt){
       const show = evt
@@ -532,9 +675,6 @@ export default {
 
   .add-show-date-fields{
     margin-top:$spacing-m;
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-column-gap: $spacing-m;
 
     legend{
       font-weight: bold;
@@ -547,6 +687,16 @@ export default {
           font-size: $copy-desktop-s;
         }
       }
+    }
+
+    &__inner{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-column-gap: $spacing-m;
+    }
+
+    .legend-helper{
+      @include baseLabelHelper;
     }
 
     label span{
@@ -618,5 +768,9 @@ export default {
 
   .hero-image-thumb{
     margin-top:$spacing-s;
+
+    img{
+      width: 100%;
+    }
   }
 </style>

@@ -76,6 +76,20 @@ export default {
     &--list:before{
       content: '\f03a';
     }
+
+     &--ellipsis:before{
+      content: '\f141';
+      font-size: rem(30);
+    }
+
+    &--new-message:before{
+      content: '\f4a8';
+    }
+
+    &--back:before{
+      content: '\f060';
+      //font-size: rem(20);
+    }
   }
 
   dialog .text-icon-button{

@@ -105,6 +105,10 @@ $spacing-xl: rem(128);
       font-size: $copy-desktop-s;
     }
   }
+
+  &:empty{
+    display: none;
+  }
 }
 
 @mixin baseLabelHelper{
@@ -116,6 +120,10 @@ $spacing-xl: rem(128);
 
   @media(min-width:$desktop){
     font-size: $copy-desktop-xs;
+  }
+
+  &:empty{
+    display: none;
   }
 }
 

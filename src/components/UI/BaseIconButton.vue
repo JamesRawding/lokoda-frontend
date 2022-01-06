@@ -92,5 +92,15 @@ export default {
       content: '\f2ed';
       font-size: rem(20);
     }
+
+    &--send:before{
+      content: '\f1d8';
+      font-size: rem(20);
+    }
+
+    &--back:before{
+      content: '\f060';
+      font-size: rem(20);
+    }
   }
 </style>
