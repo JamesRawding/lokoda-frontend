@@ -95,7 +95,6 @@ export default {
   },
   methods: {
     submitForm() {
-       console.log(this.email);
        axios.post('/register', this.form)
             .then((res) => {
                 console.log(res);
