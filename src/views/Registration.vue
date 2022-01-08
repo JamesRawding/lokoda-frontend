@@ -44,7 +44,7 @@
             <template #label>Create Password</template>
             <template #helpertext>Must be at least 8 characters long.</template>
           </password-input>
-          <password-input class="dark" inputId="confirmPassword" v-model="confirmPassword" :isRequired="true" >
+          <password-input class="dark" inputId="confirmPassword" v-model="form.confirmPassword" :isRequired="true" >
             <template #label>Confirm Password</template>
           </password-input>
           <base-button buttonType="submit" mode="cta cta--primary">Register</base-button>
@@ -102,9 +102,9 @@ export default {
     },
     accountTypeSelected(box) {
       if (box === 'artist') {
-        this.account_type = 'artist'
+        this.form.account_type = 'artist'
       }else{
-        this.account_type = 'promoter'
+        this.form.account_type = 'promoter'
       }
     },
   }
