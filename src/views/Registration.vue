@@ -9,14 +9,14 @@
           <fieldset>
             <legend>Account Type <span>(required)</span></legend>
             <base-pill-button 
-              :class="{'pill-button--selected': accountType === 'artist'}"
+              :class="{'pill-button--selected': form.accountType === 'artist'}"
               @click="accountTypeSelected('artist')" 
               buttonType="button" 
               mode="pill-button pill-button--reverse">
               Artist
             </base-pill-button>
             <base-pill-button 
-              :class="{'pill-button--selected': accountType === 'promoter'}"
+              :class="{'pill-button--selected': form.accountType === 'promoter'}"
               @click="accountTypeSelected('promoter')"  
               buttonType="button" 
               mode="pill-button pill-button--reverse">
@@ -25,22 +25,22 @@
           </fieldset>
           
 
-          <base-input v-if="accountType === 'artist'" class="dark" inputId="artistName" inputType="text" v-model="artistName" :isRequired="true" >
+          <base-input v-if="form.accountType === 'artist'" class="dark" inputId="artistName" inputType="text" v-model="form.name" :isRequired="true" >
             <template #label>Name</template>
             <template #helpertext>How you want to be discovered e.g. band name, artist name.</template>
           </base-input>
-          <base-input v-else class="dark" inputId="promoterName" inputType="text" v-model="promoterName" :isRequired="true" >
+          <base-input v-else class="dark" inputId="promoterName" inputType="text" v-model="form.name" :isRequired="true" >
             <template #label>Name</template>
             <template #helpertext>How you want to be discovered e.g. company name, your name.</template>
           </base-input>
-          <base-input class="dark" inputId="location" inputType="text" v-model="location" :isRequired="true" >
+          <base-input class="dark" inputId="location" inputType="text" v-model="form.location" :isRequired="true" >
             <template #label>Location</template>
             <template #helpertext>Enter your city to help your fans find you.</template>
           </base-input>
-          <base-input class="dark" inputId="email" inputType="email" v-model="email" :isRequired="true" >
+          <base-input class="dark" inputId="email" inputType="email" v-model="form.email" :isRequired="true" >
             <template #label>Email</template>
           </base-input>
-          <password-input class="dark" inputId="createPassword" v-model="createPassword" :isRequired="true" >
+          <password-input class="dark" inputId="createPassword" v-model="form.password" :isRequired="true" >
             <template #label>Create Password</template>
             <template #helpertext>Must be at least 8 characters long.</template>
           </password-input>
@@ -62,6 +62,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import PasswordInput from '../components/UI/PasswordInput.vue';
 import BaseInput from '../components/UI/BaseInput.vue';
 import BasePillButton from '../components/UI/BasePillButton.vue';
@@ -75,18 +76,30 @@ export default {
   },
   data(){
     return{
-      accountType: 'artist',
-      artistName: '',
-      promoterName: '',
-      email:'',
-      location:'',
-      createPassword:'',
-      confirmPassword:'',
+        form: {
+          accountType: 'artist',
+          name: '',
+          email:'',
+          location:'',
+          password:'',
+          confirmPassword:'',
+        }
     }
+  },
+  mounted() {
+      axios.get('http://127.0.0.1:8888/health_check')
+          .then (response => {
+              console.log("Back end health check okay");
+              console.log(response);
+          });
   },
   methods: {
     submitForm() {
        console.log(this.email);
+       axios.post('http://127.0.0.1:8888/register', this.form)
+            .then((res) => {
+                console.log(res);
+            });
     },
     accountTypeSelected(box) {
       if (box === 'artist') {
