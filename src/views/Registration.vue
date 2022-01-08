@@ -10,14 +10,14 @@
             <legend>Account Type <span>(required)</span></legend>
             <base-pill-button 
               :class="{'pill-button--selected': form.account_type === 'artist'}"
-              @click="account_typeSelected('artist')" 
+              @click="accountTypeSelected('artist')" 
               buttonType="button" 
               mode="pill-button pill-button--reverse">
               Artist
             </base-pill-button>
             <base-pill-button 
               :class="{'pill-button--selected': form.account_type === 'promoter'}"
-              @click="account_typeSelected('promoter')"  
+              @click="accountTypeSelected('promoter')"  
               buttonType="button" 
               mode="pill-button pill-button--reverse">
               Promoter
@@ -100,7 +100,7 @@ export default {
                 console.log(res);
             });
     },
-    account_typeSelected(box) {
+    accountTypeSelected(box) {
       if (box === 'artist') {
         this.account_type = 'artist'
       }else{
