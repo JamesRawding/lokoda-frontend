@@ -9,15 +9,15 @@
           <fieldset>
             <legend>Account Type <span>(required)</span></legend>
             <base-pill-button 
-              :class="{'pill-button--selected': form.accountType === 'artist'}"
-              @click="accountTypeSelected('artist')" 
+              :class="{'pill-button--selected': form.account_type === 'artist'}"
+              @click="account_typeSelected('artist')" 
               buttonType="button" 
               mode="pill-button pill-button--reverse">
               Artist
             </base-pill-button>
             <base-pill-button 
-              :class="{'pill-button--selected': form.accountType === 'promoter'}"
-              @click="accountTypeSelected('promoter')"  
+              :class="{'pill-button--selected': form.account_type === 'promoter'}"
+              @click="account_typeSelected('promoter')"  
               buttonType="button" 
               mode="pill-button pill-button--reverse">
               Promoter
@@ -25,7 +25,7 @@
           </fieldset>
           
 
-          <base-input v-if="form.accountType === 'artist'" class="dark" inputId="artistName" inputType="text" v-model="form.name" :isRequired="true" >
+          <base-input v-if="form.account_type === 'artist'" class="dark" inputId="artistName" inputType="text" v-model="form.name" :isRequired="true" >
             <template #label>Name</template>
             <template #helpertext>How you want to be discovered e.g. band name, artist name.</template>
           </base-input>
@@ -77,7 +77,7 @@ export default {
   data(){
     return{
         form: {
-          accountType: 'artist',
+          account_type: 'artist',
           name: '',
           email:'',
           location:'',
@@ -87,7 +87,7 @@ export default {
     }
   },
   mounted() {
-      axios.get('http://127.0.0.1:8888/health_check')
+      axios.get('/health_check')
           .then (response => {
               console.log("Back end health check okay");
               console.log(response);
@@ -96,16 +96,16 @@ export default {
   methods: {
     submitForm() {
        console.log(this.email);
-       axios.post('http://127.0.0.1:8888/register', this.form)
+       axios.post('/register', this.form)
             .then((res) => {
                 console.log(res);
             });
     },
-    accountTypeSelected(box) {
+    account_typeSelected(box) {
       if (box === 'artist') {
-        this.accountType = 'artist'
+        this.account_type = 'artist'
       }else{
-        this.accountType = 'promoter'
+        this.account_type = 'promoter'
       }
     },
   }
