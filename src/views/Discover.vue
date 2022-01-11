@@ -183,6 +183,7 @@ export default {
     
 
     button{
+      margin: 0;
       min-width: rem(158);
       &:first-of-type{
         border-top-right-radius: 0;

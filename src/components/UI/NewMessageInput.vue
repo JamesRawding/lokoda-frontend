@@ -6,7 +6,7 @@
     :aria-label="ariaLabel"
     :id="inputId"
     placeholder="New Message">
-    <base-icon-button  buttonType="submit" mode="icon-button icon-button--send">Send message</base-icon-button>
+    <base-icon-button  buttonType="submit" mode="icon-button icon-button--send" ariaLabel="send message"></base-icon-button>
 </form>
   
 </template>

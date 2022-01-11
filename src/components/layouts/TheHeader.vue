@@ -1,15 +1,14 @@
 <template>
   <header>
-    <router-link v-if="loggedIn" to="/profile"><img src="../../assets/images/lokoda-logo.svg" alt="lokoda logo">user profile</router-link>
-    <router-link v-else to="/"><img src="../../assets/images/lokoda-logo.svg" alt="lokoda logo">Log in</router-link>
+    <router-link v-if="loggedIn" to="/profile"><img src="../../assets/images/lokoda-logo.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
+    <router-link v-else to="/"><img src="../../assets/images/lokoda-logo.svg" alt="lokoda logo"><span class="sr-only">Log in</span></router-link>
     <div class="header-nav-items">
       <header-nav :loggedIn="loggedIn"></header-nav>
-      <button @click="showProfileDialog" class="profile-settings-button" v-if="loggedIn && isProfileDialogDisplayed">
-        View profile settings
+      <button @click="showProfileDialog" class="profile-settings-button" aria-label="view profile settings" v-if="loggedIn && isProfileDialogDisplayed">
+       
         <profile-pic v-if="loggedIn"></profile-pic>
       </button>
-      <button  @click="showProfileDialog" v-click-outside="hideProfileDialog" class="profile-settings-button" v-else-if="loggedIn">
-        View profile settings
+      <button  @click="showProfileDialog" v-click-outside="hideProfileDialog" class="profile-settings-button" aria-label="view profile settings" v-else-if="loggedIn">
         <profile-pic v-if="loggedIn"></profile-pic>
       </button>
     </div>
@@ -79,13 +78,12 @@ export default {
   }
 
   a{
-    text-indent: -10000px;
+    display: contents;
   }
 
   img{
     max-width:rem(180);
     width:100%;
-    float:left;
   }
 
   .header-nav-items{
@@ -97,7 +95,7 @@ export default {
     border:none;
     width:rem(44);
     height:rem(44);
-    text-indent: -10000px;
+    //text-indent: -10000px;
     background-color: transparent;
     padding:0;
     display:flex;

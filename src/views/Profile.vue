@@ -5,7 +5,7 @@
       <div class="hero-section__image-block">
         <div class="hero-section__image-container" v-if="profileImageURL">
           <img src="../assets/images/dummy-hero-img.jpg" :alt="profileName + ' profile image'">
-          <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Hero Image')" mode="icon-button icon-button--edit icon-button--round">Edit Image</base-icon-button>
+          <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Hero Image')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit image"></base-icon-button>
         </div>
         <div v-else-if="loggedIn">
           <base-text-icon-button @click="displaySettingsDialog('Hero Image')" mode="text-icon-button text-icon-button--plus">Add Image</base-text-icon-button>
@@ -33,7 +33,7 @@
           <base-pill v-for="genre in profileGenres" :key="genre + profileName">
             {{genre}}
           </base-pill>
-          <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Genres')" mode="icon-button icon-button--edit icon-button--round">Edit Genres</base-icon-button>
+          <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Genres')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit genres"></base-icon-button>
         </div>
         <div class="hero-section__genres" v-else-if="loggedIn">
           <base-text-icon-button  @click="displaySettingsDialog('Genres')" mode="text-icon-button text-icon-button--plus">Add Genres</base-text-icon-button>
@@ -52,7 +52,7 @@
 
       <section class="player-embed-block" v-if="profilePlayerEmbed">
         <h2>there is a player</h2>
-        <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Embed Player')" mode="icon-button icon-button--edit icon-button--round">Edit Player Embed</base-icon-button>
+        <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Embed Player')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit music player embed"></base-icon-button>
       </section>
       <div class="add-player-embed" v-else-if="loggedIn">
         <base-text-icon-button @click="displaySettingsDialog('Embed Player')" mode="text-icon-button text-icon-button--plus">Embed Music Player</base-text-icon-button>
@@ -68,7 +68,7 @@
 
       <section class="upcoming-shows" v-if="profileShows.length">
         <h2>Upcoming Shows</h2>
-        <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Manage Shows')" buttonType="button" mode="icon-button icon-button--edit icon-button--round">Edit shows</base-icon-button>
+        <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Manage Shows')" buttonType="button" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit shows"></base-icon-button>
         <show-card @editThisShow="editShow(show)" @deleteThisShow="deleteShow(show)" v-for="show in profileShowsResults" :key="show" :loggedIn=this.loggedIn>
           <template #month>{{show.showMonth}}</template>
           <template #day>{{show.showDay}}</template>
@@ -550,6 +550,7 @@ export default {
       align-items: center;
       position: relative;
       height: rem(200);
+      overflow: hidden;
 
       @media(min-width:$desktop){
         order: 2;

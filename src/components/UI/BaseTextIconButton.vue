@@ -19,6 +19,7 @@ export default {
     font-size: inherit;
     color: $copy;
     height: rem(44);
+    
 
     &:before{
       font-family: "Font Awesome 5 Pro";

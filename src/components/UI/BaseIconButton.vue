@@ -1,12 +1,12 @@
 <template>
-  <button :class="mode" :type="buttonType">
+  <button :class="mode" :type="buttonType" :aria-label="ariaLabel">
     <slot></slot>
   </button>
 </template>
 
 <script>
 export default {
-  props: ['mode', 'buttonType']
+  props: ['mode', 'buttonType', 'ariaLabel']
 }
 </script>
 
@@ -16,13 +16,12 @@ export default {
     height: rem(44);
     border: none;
     background-color:#fff;
-    text-indent: -10000px;
     display: flex;
     align-items: center;
     justify-content: center;
 
+
     &:before{
-      text-indent: 0;
       font-family: "Font Awesome 5 Pro";
       font-weight: 300;
       text-align: center;

@@ -12,8 +12,8 @@
     :id="inputId" 
     autocomplete="on"
     required>
-    <base-icon-button v-if="type === 'password'" @click="showPassword" buttonType="button" mode="icon-button icon-button--show-password">Show Password</base-icon-button>
-    <base-icon-button v-else @click="showPassword" buttonType="button" mode="icon-button icon-button--hide-password">Hide Password</base-icon-button>
+    <base-icon-button v-if="type === 'password'" @click="showPassword" buttonType="button" mode="icon-button icon-button--show-password" ariaLabel="show password"></base-icon-button>
+    <base-icon-button v-else @click="showPassword" buttonType="button" mode="icon-button icon-button--hide-password" ariaLabel="hide password"></base-icon-button>
 
 </div>
 <div class="input-container" v-else>
@@ -28,8 +28,8 @@
     :id="inputId"
     autocomplete="on">
     
-    <base-icon-button v-if="type === 'password'" @click="showPassword" buttonType="button" mode="icon-button icon-button--show-password">Show Password</base-icon-button>
-    <base-icon-button v-else @click="showPassword" buttonType="button" mode="icon-button icon-button--hide-password">Hide Password</base-icon-button>
+    <base-icon-button v-if="type === 'password'" @click="showPassword" buttonType="button" mode="icon-button icon-button--show-password" ariaLabel="show password"></base-icon-button>
+    <base-icon-button v-else @click="showPassword" buttonType="button" mode="icon-button icon-button--hide-password" ariaLabel="hide password"></base-icon-button>
 
 
 </div>

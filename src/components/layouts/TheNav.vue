@@ -1,7 +1,7 @@
 <template>
   <nav>
     <div v-if="loggedIn">
-      <router-link class="header-link header-link--profile" to="/profile">user profile</router-link>
+      <router-link class="header-link header-link--profile" to="/profile"><span class="sr-only">user profile</span></router-link>
       <router-link class="header-link header-link--discover" to="/discover"><span class="header-link__text">Discover</span></router-link>
       <router-link v-if="messageCount < 1" class="header-link header-link--messages" to="/messages"><span class="header-link__text">Messages</span></router-link>
       <router-link v-else class="header-link header-link--message" to="/messages"><span class="header-link__message-count">{{messageCount}}</span><span class="header-link__text">Messages</span></router-link>

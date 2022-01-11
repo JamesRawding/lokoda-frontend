@@ -12,7 +12,7 @@
     :placeholder="searchPlaceholder"
     :aria-label="ariaLabel">
     
-    <base-icon-button @click="onClick"  buttonType="button" mode="icon-button icon-button--search">Submit search</base-icon-button>
+    <base-icon-button @click="onClick"  buttonType="button" mode="icon-button icon-button--search" ariaLabel="submit search"></base-icon-button>
 
 
 </div>
