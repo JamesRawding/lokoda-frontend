@@ -27,10 +27,6 @@ export default {
       margin-right: $spacing-xs;
       width: rem(25);
       text-align: center;
-
-      @media(min-width:$desktop){
-        margin-right: $spacing-s;
-      }
     }
 
     &--filter{
@@ -89,6 +85,11 @@ export default {
 
     &--back:before{
       content: '\f060';
+      //font-size: rem(20);
+    }
+
+    &--block:before{
+      content: '\f05e';
       //font-size: rem(20);
     }
   }

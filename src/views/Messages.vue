@@ -8,29 +8,54 @@
           <h1>Messages</h1>
           <div class="messages-header__button-container">
             <base-text-icon-button @click="showContacts" mode="text-icon-button text-icon-button--new-message" aria-label="new message"><span class="sr-text">New</span></base-text-icon-button>
-            <base-text-icon-button mode="text-icon-button text-icon-button--ellipsis" aria-label="manage messages"><span class="sr-text">Manage</span></base-text-icon-button>
+            <base-text-icon-button @click="showMessagesOptions" mode="text-icon-button text-icon-button--ellipsis" aria-label="manage messages"><span class="sr-text">Manage</span></base-text-icon-button>
+            <base-dialog  @closeDialog="hideMessagesOptions" v-if="isMessagesOptionsDisplayed">
+              <strong>Message Options</strong>
+              <base-text-icon-button @click="selectMessagesToDelete" mode="text-icon-button text-icon-button--trash">Delete Messages</base-text-icon-button>
+            </base-dialog>
           </div>
         </div>
-        <search-bar v-if="messages.length > 0" searchId="searchMessages" ariaLabel="search messages" searchPlaceholder="Search Messages"></search-bar>
+        <search-bar @searched="searchMessages" v-if="messages.length > 0" searchId="searchMessages" ariaLabel="search messages" searchPlaceholder="Search Messages"></search-bar>
         <div>
-          <ul class="messages-list">
+          <ul v-if="!messagesToDelete" class="messages-list">
             <li 
-            @click="selectedMessage(messageThread.messageRecipientID)" 
-            @keypress.enter="selectedMessage(messageThread.messageRecipientID)" 
+            @click="selectedMessage(messageThread.messageID)" 
+            @keypress.enter="selectedMessage(messageThread.messageID)" 
             class="messages-list__item" 
             :class="{'messages-list__item--active': messageThread.messageActive}" 
             v-for="messageThread in latestMessages" 
-            :key="messageThread.messageRecipientID" 
+            :key="messageThread.messageID" 
             tabindex="0" 
             role="button">
               <div class="messages-list__item-img">
-                <img src="../assets/images/dummy-profile-pic.jpg" :alt="messageThread.messageRecipientName + ' profile image'">
+                <img src="../assets/images/dummy-profile-pic.jpg" alt="">
               </div>
               <div class="messages-list__item-details">
-                <h2 class="messages-list__item-name">{{messageThread.messageRecipientName}}</h2>
+                <h2 class="messages-list__item-name"><span v-for="recipientName in messageThread.messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h2>
                 <p class="messages-list__item-preview">{{messageThread.latestMessage}}</p>
               </div>
               <span class="messages-list__item-date">{{messageThread.latestMessageDate}}</span>
+            </li>
+          </ul>
+          <ul v-else class="messages-list">
+            <li
+            @click="messageForDeletion(messageThread.messageID)" 
+            @keypress.enter="messageForDeletion(messageThread.messageID)" 
+            class="messages-list__item" 
+            :class="{'messages-list__item--active': messageThread.messageActive}" 
+            v-for="messageThread in latestMessages" 
+            :key="messageThread.messageID" 
+            tabindex="0" 
+            role="button">
+              <div class="messages-list__item-img">
+                <img src="../assets/images/dummy-profile-pic.jpg" alt="">
+              </div>
+              <div class="messages-list__item-details">
+                <h2 class="messages-list__item-name"><span v-for="recipientName in messageThread.messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h2>
+                <p class="messages-list__item-preview">{{messageThread.latestMessage}}</p>
+              </div>
+              <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="deleteMessagesIDs.includes(messageThread.messageID)"></div>
+              <div class="group-contacts-list__item-checked-status" v-else></div>
             </li>
           </ul>
         </div>
@@ -39,6 +64,16 @@
         </div>
       </section>
 
+      <div class="delete-messages-count" v-if="messagesToDelete">
+        <span>{{deleteMessagesCount}} message<span v-if="deleteMessagesIDs.length > 1">s</span> selected</span>
+        <ul class="delete-messages-count__list">
+          <li class="delete-messages-count__list-item" v-for="message in deleteMessagesIDs" :key="message.messageID">
+            <img src="../assets/images/dummy-profile-pic.jpg" alt="">
+          </li>
+        </ul>
+        <base-button v-if="deleteMessagesIDs.length >= 1" @click="deleteSelectedMessages"  role="button" mode="cta cta--primary">Delete Message<span v-if="deleteMessagesIDs.length > 1">s</span></base-button>
+      </div>
+
 
       <section v-else-if="contactsListVisible">
         <div class="messages-header">
@@ -46,15 +81,62 @@
           <h1>New Message</h1>
           <div class="messages-header__button-container">
             <base-text-icon-button @click="showMessageList" mode="text-icon-button text-icon-button--back">Messages</base-text-icon-button>
-            <base-text-icon-button mode="text-icon-button text-icon-button--ellipsis" aria-label="manage messages"><span class="sr-text">Manage</span></base-text-icon-button>
+            <base-text-icon-button @click="showContactsOptions" mode="text-icon-button text-icon-button--ellipsis" aria-label="manage contacts"><span class="sr-text">Manage</span></base-text-icon-button>
+            <base-dialog  @closeDialog="hideContactsOptions" v-if="isContactsOptionsDisplayed">
+              <strong>Contacts Options</strong>
+              <base-text-icon-button @click="selectContactsToBlock" mode="text-icon-button text-icon-button--block">Block Contacts</base-text-icon-button>
+              <base-text-icon-button @click="selectContactsToDelete" mode="text-icon-button text-icon-button--trash">Delete Contacts</base-text-icon-button>
+            </base-dialog>
           </div>
+          
         </div>
-        <search-bar v-if="contacts.length > 0" searchId="searchContacts" ariaLabel="search contacts" searchPlaceholder="Search Contacts"></search-bar>
+        <search-bar @searched="searchContacts" v-if="contacts.length > 0" searchId="searchContacts" ariaLabel="search contacts" searchPlaceholder="Search Contacts"></search-bar>
         <div>
-          <ul class="contacts-list">
+          <ul v-if="contactsToBlock" class="contacts-list">
             <li @click="startGroupMessage" class="contacts-list__item contacts-list__item--new-group">New Group</li>
             <li
-            @click="startChat(contact.contactID)" 
+            @click="contactForBlocking(contact.contactID)" 
+            @keypress.enter="contactForBlocking(contact.contactID)"
+            class="contacts-list__item" 
+            v-for="contact in alphabetisedContacts" 
+            :key="contact.contactID" 
+            tabindex="0" 
+            role="button">
+              <div class="contacts-list__item-img">
+                <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.contactName + ' profile image'">
+              </div>
+              <div class="messages-list__item-details">
+                <h2 class="messages-list__item-name">{{contact.contactName}}</h2>
+              </div>
+              <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="blockContactsIDs.includes(contact.contactID)"></div>
+              <div class="group-contacts-list__item-checked-status" v-else></div>
+            </li>
+          </ul>
+          <ul v-else-if="contactsToDelete" class="contacts-list">
+            <li @click="startGroupMessage" class="contacts-list__item contacts-list__item--new-group">New Group</li>
+            <li
+            @click="contactForDeletion(contact.contactID)" 
+            @keypress.enter="contactForDeletion(contact.contactID)"
+            class="contacts-list__item" 
+            v-for="contact in alphabetisedContacts" 
+            :key="contact.contactID" 
+            tabindex="0" 
+            role="button">
+              <div class="contacts-list__item-img">
+                <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.contactName + ' profile image'">
+              </div>
+              <div class="messages-list__item-details">
+                <h2 class="messages-list__item-name">{{contact.contactName}}</h2>
+              </div>
+              <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="deleteContactsIDs.includes(contact.contactID)"></div>
+              <div class="group-contacts-list__item-checked-status" v-else></div>
+            </li>
+          </ul>
+          <ul v-else class="contacts-list">
+            <li @click="startGroupMessage" class="contacts-list__item contacts-list__item--new-group">New Group</li>
+            <li
+            @click="startChat(contact.contactID)"
+            @keypress.enter="startChat(contact.contactID)" 
             class="contacts-list__item" 
             v-for="contact in alphabetisedContacts" 
             :key="contact.contactID" 
@@ -71,13 +153,32 @@
         </div>
       </section>
 
+      <div class="block-contacts-count" v-if="contactsToBlock">
+        <span>{{blockContactsCount}} contact<span v-if="blockContactsIDs.length > 1">s</span> selected</span>
+        <ul class="block-contacts-count__list">
+          <li class="block-contacts-count__list-item" v-for="contact in blockContactsIDs" :key="contact.contactID">
+            <img src="../assets/images/dummy-profile-pic.jpg" alt="">
+          </li>
+        </ul>
+        <base-button @click="blockSelectedContacts" v-if="blockContactsIDs.length >= 1"   role="button" mode="cta cta--primary">Block Contact<span v-if="blockContactsIDs.length > 1">s</span></base-button>
+      </div>
+
+      <div class="delete-contacts-count" v-if="contactsToDelete">
+        <span>{{deleteContactsCount}} contact<span v-if="deleteContactsIDs.length > 1">s</span> selected</span>
+        <ul class="delete-contacts-count__list">
+          <li class="delete-contacts-count__list-item" v-for="contact in deleteContactsIDs" :key="contact.contactID">
+            <img src="../assets/images/dummy-profile-pic.jpg" alt="">
+          </li>
+        </ul>
+        <base-button @click="deleteSelectedContacts" v-if="deleteContactsIDs.length >= 1"   role="button" mode="cta cta--primary">Delete Contact<span v-if="deleteContactsIDs.length > 1">s</span></base-button>
+      </div>
+
       <section v-else-if="groupContactsListVisible">
         <div class="messages-header">
           <base-icon-button @click="showContacts" mode="icon-button icon-button--back" ariaLabel="back to contacts"></base-icon-button>
           <h1>New Group</h1>
           <div class="messages-header__button-container">
             <base-text-icon-button @click="showContacts" mode="text-icon-button text-icon-button--back">Contacts</base-text-icon-button>
-            <base-text-icon-button mode="text-icon-button text-icon-button--ellipsis" aria-label="manage messages"><span class="sr-text">Manage</span></base-text-icon-button>
           </div>
         </div>
         <search-bar v-if="contacts.length > 0" searchId="searchContacts" ariaLabel="search contacts" searchPlaceholder="Search Contacts"></search-bar>
@@ -107,30 +208,25 @@
       </section>
 
       <div class="group-chat-start" v-if="groupChatContacts.length > 0">
-        <span>{{groupChatCount}} people selected</span>
+        <span v-if="groupChatContacts.length === 1">{{groupChatCount}} contact selected</span>
+        <span v-else>{{groupChatCount}} contacts selected</span>
         <ul class="group-chat-start__list">
           <li class="group-chat-start__list-item" v-for="contact in groupChatContacts" :key="contact.contactID">
             <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.contactName + ' profile image'">
           </li>
         </ul>
-        <base-button @click="startGroupChat"  role="button" mode="cta cta--primary">Start Group Chat</base-button>
+        <base-button @click="startGroupChat(groupChatContactsIDs)"  role="button" mode="cta cta--primary">Start Group Chat</base-button>
       </div>
 
       <section v-if="newGroupMessage" class="active-messages active-messages--new">
         <div class="active-messages__header">
-          <base-button @click="cancelMessage" buttonType="button" mode="active-messages__cancel-btn">Cancel <span class="sr-only">new message</span></base-button>
-          <!-- <h3>{{messageRecipientName}}</h3> -->
-          <base-icon-button buttonType="button" mode="icon-button icon-button--ellipsis" ariaLabel="more options"></base-icon-button>
+          <base-button @click="cancelGroupMessage" buttonType="button" mode="active-messages__cancel-btn">Cancel <span class="sr-only">new message</span></base-button>
+          <h3 class="messages-list__item-name"><span v-for="recipientName in messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h3>
+
+          <!-- <base-icon-button buttonType="button" mode="icon-button icon-button--ellipsis" ariaLabel="more options"></base-icon-button> -->
         </div>
-        <ul class="active-messages__messages-list">
-          <!-- <li v-for="messages in activeMessages" :key="messages.messageTime + messages.messageDate" class="active-messages__message" :class="thisUserID === messages.messageSenderID ? 'active-messages__message--user' : 'active-messages__message--recipient'">
-            <span class="active-messages__message-sender">{{messages.messageSenderName}}</span>
-            <span class="active-messages__message-copy">{{messages.message}}</span>
-            <span class="active-messages__message-time">{{messages.messageTime}}</span>
-          </li> -->
-        </ul>
         <div class="new-message-input-container">
-          <!-- <new-message-input @sendNewMessage="submitNewMessage" ariaLabel="Send new message" inputId="newMessage"></new-message-input> -->
+          <new-message-input @sendNewMessage="submitNewMessage" ariaLabel="Send new message" inputId="newGroupMessage"></new-message-input>
         </div>
       </section>
 
@@ -138,8 +234,9 @@
       <section v-if="newMessage" class="active-messages active-messages--new">
         <div class="active-messages__header">
           <base-button @click="cancelMessage" buttonType="button" mode="active-messages__cancel-btn">Cancel <span class="sr-only">new message</span></base-button>
-          <h3>{{messageRecipientName}}</h3>
-          <base-icon-button buttonType="button" mode="icon-button icon-button--ellipsis" ariaLabel="more options"></base-icon-button>
+          <h3 class="messages-list__item-name">{{messageRecipientNames}}</h3>
+
+          <!-- <base-icon-button buttonType="button" mode="icon-button icon-button--ellipsis" ariaLabel="more options"></base-icon-button> -->
         </div>
         <ul class="active-messages__messages-list">
           <li v-for="messages in activeMessages" :key="messages.messageTime + messages.messageDate" class="active-messages__message" :class="thisUserID === messages.messageSenderID ? 'active-messages__message--user' : 'active-messages__message--recipient'">
@@ -157,11 +254,21 @@
       <section v-if="messagesSelected" class="active-messages">
         <div class="active-messages__header">
           <base-icon-button @click="closeMessage" buttonType="button" mode="icon-button icon-button--back" ariaLabel="close message"></base-icon-button>
-          <h3>{{messageRecipientName}}</h3>
-          <base-icon-button buttonType="button" mode="icon-button icon-button--ellipsis" ariaLabel="more options"></base-icon-button>
+          <h3 class="messages-list__item-name"><span v-for="recipientName in messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h3>
+
+          <base-icon-button @click="manageActiveMessage" buttonType="button" mode="icon-button icon-button--ellipsis" ariaLabel="more options"></base-icon-button>
+          
         </div>
+        <base-dialog  @closeDialog="hideActiveMessageOptions" v-if="isActiveMessageOptionsDisplayed">
+          <strong>Message Options</strong>
+          <base-text-icon-button v-if="messageRecipientNames.length > 1" @click="leaveGroup" mode="text-icon-button text-icon-button--logout">Leave Group</base-text-icon-button>
+          <base-text-icon-button v-else @click="blockSender" mode="text-icon-button text-icon-button--block">Block Sender</base-text-icon-button>
+          <base-text-icon-button @click="deleteActiveMessage" mode="text-icon-button text-icon-button--trash">Delete Message</base-text-icon-button>
+        </base-dialog>
         <ul class="active-messages__messages-list">
-          <li v-for="messages in activeMessages" :key="messages.messageTime + messages.messageDate" class="active-messages__message" :class="thisUserID === messages.messageSenderID ? 'active-messages__message--user' : 'active-messages__message--recipient'">
+          <li 
+            v-for="messages in activeMessages" :key="messages.messageTime + messages.messageDate" 
+            :class="['active-messages__message', (thisUserID === messages.messageSenderID ? 'active-messages__message--user' : 'active-messages__message--recipient'),(messages.doubleMessage ? 'active-messages__message--double' : ''),(messages.messageSenderID === 'memberLeftGroup' ? 'active-messages__message--member-left' : ''),(messages.messageSenderID === 'dateSent' ? 'active-messages__message--date-sent' : '')]">
             <span class="active-messages__message-sender">{{messages.messageSenderName}}</span>
             <span class="active-messages__message-copy">{{messages.message}}</span>
             <span class="active-messages__message-time">{{messages.messageTime}}</span>
@@ -183,6 +290,7 @@ import BaseTextIconButton from '../components/UI/BaseTextIconButton.vue';
 import BaseIconButton from '../components/UI/BaseIconButton.vue';
 import NewMessageInput from '../components/UI/NewMessageInput.vue';
 import SearchBar from '../components/UI/SearchBar.vue';
+import BaseDialog from '../components/UI/BaseDialog.vue';
 
 export default {
   components:{
@@ -191,10 +299,13 @@ export default {
     BaseTextIconButton,
     BaseIconButton,
     SearchBar,
-    NewMessageInput
+    NewMessageInput,
+    BaseDialog
   },
   data(){
     return{
+      searchMessageValue: '',
+      searchContactValue: '',
       messagesListVisible: true,
       messagesSelected: false,
       newMessage: false,
@@ -203,8 +314,9 @@ export default {
       thisUserNewMessage: '',
       thisUserNewMessageDate: '',
       thisUserNewMessageTime: '',
-      messageRecipientName: '',
-      messageRecipientID: '',
+      messageID: '',
+      messageRecipientNames: [],
+      messageRecipientIDs: [],
       contactsListVisible: false,
       groupContactsListVisible: false,
       groupChatContacts:[],
@@ -212,6 +324,18 @@ export default {
       //the above is very hacky
       groupChatCount: 0,
       newGroupMessage: false,
+      isMessagesOptionsDisplayed: false,
+      messagesToDelete: false,
+      deleteMessagesIDs: [],
+      deleteMessagesCount: 0,
+      isContactsOptionsDisplayed: false,
+      contactsToBlock: false,
+      blockContactsIDs: [],
+      blockContactsCount: 0,
+      contactsToDelete: false,
+      deleteContactsIDs: [],
+      deleteContactsCount: 0,
+      isActiveMessageOptionsDisplayed: false,
       contacts:[
         {
           contactID: 'bon-jovi',
@@ -232,6 +356,12 @@ export default {
           contactBlocked: false
         },
         {
+          contactID: 'bros',
+          contactName: 'Bros',
+          contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
+          contactBlocked: false
+        },
+        {
           contactID: 'gary-glitter',
           contactName: 'Gary Glitter',
           contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
@@ -240,8 +370,9 @@ export default {
       ],
       messages:[
         {
-          messageRecipientID: 'bon-jovi',
-          messageRecipientName: 'Bon Jovi',
+          messageID: 'bon-jovi',
+          messageRecipientIDs: ['bon-jovi'],
+          messageRecipientNames: ['Bon Jovi'],
           messageRecipientProfilePic: '../assets/images/dummy-profile-pic.jpg',
           recipientMessages:[
             {
@@ -249,25 +380,27 @@ export default {
               messageSenderName: 'Down To Folk',
               messageTime: '20:00',
               messageDate: '3rd Oct',
-              message: 'Hello World'
+              message: 'Hello World',
+              doubleMessage: false
             },
             {
               messageSenderID: 'bon-jovi',
               messageSenderName: 'Bon Jovi',
               messageTime: '21:00',
               messageDate: '3rd Oct',
-              message: 'Hello to you ello to you ello to you ello to you'
+              message: 'Hello to you ello to you ello to you ello to you',
+              doubleMessage: false
             }
           ],
           latestMessage: 'Hello to you ello to you ello to you ello to you',
           latestMessageDate: '3rd Oct',
           latestMessageTimestamp: 1641556236655,
           messageActive: false,
-          groupMessage: false,
         },
         {
-          messageRecipientID: 'bros',
-          messageRecipientName: 'Bros',
+          messageID: 'bros',
+          messageRecipientIDs: ['bros'],
+          messageRecipientNames: ['Bros'],
           messageRecipientProfilePic: '../assets/images/dummy-profile-pic.jpg',
           recipientMessages:[
             {
@@ -275,67 +408,90 @@ export default {
               messageSenderName: 'Down To Folk',
               messageTime: '22:00',
               messageDate: '3rd Oct',
-              message: 'Hello Cruel World'
+              message: 'Hello Cruel World',
+              doubleMessage: false
             },
             {
               messageSenderID: 'bros',
               messageSenderName: 'Bros',
               messageTime: '23:00',
               messageDate: '4th Oct',
-              message: 'Yo'
+              message: 'Yo',
+              doubleMessage: false
             },
             {
               messageSenderID: 'bros',
               messageSenderName: 'Bros',
               messageTime: '24:00',
               messageDate: '4th Oct',
-              message: 'Ahh bello'
+              message: 'Ahh bello',
+              doubleMessage: true
             }
           ],
           latestMessage: 'Ahh bello',
           latestMessageDate: '4th Oct',
           latestMessageTimestamp: 1641556236635,
           messageActive: false,
-          groupMessage: false,
         },
         {
-          groupMessageRecipientIDs: ['bros', 'bon-jovi'],
-          groupMessageRecipientNames: ['Bros', 'Bon Jovi'],
-          groupRecipientMessages:[
+          messageID: 'bon-jovi-shawoddywoddy',
+          messageRecipientIDs: ['bon-jovi', 'shawoddywoddy', 'down-to-folk'],
+          messageRecipientNames: ['Bon Jovi', 'Shawoddywoddy', 'down to folk'],
+          messageRecipientProfilePic: '',
+          recipientMessages:[
             {
               messageSenderID: 'down-to-folk',
               messageSenderName: 'Down To Folk',
               messageTime: '22:00',
               messageDate: '3rd Oct',
-              message: 'Hello Cruel World'
+              message: 'Hello Cruel World',
+              doubleMessage: false
             },
             {
-              messageSenderID: 'bros',
-              messageSenderName: 'Bros',
+              messageSenderID: 'shawoddywoddy',
+              messageSenderName: 'Shawoddywoddy',
               messageTime: '23:00',
               messageDate: '4th Oct',
-              message: 'Yo'
+              message: 'Yo',
+              doubleMessage: false
             },
             {
               messageSenderID: 'bon-jovi',
               messageSenderName: 'Bon Jovi',
               messageTime: '23:30',
               messageDate: '4th Oct',
-              message: 'Alright'
+              message: 'Oi Oi',
+              doubleMessage: false
             },
             {
-              messageSenderID: 'bros',
-              messageSenderName: 'Bros',
-              messageTime: '24:00',
+              messageSenderID: 'shawoddywoddy',
+              messageSenderName: 'Shawoddywoddy',
+              messageTime: '23:40',
               messageDate: '4th Oct',
-              message: 'Oi oi'
-            }
+              message: 'obrigado',
+              doubleMessage: false
+            },
+            {
+              messageSenderID: 'bon-jovi',
+              messageSenderName: 'Bon Jovi',
+              messageTime: '23:50',
+              messageDate: '4th Oct',
+              message: 'Hola',
+              doubleMessage: false
+            },
+            {
+              messageSenderID: 'bon-jovi',
+              messageSenderName: 'Bon Jovi',
+              messageTime: '23:55',
+              messageDate: '4th Oct',
+              message: 'Bonjourno',
+              doubleMessage: true
+            },
           ],
-          latestMessage: 'Oi oi',
-          latestMessageDate: '1st Sep',
-          latestMessageTimestamp: 1641556236435,
+          latestMessage: 'Bonjourno',
+          latestMessageDate: '4th Oct',
+          latestMessageTimestamp: 1641556236615,
           messageActive: false,
-          groupMessage: true,
         }
       ],
     }
@@ -345,6 +501,8 @@ export default {
       for (let i = 0; i < this.messages.length; i++) {
         this.messages[i].messageActive = false;
       }
+      this.messageRecipientNames = [];
+      
     },
     closeMessage(){
       this.messagesSelected = false;
@@ -354,12 +512,14 @@ export default {
     },
     selectedMessage(val){
       this.cancelActiveMessage();
-      const chosenMessage = this.messages.find(message => message.messageRecipientID === val);
+      const chosenMessage = this.messages.find(message => message.messageID === val);
       chosenMessage.messageActive = true;
       this.messagesSelected = true;
+      this.messagesListVisible = true;
+      this.groupContactsListVisible = false;
       this.newMessage = false;
-      this.messageRecipientName = chosenMessage.messageRecipientName;
-      this.messageRecipientID = chosenMessage.messageRecipientID;
+      this.messageRecipientNames = chosenMessage.messageRecipientNames;
+      this.messageRecipientIDs = chosenMessage.messageRecipientIDs;
     },
     submitNewMessage(val){
       const currentMessageThread = this.messages.find(message => message.messageActive == true).recipientMessages;
@@ -381,6 +541,30 @@ export default {
       const currentDayMonth = currentDayFormatted + " " + currentMonth;
       this.thisUserNewMessage = val;
 
+
+      for (let i = 0; i < currentMessageThread.length; i++) {
+        var length = currentMessageThread.length
+        if(currentMessageThread[i].messageSenderName == currentMessageThread[(i+length-1)%length].messageSenderName){
+          currentMessageThread[i].doubleMessage = true;
+        }
+      }
+
+
+      if(currentMessageThread.find(message => message.messageSenderID === 'dateSent') && currentMessageThread.find(message => message.messageDate === currentDayMonth)){
+        //Nothing here as targeting !== dateSent will return all other IDs
+      }
+      else{
+        currentMessageThread.push({
+          messageSenderID: 'dateSent',
+          messageTime: '',
+          messageDate: currentDayMonth,
+          message: currentDayMonth
+        });
+      }
+
+      
+
+
       if(this.thisUserNewMessage != ''){
         currentMessageThread.push({
           messageSenderID: this.thisUserID,
@@ -393,23 +577,38 @@ export default {
         latestMessageInfo.latestMessageDate = currentDayMonth;
         latestMessageInfo.latestMessageTimestamp = new Date().getTime();
         this.newMessage = false;
-        this.selectedMessage(latestMessageInfo.messageRecipientID)
+        this.newGroupMessage = false;
+        this.selectedMessage(latestMessageInfo.messageID)
       }
       
     },
-    showContacts(){
+    showContacts(){  
+      this.hideCounts();
+      this.groupChatContacts = [];
+      this.groupChatContactsIDs = [];
+      this.groupChatCount = 0;
+      this.messageID = '';
+      this.messageRecipientNames = [],
+      this.messageRecipientIDs = [],
+      this.newMessage = false;
       this.cancelActiveMessage();
-
-      
       this.contactsListVisible = true;
       this.groupContactsListVisible = false;
       this.messagesListVisible = false;
       this.messagesSelected = false;
+
+      for (let i = 0; i < this.messages.length; i++) {
+        if(this.messages[i].recipientMessages.length <= 0){
+          this.messages.shift();
+        }
+      }
       
     },
     showMessageList(){
       this.contactsListVisible = false;
       this.messagesListVisible = true;
+      this.hideCounts();
+      
     },
     startGroupMessage(){
       this.contactsListVisible = false;
@@ -419,31 +618,65 @@ export default {
     startChat(val){
       this.contactsListVisible = false;
       this.messagesListVisible = true;
-      if(this.messages.find(message => message.messageRecipientID === val)){
+      if(this.messages.find(message => message.messageID === val)){
         this.selectedMessage(val)
       }else{
         this.newMessage = true;
         const chosenContact = this.contacts.find(contact => contact.contactID === val);
-        this.messageRecipientName = chosenContact.contactName
-        this.messageRecipientID = chosenContact.contactID
-        
-        
+        this.messageRecipientNames = chosenContact.contactName;
+        this.messageID = chosenContact.contactID
         this.messages.unshift({
-          messageRecipientID: chosenContact.contactID,
-          messageRecipientName: chosenContact.contactName,
+          messageID: chosenContact.contactID,
+          messageRecipientNames: [chosenContact.contactName],
           recipientMessages:[],
           messageActive: true
-
         });
       }
     },
-    startGroupChat(){
-      this.groupContactsListVisible = false;
-      this.newGroupMessage = true;
-      //push group chat contacts somewhere here
+    startGroupChat(val){
+      val.sort((a, b) => {
+        if (a < b)
+            return -1;
+        if (a > b)
+            return 1;
+        return 0;
+      });
+      val = val.join('-')
+      if(this.messages.find(message => message.messageID === val)){
+        this.selectedMessage(val);
+        this.groupChatContacts = [];
+        this.groupChatContactsIDs = [];
+        this.groupChatCount = 0;
+      }else{
+        const groupContacts = [];
+        const groupContactsIDs = [];
+        for (let i = 0; i < this.groupChatContacts.length; i++) {
+          groupContacts.push(''+this.groupChatContacts[i].contactName+'')
+        }
+        for (let i = 0; i < this.groupChatContacts.length; i++) {
+          groupContactsIDs.push(''+this.groupChatContacts[i].contactID+'')
+        }
 
-      this.groupChatContacts = [];
+        groupContactsIDs.sort((a, b) => {
+          if (a < b)
+              return -1;
+          if (a > b)
+              return 1;
+          return 0;
+        });    
+        this.groupContactsListVisible = false;
+        this.newGroupMessage = true;
+        this.messagesListVisible = true;
+        this.messageRecipientNames = groupContacts;
+        this.groupChatContacts = [];
 
+        this.messages.unshift({
+          messageID: groupContactsIDs.join('-'),
+          messageRecipientNames: groupContacts,
+          recipientMessages:[],
+          messageActive: true
+        });
+      }
     },
     addGroupRecipient(val){
       const groupArray = this.groupChatContacts;
@@ -453,13 +686,12 @@ export default {
       if(!groupArray.includes(contact)){          
           groupArray.push(contact);
           groupIDsArray.push(val);
-          this.groupChatCount += 1
+          this.groupChatCount += 1;
       }else{
           groupArray.splice(groupArray.indexOf(contact), 1);
           groupIDsArray.splice(groupIDsArray.indexOf(val), 1);
-          this.groupChatCount -= 1
-      }
-    
+          this.groupChatCount -= 1;
+      }    
     },
     cancelMessage(){
       this.messages.shift();
@@ -467,9 +699,182 @@ export default {
       this.cancelActiveMessage();
     },
     cancelGroupMessage(){
+      this.messages.shift();
       this.newGroupMessage = false;
       this.groupContactsListVisible = true;
+      this.cancelActiveMessage();
+      this.groupChatContacts = []
+      this.groupChatContactsIDs = []
+      this.groupChatCount = 0
+    },
+    showMessagesOptions(){
+      this.isMessagesOptionsDisplayed = true;
+    },
+    hideMessagesOptions(){
+      this.isMessagesOptionsDisplayed = false;
+    },
+
+    selectMessagesToDelete(){
+      this.closeMessage();
+      this.messagesToDelete = true;
+      this.hideMessagesOptions();
+    },
+    messageForDeletion(val){
+      const deleteMessagesArray = this.deleteMessagesIDs;
+      if(!deleteMessagesArray.includes(val)){          
+          deleteMessagesArray.push(val);
+          this.deleteMessagesCount += 1;
+      }else{
+        deleteMessagesArray.splice(deleteMessagesArray.indexOf(val), 1);
+        this.deleteMessagesCount -= 1;
+      }
+    },
+
+    deleteSelectedMessages(){
+      const messageArray = this.latestMessages;
+      this.messagesToDelete = false;
+      this.deleteMessagesCount = 0;
+
+      for (let i = 0; i < this.deleteMessagesIDs.length; i++) {
+        let selectedMessage = this.deleteMessagesIDs[i]
+        messageArray.splice(messageArray.findIndex(v => v.messageID === selectedMessage), 1);
+      }
+      this.deleteMessagesIDs = [];
+    },
+
+    hideCounts(){
+      this.contactsToBlock = false;
+      this.blockContactsCount = 0;
+      this.blockContactsIDs = [];
+      this.contactsToDelete = false;
+      this.deleteContactsCount = 0;
+      this.deleteContactsIDs = [];
+      this.messagesToDelete = false;
+      this.deleteMessagesCount = 0;
+      this.deleteMessagesIDs = [];
+    },
+
+    showContactsOptions(){
+      this.isContactsOptionsDisplayed = true;
+      this.contactsToBlock = false;
+      this.hideCounts();
+    },
+
+    hideContactsOptions(){
+      this.isContactsOptionsDisplayed = false;
+    },
+
+    selectContactsToBlock(){
+      this.isContactsOptionsDisplayed = false;
+      this.contactsToBlock = true;
+    },
+
+    contactForBlocking(val){
+      const blockContactsArray = this.blockContactsIDs;
+      if(!blockContactsArray.includes(val)){          
+          blockContactsArray.push(val);
+          this.blockContactsCount += 1;
+      }else{
+        blockContactsArray.splice(blockContactsArray.indexOf(val), 1);
+        this.blockContactsCount -= 1;
+      }
+    },
+
+    blockSelectedContacts(){
+      const contactsArray = this.alphabetisedContacts;
+      this.contactsToBlock = false;
+      this.blockContactsCount = 0;
+
+      for (let i = 0; i < this.blockContactsIDs.length; i++) {
+        let selectedContact = this.blockContactsIDs[i];
+        const blockContact = contactsArray.find(contact => contact.contactID === selectedContact);
+        blockContact.contactBlocked = true
+      }
+      this.blockContactsIDs = [];
+    },
+
+    selectContactsToDelete(){
+      this.isContactsOptionsDisplayed = false;
+      this.contactsToDelete = true;
+    },
+
+    contactForDeletion(val){
+      const deleteContactsArray = this.deleteContactsIDs;
+      if(!deleteContactsArray.includes(val)){          
+          deleteContactsArray.push(val);
+          this.deleteContactsCount += 1;
+      }else{
+        deleteContactsArray.splice(deleteContactsArray.indexOf(val), 1);
+        this.deleteContactsCount -= 1;
+      }
+    },
+
+    deleteSelectedContacts(){
+      const contactsArray = this.alphabetisedContacts;
+      this.contactsToDelete = false;
+      this.deleteContactsCount = 0;
+
+      for (let i = 0; i < this.deleteContactsIDs.length; i++) {
+        let selectedContact = this.deleteContactsIDs[i]
+        contactsArray.splice(contactsArray.findIndex(v => v.contactID === selectedContact), 1);
+      }
+      this.deleteContactsIDs = [];
+    },
+
+    manageActiveMessage(){
+      this.isActiveMessageOptionsDisplayed = true;
+    },
+
+    hideActiveMessageOptions(){
+      this.isActiveMessageOptionsDisplayed = false;
+    },
+
+    blockSender(){
+      const contactToBlock = this.messages.find(message => message.messageActive == true).messageID;
+      const contactsArray = this.alphabetisedContacts;
+      const blockContact = contactsArray.find(contact => contact.contactID === contactToBlock);
+      blockContact.contactBlocked = true;
+      this.messagesSelected = false;
+      this.isActiveMessageOptionsDisplayed = false;
+      this.deleteActiveMessage();      
+    },
+
+    deleteActiveMessage(){
+      const messageToDelete = this.messages.find(message => message.messageActive == true).messageID;
+      const messageArray = this.latestMessages;
+      messageArray.splice(messageArray.findIndex(v => v.messageID === messageToDelete), 1); 
+      this.messagesSelected = false;
+      this.isActiveMessageOptionsDisplayed = false;
+    },
+
+    leaveGroup(){
+      const activeMessage = this.messages.find(message => message.messageActive == true);
+      const activeMessageRecipientsIDArray = activeMessage.messageRecipientIDs;
+      const activeMessageRecipientsNamesArray = activeMessage.messageRecipientNames;
+
+      if(activeMessageRecipientsIDArray.includes(this.thisUserID)){
+        this.deleteActiveMessage();
+        activeMessage.recipientMessages.push({
+          messageSenderID: 'memberLeftGroup',
+          message: this.thisUserName + ' left the group.'
+        })
+        activeMessageRecipientsIDArray.splice(activeMessageRecipientsIDArray.findIndex(v => v.recipientID === this.thisUserID), 1);
+        activeMessageRecipientsNamesArray.splice(activeMessageRecipientsNamesArray.findIndex(v => v.recipientName === this.thisUserName), 1);
+      }
+      
+      this.messagesSelected = false;
+      this.isActiveMessageOptionsDisplayed = false;
+      this.cancelActiveMessage();
+      
+    },
+
+    searchMessages(val){
+      this.searchMessageValue = val;
+    },
+    searchContacts(val){
+      this.searchContactValue = val;
     }
+
   },
   computed:{
     activeMessages(){
@@ -478,14 +883,23 @@ export default {
     },
 
     latestMessages(){
-      const timeStampedMessages = this.messages
+      let timeStampedMessages = this.messages
+
+      if(this.searchMessageValue){
+        timeStampedMessages = this.messages.filter(m => m.messageID.toLowerCase().indexOf(this.searchMessageValue) > -1)
+      }
       return timeStampedMessages.sort(function(x, y){
           return y.latestMessageTimestamp - x.latestMessageTimestamp;
       })
     },
 
     alphabetisedContacts(){
-      const unblockedContacts = this.contacts.filter(contacts => contacts.contactBlocked == false)
+      let unblockedContacts = this.contacts.filter(contacts => contacts.contactBlocked == false)
+      
+      if(this.searchContactValue){
+        unblockedContacts = this.contacts.filter(m => m.contactID.toLowerCase().indexOf(this.searchContactValue) > -1)
+      }
+
       return unblockedContacts
       .filter(unblockedContacts => unblockedContacts.contactName.toLowerCase())
       .sort((a, b) => {
@@ -592,6 +1006,7 @@ export default {
         background-color: $lightgrey;
         border-radius: $border-radius-reg;
         padding: $spacing-xs $spacing-s;
+        position: relative;
       }
 
       .text-icon-button--back{
@@ -601,9 +1016,18 @@ export default {
           display: flex;
         }
       }
+
+      dialog{
+        @media(min-width:$desktop){
+          right: 0;
+          left: auto;
+          top: 100%;
+        }
+      }
     }
 
-    .text-icon-button{
+    .text-icon-button--new-message,
+    .text-icon-button--ellipsis{
       color: #fff;
       width: rem(44);
       justify-content: center;
@@ -736,6 +1160,25 @@ export default {
 
     &__item-name{
       font-size: $copy-mobile;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      span{
+        margin-right: $spacing-xs;
+
+        &:after{
+          content: ',';
+        }
+
+        &:last-of-type{
+          margin-right: 0;
+
+          &:after{
+            content: '';
+          }
+        }
+      }
     }
 
     &__item-preview{
@@ -805,6 +1248,7 @@ export default {
       overflow: hidden;
       padding:$spacing-s;
       border-bottom:rem(1) solid $dark-green;
+      position: relative;
 
       @media(min-width:$desktop){
         padding: $spacing-s $spacing-m;
@@ -843,6 +1287,14 @@ export default {
             padding-left:$spacing-s;
           }
         }
+      }
+    }
+
+    dialog{
+      @media(min-width:$desktop){
+        right: 0;
+        left: auto;
+        top: rem(65);
       }
     }
 
@@ -905,12 +1357,38 @@ export default {
 
       &--recipient{
         background-color:$mid-grey;
-        margin-top:$spacing-m;
+        margin-top:rem(50);
 
         &:after{
           left:rem(-6);
           transform: rotate(-20deg);
           color:$mid-grey;
+        }
+      }
+
+      &--double{
+        margin-top:$spacing-s;
+        .active-messages__message-sender{
+          display: none;
+        }
+      }
+
+      &--member-left,
+      &--date-sent{
+        margin: $spacing-m auto;
+        background-color: transparent;
+        font-size: $copy-mobile-xs;
+        color: $lightgrey;
+        border: rem(1) solid $lightgrey;
+        padding: $spacing-xs;
+
+        .active-messages__message-copy{
+          margin:0;
+          line-height: 1.2;
+        }
+
+        &:after{
+          display: none;
         }
       }
 
@@ -949,14 +1427,6 @@ export default {
       }
     }
 
-    .active-messages__message--recipient + .active-messages__message--recipient{
-      margin-top:$spacing-s;
-
-      .active-messages__message-sender{
-        display: none;
-      }
-    }
-
     .new-message-input-container{
       position: fixed;
       bottom:0;
@@ -984,7 +1454,10 @@ export default {
     }
   }
 
-  .group-chat-start{
+  .group-chat-start,
+  .delete-messages-count,
+  .block-contacts-count,
+  .delete-contacts-count{
     position: fixed;
     background-color: #fff;
     box-shadow: $box-shadow;
@@ -994,8 +1467,20 @@ export default {
     text-align: center;
     padding: $spacing-s;
 
+    @media(min-width:$desktop){
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
     &__list{
       margin-top: $spacing-s;
+
+      &:empty{
+        margin: 0;
+      }
     }
 
     &__list-item{
