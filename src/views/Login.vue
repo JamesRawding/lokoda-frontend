@@ -5,10 +5,10 @@
     <p>Welcome back</p>
 
     <form @submit.prevent="submitForm">
-      <base-input class="dark" inputId="email" inputType="email" v-model="email" :isRequired="false" >
+      <base-input class="dark" inputId="email" inputType="email" v-model="form.email" :isRequired="false" >
         <template #label>Email</template>
       </base-input>
-      <password-input class="dark" inputId="password" v-model="password" :isRequired="false" >
+      <password-input class="dark" inputId="password" v-model="form.password" :isRequired="false" >
         <template #label>Password</template>
       </password-input>
       <div class="link-container">
@@ -23,6 +23,7 @@
 </main>
 </template>
 <script>
+import axios from 'axios';
 import PasswordInput from '../components/UI/PasswordInput.vue';
 import BaseInput from '../components/UI/BaseInput.vue';
 import BaseButton from '../components/UI/BaseButton.vue';
@@ -32,16 +33,27 @@ export default {
     BaseInput,
     BaseButton,
   },
+  mounted() {
+      axios.get('/health_check')
+          .then (response => {
+              console.log("Back end health check okay");
+              console.log(response);
+          });
+  },
   data(){
     return{
-      email:'',
-      password:''
+        form: { 
+          email:'',
+          password:''
+        }
     }
   },
   methods: {
     submitForm() {
-       console.log(this.email);
-       console.log(this.password);
+       axios.post('/login', this.form)
+            .then((res) => {
+                console.log(res);
+            });
     }
   }
 }
