@@ -35,7 +35,7 @@ export default {
   emits:['changedGenre', 'changedDistance', 'changedSearch'],
   data(){
     return{
-      genres:['Any', 'Alternative', 'Rock', 'Punk'],
+      genres:['Any', 'Alternative','Folk', 'Funk', 'Rock', 'Punk'],
       genreDropdown: 'Any',
       distances:['0 - 15', '15 - 20', '20 - 30', '30 - 40'],
       distanceDropdown: '0 - 15',

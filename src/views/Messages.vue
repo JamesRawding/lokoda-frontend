@@ -181,7 +181,7 @@
             <base-text-icon-button @click="showContacts" mode="text-icon-button text-icon-button--back">Contacts</base-text-icon-button>
           </div>
         </div>
-        <search-bar v-if="contacts.length > 0" searchId="searchContacts" ariaLabel="search contacts" searchPlaceholder="Search Contacts"></search-bar>
+        <search-bar @searched="searchContacts" v-if="contacts.length > 0" searchId="searchContacts" ariaLabel="search contacts" searchPlaceholder="Search Contacts"></search-bar>
         <div>
           <ul class="group-contacts-list">
             <li
@@ -223,7 +223,6 @@
           <base-button @click="cancelGroupMessage" buttonType="button" mode="active-messages__cancel-btn">Cancel <span class="sr-only">new message</span></base-button>
           <h3 class="messages-list__item-name"><span v-for="recipientName in messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h3>
 
-          <!-- <base-icon-button buttonType="button" mode="icon-button icon-button--ellipsis" ariaLabel="more options"></base-icon-button> -->
         </div>
         <div class="new-message-input-container">
           <new-message-input @sendNewMessage="submitNewMessage" ariaLabel="Send new message" inputId="newGroupMessage"></new-message-input>
@@ -236,7 +235,6 @@
           <base-button @click="cancelMessage" buttonType="button" mode="active-messages__cancel-btn">Cancel <span class="sr-only">new message</span></base-button>
           <h3 class="messages-list__item-name">{{messageRecipientNames}}</h3>
 
-          <!-- <base-icon-button buttonType="button" mode="icon-button icon-button--ellipsis" ariaLabel="more options"></base-icon-button> -->
         </div>
         <ul class="active-messages__messages-list">
           <li v-for="messages in activeMessages" :key="messages.messageTime + messages.messageDate" class="active-messages__message" :class="thisUserID === messages.messageSenderID ? 'active-messages__message--user' : 'active-messages__message--recipient'">
@@ -886,10 +884,10 @@ export default {
       let timeStampedMessages = this.messages
 
       if(this.searchMessageValue){
-        timeStampedMessages = this.messages.filter(m => m.messageID.toLowerCase().indexOf(this.searchMessageValue) > -1)
+        timeStampedMessages = this.messages.filter(m => m.messageID.replace(/-/g, ' ').toLowerCase().indexOf(this.searchMessageValue) > -1)
       }
       return timeStampedMessages.sort(function(x, y){
-          return y.latestMessageTimestamp - x.latestMessageTimestamp;
+        return y.latestMessageTimestamp - x.latestMessageTimestamp;
       })
     },
 
@@ -897,7 +895,7 @@ export default {
       let unblockedContacts = this.contacts.filter(contacts => contacts.contactBlocked == false)
       
       if(this.searchContactValue){
-        unblockedContacts = this.contacts.filter(m => m.contactID.toLowerCase().indexOf(this.searchContactValue) > -1)
+        unblockedContacts = this.contacts.filter(m => m.contactName.toLowerCase().indexOf(this.searchContactValue) > -1)
       }
 
       return unblockedContacts

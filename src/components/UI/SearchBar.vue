@@ -4,28 +4,22 @@
     <slot name="label"></slot>
   </label>
   <span class="input-helper-text"><slot name="helpertext"></slot></span>
+  <span class="search-icon"></span>
   <input 
-    @keyup.enter="onEnter" 
+    @keyup="onKeyup" 
     type="search" 
     :id="searchId"
     v-model="searchValue"
     :placeholder="searchPlaceholder"
-    :aria-label="ariaLabel">
-    
-    <base-icon-button @click="onClick"  buttonType="button" mode="icon-button icon-button--search" ariaLabel="submit search"></base-icon-button>
-
+    :aria-label="ariaLabel">    
 
 </div>
   
 </template>
 
 <script>
-import BaseIconButton from '../UI/BaseIconButton.vue';
 
 export default {
-  components:{
-    BaseIconButton
-  },
   emits:['searched'],
   props: ['searchId','searchPlaceholder', 'ariaLabel'],
   data(){
@@ -34,12 +28,12 @@ export default {
     }
   },
   methods: {
-    onEnter() {
+    onKeyup() {
       this.$emit('searched',this.searchValue);
     },
-    onClick() {
-      this.$emit('searched',this.searchValue);
-    }
+    // onClick() {
+    //   this.$emit('searched',this.searchValue);
+    // }
   }
 }
 </script>
@@ -60,10 +54,10 @@ export default {
 
   input{
     @include baseInput;
-    padding-right: rem(44);
+    padding-left: rem(44);
 
     @media(min-width:$desktop){
-      padding-right: rem(50);
+      padding-left: rem(50);
     }
 
     &::-webkit-search-cancel-button{
@@ -76,23 +70,22 @@ export default {
   }
 
 
-  .icon-button{
+  .search-icon{
     position: absolute;
-    bottom:0;
-    right: 0;
+    bottom:rem(10);
+    left: rem(8);
     color: $copy;
     background-color: transparent;
 
     @media(min-width:$desktop){
-      bottom: rem(4);
+      bottom: rem(14);
+      left: rem(16);
     }
-
-    &--search{
-      &:before{
-        font-weight: 400;
-        content:'\f002';
-        font-size: rem(25);
-      }
+    &:before{
+      font-family: "Font Awesome 5 Pro";
+      font-weight: 400;
+      content:'\f002';
+      font-size: rem(20);
     }
     
   }

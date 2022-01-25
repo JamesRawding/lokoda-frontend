@@ -13,7 +13,7 @@
     <div v-if="artistsVisible">
       <h2><span>Artists from </span>Sheffield</h2>
       <div class="grid-parent">
-        <base-card v-for="band in bands" :key="band">
+        <base-card v-for="band in alphabetisedBandResults" :key="band">
           <img :src=band.image :alt=band.alt>
           <a :href=band.url> <h3>{{band.name}}</h3></a>
           <span class="location">{{band.location}}</span>
@@ -26,7 +26,7 @@
     <div v-if="promotersVisible">
       <h2><span>Promoters from </span>Sheffield</h2>
       <div class="grid-parent">
-        <base-card v-for="promoter in promoters" :key='promoter'>
+        <base-card v-for="promoter in alphabetisedPromoterResults" :key='promoter'>
           <img :src=promoter.image :alt=promoter.alt>
           <a :href=promoter.url> <h3>{{promoter.name}}</h3></a>
           <span class="location">{{promoter.location}}</span>
@@ -60,6 +60,9 @@ export default {
       filtersVisible: false,
       artistsVisible: true,
       promotersVisible: false,
+      searchValue: '',
+      genreDropdownValue: '',
+      distanceDropdownValue: '',
       bands:[
         {
           image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Paragon_%28band%29_-_B%C3%B6rsencrash_Festival_Wuppertal_2016-AL1745.jpg/660px-Paragon_%28band%29_-_B%C3%B6rsencrash_Festival_Wuppertal_2016-AL1745.jpg',
@@ -94,7 +97,7 @@ export default {
           name: 'Down To Folk',
           url: '',
           location: 'Sheffield',
-          genres: ['Folk','Hip-Hop', 'Pop']
+          genres: ['Folk','Hip-Hop', 'Pop', 'Funk']
 
         }
       ],
@@ -150,13 +153,63 @@ export default {
       
     },
     selectedGenre(value){
-      console.log(value)
+      this.genreDropdownValue = value
     },
     selectedDistance(value){
       console.log(value)
+      this.distanceDropdownValue = value
     },
     enteredSearch(value){
-      console.log(value) 
+      this.searchValue = value;
+    }
+  },
+
+  computed:{
+     alphabetisedBandResults(){
+      let bandResults = this.bands
+      
+      if(this.searchValue){
+        bandResults = bandResults.filter(m => m.name.toLowerCase().indexOf(this.searchValue) > -1);
+      }
+
+      if(this.genreDropdownValue && this.genreDropdownValue !== 'Any'){
+        bandResults = bandResults.filter((m) =>{
+          return (m.genres.indexOf(this.genreDropdownValue) > -1)
+        })
+      }
+
+      return bandResults
+      .filter(bandResults => bandResults.name.toLowerCase())
+      .sort((a, b) => {
+          if (a.name < b.name)
+              return -1;
+          if (a.name > b.name)
+              return 1;
+          return 0;
+      });
+    },
+    alphabetisedPromoterResults(){
+      let promoterResults = this.promoters
+      
+      if(this.searchValue){
+        promoterResults = promoterResults.filter(m => m.name.toLowerCase().indexOf(this.searchValue) > -1)
+      }
+
+      if(this.genreDropdownValue && this.genreDropdownValue !== 'Any'){
+        promoterResults = promoterResults.filter((m) =>{
+          return (m.genres.indexOf(this.genreDropdownValue) > -1)
+        })
+      }
+
+      return promoterResults
+      .filter(promoterResults => promoterResults.name.toLowerCase())
+      .sort((a, b) => {
+          if (a.name < b.name)
+              return -1;
+          if (a.name > b.name)
+              return 1;
+          return 0;
+      });
     }
   }
 }
