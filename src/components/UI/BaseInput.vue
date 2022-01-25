@@ -62,9 +62,9 @@ export default {
     }
   }
 
-  dialog .input-container:first-of-type{
-    margin-top: 0;
-  }
+  // dialog .input-container:first-of-type{
+  //   margin-top: 0;
+  // }
 
   .add-show-date-fields label span{
     display: none;

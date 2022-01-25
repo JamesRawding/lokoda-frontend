@@ -71,8 +71,8 @@
                 <base-button @click="displaySettingsDialog('Confirm Delete')" buttonType="button" mode="cta cta--warning">Delete</base-button>
               </div>
             </base-dialog>
-            <base-dialog mode="modal-dialog" v-if="confirmDeleteAccountDialogVisible"  @closeDialog="hideSettingsDialog('Confirm Delete')">
-              <strong>Delete Account</strong>
+            <base-dialog mode="modal-dialog modal-dialog--warning" v-if="confirmDeleteAccountDialogVisible"  @closeDialog="hideSettingsDialog('Confirm Delete')">
+              <strong>Are you sure?</strong>
               <p>Last chance, no turning back...</p>
                 <div class="dialog-cta-container">
                   <base-button @click="hideSettingsDialog('Confirm Delete')" buttonType="button" mode="cta cta--secondary">Cancel</base-button>

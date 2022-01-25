@@ -21,6 +21,9 @@
             {{genre}}
           </base-pill>
         </base-card>
+      </div>
+      <div v-if="alphabetisedBandResults.length === 0">
+        <strong>No bands match that search.</strong>
       </div>     
     </div>
     <div v-if="promotersVisible">
@@ -34,7 +37,10 @@
             {{genre}}
           </base-pill>
         </base-card> 
-      </div>  
+      </div>
+       <div v-if="alphabetisedPromoterResults.length === 0">
+        <strong>No promoters match that search.</strong>
+      </div>   
     </div>
   </main>
 </template>

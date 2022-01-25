@@ -59,8 +59,11 @@
             </li>
           </ul>
         </div>
-        <div v-if="messages.length === 0" class="no-messages">
+        <div v-if="latestMessages.length === 0 && searchMessageValue === ''" class="no-messages">
           <strong>You currently have no messages.</strong>
+        </div>
+        <div v-else-if="latestMessages.length === 0 && searchMessageValue !== ''" class="no-messages">
+          <strong>No contacts match that search.</strong>
         </div>
       </section>
 
@@ -151,6 +154,12 @@
             </li>
           </ul>
         </div>
+        <div v-if="alphabetisedContacts.length === 0 && searchContactValue === ''" class="no-messages">
+          <strong>You currently have no contacts.</strong>
+        </div>
+        <div v-else-if="alphabetisedContacts.length === 0 && searchContactValue !== ''" class="no-messages">
+          <strong>No contacts match that search.</strong>
+        </div>
       </section>
 
       <div class="block-contacts-count" v-if="contactsToBlock">
@@ -204,6 +213,12 @@
               </div>
             </li>
           </ul>
+        </div>
+        <div v-if="alphabetisedContacts.length === 0 && searchContactValue === ''" class="no-messages">
+          <strong>You currently have no contacts.</strong>
+        </div>
+        <div v-else-if="alphabetisedContacts.length === 0 && searchContactValue !== ''" class="no-messages">
+          <strong>No contacts match that search.</strong>
         </div>
       </section>
 

@@ -169,6 +169,14 @@ strong{
   line-height: 1.5;
 }
 
+.dialog-inner > strong{
+  font-size: $copy-mobile-m;
+
+  @media(min-width:$desktop){
+    font-size: $copy-desktop-m;
+  }
+}
+
 a{
   color: $link;
   cursor: pointer;
