@@ -1,5 +1,8 @@
 // vue.config.js
 module.exports = {
+  devServer: {
+      proxy: 'http://lokoda.co.uk/api'
+  },
   css: {
     loaderOptions: {
       // pass options to sass-loader
