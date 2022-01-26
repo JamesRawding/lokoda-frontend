@@ -1,8 +1,11 @@
 <template>
   <base-text-icon-button @click="filtersVisible = !filtersVisible" buttonType="button" mode="text-icon-button text-icon-button--filter">Filter</base-text-icon-button>
   <div :class="{'filters-container--active' : filtersVisible}" class="filters-container">
-      <search-bar @searched="searchValue" searchId="artistSearch" searchPlaceholder="e.g Sheffield, Johnny Band name">
-      <template #label>Search</template>
+    <search-bar @searched="searchLocationValue" searchId="locationSearch" searchPlaceholder="e.g Sheffield, S10">
+      <template #label>Search by location</template>
+    </search-bar>
+    <search-bar @searched="searchNameValue" searchId="nameSearch" searchPlaceholder="e.g Bandy McBandface">
+      <template #label>Search by name</template>
     </search-bar>
     <base-dropdown @changed="genreValue" dropdownId="genreDropdown" v-model="genreDropdown" :isRequired="false" >
       <template #label>Genre</template>
@@ -10,7 +13,13 @@
         <option v-for="genre in genres" :key="genre" :value="genre">{{genre}}</option>
       </template>
     </base-dropdown>
-    <base-dropdown @changed="distanceValue" dropdownId="distanceDropdown" v-model="distanceDropdown" :isRequired="false" >
+    <base-dropdown v-if="!locationEntered" @changed="distanceValue" dropdownId="distanceDropdown" v-model="distanceDropdown" :isRequired="false" isDisabled>
+      <template #label>Distance</template>
+      <template #options>
+        <option v-for="distance in distances" :key="distance" :value="distance">{{distance}} miles</option>
+      </template>
+    </base-dropdown>
+    <base-dropdown v-else @changed="distanceValue" dropdownId="distanceDropdown" v-model="distanceDropdown" :isRequired="false">
       <template #label>Distance</template>
       <template #options>
         <option v-for="distance in distances" :key="distance" :value="distance">{{distance}} miles</option>
@@ -32,7 +41,7 @@ export default {
     BaseTextIconButton,
     BaseButton
   },
-  emits:['changedGenre', 'changedDistance', 'changedSearch'],
+  emits:['changedGenre', 'changedDistance', 'changedNameSearch', 'changedLocationSearch'],
   data(){
     return{
       genres:['Any', 'Alternative','Folk', 'Funk', 'Rock', 'Punk'],
@@ -40,20 +49,30 @@ export default {
       distances:['0 - 15', '15 - 20', '20 - 30', '30 - 40'],
       distanceDropdown: '0 - 15',
       filtersVisible: false,
+      locationEntered: false,
     }
   },
   methods:{
     genreValue(value){
       const genreValue = value;
-      this.$emit('changedGenre', genreValue)
+      this.$emit('changedGenre', genreValue);
     },
     distanceValue(value){
       const distanceValue = value;
-      this.$emit('changedDistance', distanceValue)
+      this.$emit('changedDistance', distanceValue);
     },
-    searchValue(value){
+    searchNameValue(value){
       const searchValue = value;
-      this.$emit('changedSearch', searchValue)
+      this.$emit('changedNameSearch', searchValue);
+    },
+    searchLocationValue(value){
+      if(value === ''){
+        this.locationEntered = false;
+      }else{
+        this.locationEntered = true;
+      }
+      const searchValue = value;
+      this.$emit('changedLocationSearch', searchValue);
     }
   }
 }
@@ -76,7 +95,7 @@ export default {
       margin: $spacing-m 0 0 0;
       padding: 0;
       grid-column-gap: rem(32);
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns:1fr 1fr 1fr 1fr;
       box-shadow: none;
     }
 

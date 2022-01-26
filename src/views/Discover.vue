@@ -9,9 +9,9 @@
       <base-button :class="{'segmented-control--active': artistsVisible}" mode="cta cta--secondary" buttonType="button" @click="showResultType('artist')">Artists</base-button>
       <base-button :class="{'segmented-control--active': promotersVisible}" mode="cta cta--secondary" buttonType="button" @click="showResultType('promoter')">Promoters</base-button>
     </div>
-    <the-filters @changedSearch="enteredSearch" @changedGenre="selectedGenre" @changedDistance="selectedDistance"></the-filters>
+    <the-filters @changedNameSearch="enteredNameSearch" @changedLocationSearch="enteredLocationSearch" @changedGenre="selectedGenre" @changedDistance="selectedDistance"></the-filters>
     <div v-if="artistsVisible">
-      <h2><span>Artists from </span>Sheffield</h2>
+      <h2><span>Artists from </span>{{currentLocationFilter}}</h2>
       <div class="grid-parent">
         <base-card v-for="band in alphabetisedBandResults" :key="band">
           <img :src=band.image :alt=band.alt>
@@ -27,7 +27,7 @@
       </div>     
     </div>
     <div v-if="promotersVisible">
-      <h2><span>Promoters from </span>Sheffield</h2>
+      <h2><span>Promoters from </span>{{currentLocationFilter}}</h2>
       <div class="grid-parent">
         <base-card v-for="promoter in alphabetisedPromoterResults" :key='promoter'>
           <img :src=promoter.image :alt=promoter.alt>
@@ -66,7 +66,10 @@ export default {
       filtersVisible: false,
       artistsVisible: true,
       promotersVisible: false,
-      searchValue: '',
+      searchNameValue: '',
+      searchLocationValue: '',
+      currentLocationFilter: 'All Locations',
+      defaultLocation: 'All Locations',
       genreDropdownValue: '',
       distanceDropdownValue: '',
       bands:[
@@ -75,7 +78,7 @@ export default {
           alt:'Image of Down to folk',
           name: 'Down To Folk',
           url: '/down-to-folk',
-          location: 'Sheffield',
+          location: 'sheffield',
           genres: ['Folk','Hip-Hop', 'Pop']
 
         },
@@ -84,7 +87,7 @@ export default {
           alt:'Image of Down to folk',
           name: 'Goldie Lookin Chain',
           url: '/goldie-lookin-chain',
-          location: 'Sheffield',
+          location: 'hull',
           genres: ['Rock','Metal']
 
         },
@@ -93,7 +96,7 @@ export default {
           alt:'Image of Down to folk',
           name: 'Shawoddywoddy',
           url: '',
-          location: 'Sheffield',
+          location: 'glasgow',
           genres: ['Glam','Alternative', 'Funk']
 
         },
@@ -102,7 +105,7 @@ export default {
           alt:'Image of Down to folk',
           name: 'Down To Folk',
           url: '',
-          location: 'Sheffield',
+          location: 'sheffield',
           genres: ['Folk','Hip-Hop', 'Pop', 'Funk']
 
         }
@@ -113,7 +116,7 @@ export default {
           alt:'Image of Down to folk',
           name: 'Sheer Music',
           url: '',
-          location: 'Sheffield',
+          location: 'sheffield',
           genres: ['Folk','Hip-Hop', 'Pop', 'Rap', 'Country']
 
         },
@@ -122,7 +125,7 @@ export default {
           alt:'Image of Down to folk',
           name: 'Johnny Promoter',
           url: '',
-          location: 'Sheffield',
+          location: 'swansea',
           genres: ['Rock','Metal']
 
         },
@@ -131,7 +134,7 @@ export default {
           alt:'Image of Down to folk',
           name: 'Promotion ltd',
           url: '',
-          location: 'Sheffield',
+          location: 'hull',
           genres: ['Glam','Alternative', 'Funk']
 
         },
@@ -140,7 +143,7 @@ export default {
           alt:'Image of Down to folk',
           name: 'Gigs r us',
           url: '',
-          location: 'Sheffield',
+          location: 'sheffield',
           genres: ['Folk','Hip-Hop', 'Pop']
 
         }
@@ -165,8 +168,15 @@ export default {
       console.log(value)
       this.distanceDropdownValue = value
     },
-    enteredSearch(value){
-      this.searchValue = value;
+    enteredNameSearch(value){
+      this.searchNameValue = value;
+    },
+    enteredLocationSearch(value){
+      this.searchLocationValue = value;
+      this.currentLocationFilter = value.charAt(0).toUpperCase() + value.slice(1);
+      if(value === ''){
+        this.currentLocationFilter = this.defaultLocation
+      }
     }
   },
 
@@ -174,8 +184,16 @@ export default {
      alphabetisedBandResults(){
       let bandResults = this.bands
       
-      if(this.searchValue){
-        bandResults = bandResults.filter(m => m.name.toLowerCase().indexOf(this.searchValue) > -1);
+      if(this.searchNameValue){
+        bandResults = bandResults.filter(m => m.name.toLowerCase().indexOf(this.searchNameValue) > -1);
+      }
+
+      if(this.searchLocationValue === 'All Locations'){
+         bandResults = bandResults.filter(m => m.location.toLowerCase().indexOf('') > -1 );
+      }
+
+      if(this.searchLocationValue){
+        bandResults = bandResults.filter(m => m.location.toLowerCase().indexOf(this.searchLocationValue) > -1 );
       }
 
       if(this.genreDropdownValue && this.genreDropdownValue !== 'Any'){
@@ -197,8 +215,20 @@ export default {
     alphabetisedPromoterResults(){
       let promoterResults = this.promoters
       
-      if(this.searchValue){
-        promoterResults = promoterResults.filter(m => m.name.toLowerCase().indexOf(this.searchValue) > -1)
+      if(this.searchNameValue){
+        promoterResults = promoterResults.filter(m => m.name.toLowerCase().indexOf(this.searchNameValue) > -1)
+      }
+
+      if(this.currentLocationFilter === 'All Locations'){
+        promoterResults = promoterResults.filter(m => m.location.toLowerCase().indexOf('') > -1 );
+      }
+
+      if(this.searchLocationValue){
+        promoterResults = promoterResults.filter(m => m.location.toLowerCase().indexOf(this.searchLocationValue) > -1)
+      }
+
+      if(this.searchLocationValue){
+        promoterResults = promoterResults.filter(m => m.location.toLowerCase().indexOf(this.searchLocationValue) > -1)
       }
 
       if(this.genreDropdownValue && this.genreDropdownValue !== 'Any'){
@@ -372,6 +402,7 @@ export default {
     display: block;
     line-height: 1.5;
     margin-top: rem(-8);
+    text-transform: capitalize;
   }
 </style>
 

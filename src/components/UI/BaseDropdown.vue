@@ -10,7 +10,8 @@
     @change="onChange($event)" 
     :id="dropdownId" 
     aria-required="true" 
-    required>
+    required
+    :disabled="isDisabled">
     <slot name="options"></slot>
   </select>
 </div>
@@ -22,7 +23,8 @@
   <select 
     :value="modelValue" 
     @change="onChange($event)" 
-    :id="dropdownId">
+    :id="dropdownId"
+    :disabled="isDisabled">
     <slot name="options"></slot>
     </select>
 </div>
@@ -32,7 +34,7 @@
 <script>
 export default {
   emits:['changed'],
-  props: ['dropdownId', 'isRequired','modelValue'],
+  props: ['dropdownId', 'isRequired','modelValue', 'isDisabled'],
   methods: {
     onChange(event) {
       this.$emit('changed',event.target.value)
@@ -62,12 +64,14 @@ export default {
     background-position: 98% 15px;
     cursor: pointer;
     background-size: 20px;
+    color: $copy;
 
     ::-ms-expand {
       display: none; /* Hide the default arrow in Internet Explorer 10 and Internet Explorer 11 */
     }
 
     @media(min-width:$desktop){
+      background-position: 95% 15px;
       background-position-y:19px;
     }
   }
