@@ -28,6 +28,14 @@ const routes = [
     }
   },
   {
+    path: '/create-new-password',
+    name: 'CreateNewPassword',
+    component: () => import('../views/CreateNewPassword.vue'),
+    meta: {
+      title: 'Create New Password',
+    }
+  },
+  {
     path: '/discover',
     name: 'Discover',
     component: () => import('../views/Discover.vue'),

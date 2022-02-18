@@ -61,7 +61,8 @@ export default {
 
 <style lang="scss" scoped>
   main{
-    background-image: url("../assets/images/lokoda-bg-image.jpg");
+    //background-image: url("../assets/images/lokoda-bg-image.jpg");
+    background-image: url("https://res.cloudinary.com/dgddraffq/image/upload/f_auto,q_auto:best/v1645181564/lokoda-bg-image_ne2ls1.jpg");
     background-repeat: no-repeat;
     background-position: center; 
     background-size: cover;

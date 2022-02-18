@@ -1,15 +1,18 @@
 <template>
 <main>
     <img src="../assets/images/lokoda-logo-reverse.svg" alt="lokoda logo">
-    <h1>Password Reset</h1>
-    <p>Reset your password to get back on track.</p>
+    <h1>Create New Password</h1>
+    <p>Hopefully you remember it this time.</p>
 
     <form @submit.prevent="submitForm">
-      <base-input class="dark" inputId="email" inputType="email" v-model="email" :isRequired="false" >
-      <template #label>Email</template>
-      <template #helpertext>Enter the email used when registering.</template>
-      </base-input>
-      <base-button buttonType="submit" mode="cta cta--primary">Reset Password</base-button>
+      <password-input class="dark" inputId="createPassword" v-model="password" :isRequired="true" >
+        <template #label>Create Password</template>
+        <template #helpertext>Must be at least 8 characters long.</template>
+      </password-input>
+      <password-input class="dark" inputId="confirmPassword" v-model="confirmPassword" :isRequired="true" >
+        <template #label>Confirm Password</template>
+      </password-input>
+      <base-button buttonType="submit" mode="cta cta--primary">Confirm Password</base-button>
     </form>
     
     
@@ -17,16 +20,17 @@
 </main>
 </template>
 <script>
-import BaseInput from '../components/UI/BaseInput.vue';
+import PasswordInput from '../components/UI/PasswordInput.vue';
 import BaseButton from '../components/UI/BaseButton.vue';
 export default {
   components: {
-    BaseInput,
+    PasswordInput,
     BaseButton
   },
   data(){
     return{
-      email:'',
+      password:'',
+      confirmPassword: ''
     }
   },
   methods: {
