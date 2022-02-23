@@ -39,6 +39,12 @@ export default {
     &--profile:before{
       content: '\f007';
     }
+
+    &--chat:before{
+      content: '\f075';
+    }
+
+    
   }
 
   dialog .text-icon-link{

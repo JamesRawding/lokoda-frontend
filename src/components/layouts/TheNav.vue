@@ -3,8 +3,8 @@
     <div v-if="loggedIn">
       <router-link class="header-link header-link--profile" to="/profile"><span class="sr-only">user profile</span></router-link>
       <router-link class="header-link header-link--discover" to="/discover"><span class="header-link__text">Discover</span></router-link>
-      <router-link v-if="messageCount < 1" class="header-link header-link--messages" to="/messages"><span class="header-link__text">Messages</span></router-link>
-      <router-link v-else class="header-link header-link--message" to="/messages"><span class="header-link__message-count">{{messageCount}}</span><span class="header-link__text">Messages</span></router-link>
+      <router-link v-if="unreadMessageCount < 1" class="header-link header-link--messages" to="/messages"><span class="header-link__text">Messages</span></router-link>
+      <router-link v-else class="header-link header-link--message" to="/messages"><span class="header-link__message-count">{{unreadMessageCount}}</span><span class="header-link__text">Messages</span></router-link>
     </div>
     <div v-else>
       <router-link class="header-link header-link--home" to="/">log in</router-link>
@@ -20,7 +20,7 @@ export default {
   props:['loggedIn'],
   data(){
     return {
-      messageCount: 0
+      unreadMessageCount: 0
     }
   },
 }

@@ -23,6 +23,10 @@ export default {
       @include cta--secondary; 
     }
 
+     &--secondary-reverse{
+      @include cta--secondary-reverse; 
+    }
+
     &--warning{
       @include cta--warning; 
     }

@@ -315,8 +315,10 @@ export default {
     NewMessageInput,
     BaseDialog
   },
+  props:['profileID'],
   data(){
     return{
+      messagesUnread: 0,
       searchMessageValue: '',
       searchContactValue: '',
       messagesListVisible: true,
@@ -409,6 +411,7 @@ export default {
           latestMessageDate: '3rd Oct',
           latestMessageTimestamp: 1641556236655,
           messageActive: false,
+          messageRead: true
         },
         {
           messageID: 'bros',
@@ -445,6 +448,7 @@ export default {
           latestMessageDate: '4th Oct',
           latestMessageTimestamp: 1641556236635,
           messageActive: false,
+          messageRead: false,
         },
         {
           messageID: 'bon-jovi-shawoddywoddy',
@@ -505,6 +509,7 @@ export default {
           latestMessageDate: '4th Oct',
           latestMessageTimestamp: 1641556236615,
           messageActive: false,
+          messageRead: false,
         }
       ],
     }
@@ -527,6 +532,10 @@ export default {
       this.cancelActiveMessage();
       const chosenMessage = this.messages.find(message => message.messageID === val);
       chosenMessage.messageActive = true;
+      if(chosenMessage.messageRead == false){
+        chosenMessage.messageRead = true;
+        this.messagesUnread -=1;
+      }
       this.messagesSelected = true;
       this.messagesListVisible = true;
       this.groupContactsListVisible = false;
@@ -929,6 +938,20 @@ export default {
       const container = this.$el.querySelector(".active-messages__messages-list");
       container.scrollTop = container.scrollHeight;
     }
+    console.log('messages unread ' + this.messagesUnread)
+  },
+  mounted(){
+    if(this.profileID){
+      console.log(this.profileID)
+    }
+
+    for (let i = 0; i < this.messages.length; i++) {
+      if(this.messages[i].messageRead == false){
+        this.messagesUnread += 1;
+      } 
+    }
+
+    console.log('messages unread ' + this.messagesUnread)
   }
 }
 </script>

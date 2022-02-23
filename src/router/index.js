@@ -46,6 +46,7 @@ const routes = [
   {
     path: '/messages',
     name: 'Messages',
+    props: true,
     component: () => import('../views/Messages.vue'),
     meta: {
       title: 'Messages',
@@ -60,7 +61,7 @@ const routes = [
     }
   },
   {
-    path: '/:profileURL',
+    path: '/profile/:profileURL',
     name: 'Profile',
     component: () => import('../views/Profile.vue'),
     meta: {
@@ -68,10 +69,22 @@ const routes = [
     }
   },
   {
-    path: '/design-system',
-    name: 'DesignSystem',
-    component: () => import('../views/DesignSystem.vue')
+    path: '/404',
+    name: '404',
+    component: () => import('../views/404.vue'),
+    meta: {
+      title: 'Page Not Found',
+    }
   },
+  {
+    path: '/:notFound(.*)',
+    redirect: '/404',
+  },
+  // {
+  //   path: '/design-system',
+  //   name: 'DesignSystem',
+  //   component: () => import('../views/DesignSystem.vue')
+  // },
 ]
 
 

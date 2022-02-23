@@ -2,7 +2,9 @@
   <main>
     <div class="grid-parent">
       <div class="form-column">
-        <img src="../assets/images/lokoda-logo-reverse.svg" alt="lokoda logo">
+        <!-- <img src="../assets/images/lokoda-logo-reverse.svg" alt="lokoda logo"> -->
+        <img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo-reverse_bjnnfx.svg" alt="lokoda logo">
+
         <h1>Register Now</h1>
         <p>Create an account today. Already a user? <router-link to="/">Log in here</router-link></p>
         <form @submit.prevent="submitForm">
@@ -55,7 +57,9 @@
         <p>
           KEEPING LOCAL MUSIC ALIVE
         </p>
-        <img src="../assets/images/lokoda-logo-reverse.svg" alt="lokoda logo">
+        <!-- <img src="../assets/images/lokoda-logo-reverse.svg" alt="lokoda logo"> -->
+        <img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo-reverse_bjnnfx.svg" alt="lokoda logo">
+
       </div>
     </div>
   </main>

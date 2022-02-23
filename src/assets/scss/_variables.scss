@@ -175,6 +175,21 @@ $spacing-xl: rem(128);
   }
 }
 
+@mixin cta--secondary-reverse{
+  border-color: #fff;
+  background-color: transparent;
+  color:#fff;
+
+  @media(min-width:$desktop){
+    &:hover,
+    &:focus{
+      border-color: #fff;
+      background-color: #fff;
+      color:$dark-green;
+    }
+  }
+}
+
 @mixin cta--warning{
   border-color: $rag-red;
   background-color: $rag-red;

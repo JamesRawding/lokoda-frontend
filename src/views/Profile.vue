@@ -5,9 +5,9 @@
       <div class="hero-section__image-block">
         <div class="hero-section__image-container" v-if="profileImageURL">
           <img src="../assets/images/dummy-hero-img.jpg" :alt="profileName + ' profile image'">
-          <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Hero Image')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit image"></base-icon-button>
+          <base-icon-button v-if="loggedIn && userID == profileID" @click="displaySettingsDialog('Hero Image')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit image"></base-icon-button>
         </div>
-        <div v-else-if="loggedIn">
+        <div v-else-if="loggedIn && userID == profileID">
           <base-text-icon-button @click="displaySettingsDialog('Hero Image')" mode="text-icon-button text-icon-button--plus">Add Image</base-text-icon-button>
         </div>
         <base-dialog mode="modal-dialog" v-if="heroDialogVisible"  @closeDialog="hideSettingsDialog('Hero Image')">
@@ -33,9 +33,9 @@
           <base-pill v-for="genre in profileGenres" :key="genre + profileName">
             {{genre}}
           </base-pill>
-          <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Genres')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit genres"></base-icon-button>
+          <base-icon-button v-if="loggedIn && userID == profileID" @click="displaySettingsDialog('Genres')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit genres"></base-icon-button>
         </div>
-        <div class="hero-section__genres" v-else-if="loggedIn">
+        <div class="hero-section__genres" v-else-if="loggedIn && userID == profileID">
           <base-text-icon-button  @click="displaySettingsDialog('Genres')" mode="text-icon-button text-icon-button--plus">Add Genres</base-text-icon-button>
         </div>
         <base-dialog mode="modal-dialog" v-if="genresDialogVisible"  @closeDialog="hideSettingsDialog('Genres')">
@@ -45,6 +45,10 @@
           </base-pill-button>
           <base-button @click="hideSettingsDialog('Genres')" buttonType="button" mode="cta cta--primary">Save</base-button>
         </base-dialog>
+
+        <router-link v-if="loggedIn && userID != profileID" class="cta-secondary-reverse" :to="{name:'Messages', params: {profileID} }">Get In Touch</router-link>
+        <a v-if="!loggedIn" class="fallback-mailto" :href="'mailto:'+ profileEmail">Get In Touch</a>
+
       </div> 
     </section>
 
@@ -52,9 +56,9 @@
 
       <section class="player-embed-block" v-if="profilePlayerEmbed">
         <h2>there is a player</h2>
-        <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Embed Player')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit music player embed"></base-icon-button>
+        <base-icon-button v-if="loggedIn && userID == profileID" @click="displaySettingsDialog('Embed Player')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit music player embed"></base-icon-button>
       </section>
-      <div class="add-player-embed" v-else-if="loggedIn">
+      <div class="add-player-embed" v-else-if="loggedIn && userID == profileID">
         <base-text-icon-button @click="displaySettingsDialog('Embed Player')" mode="text-icon-button text-icon-button--plus">Embed Music Player</base-text-icon-button>
         <span>e.g. Spotify, Soundcloud, Bandcamp etc</span>
       </div>
@@ -68,7 +72,7 @@
 
       <section class="upcoming-shows" v-if="profileShows.length">
         <h2>Upcoming Shows</h2>
-        <base-icon-button v-if="loggedIn" @click="displaySettingsDialog('Manage Shows')" buttonType="button" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit shows"></base-icon-button>
+        <base-icon-button v-if="loggedIn && userID == profileID" @click="displaySettingsDialog('Manage Shows')" buttonType="button" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit shows"></base-icon-button>
         <show-card @editThisShow="editShow(show)" @deleteThisShow="deleteShow(show)" v-for="show in profileShowsResults" :key="show" :loggedIn=this.loggedIn>
           <template #month>{{show.showMonth}}</template>
           <template #day>{{show.showDay}}</template>
@@ -79,7 +83,7 @@
         <base-text-icon-button v-if="profileShows.length > 3" @click="toggleShowListings" mode="text-icon-button text-icon-button--list" buttonType="button"> <span v-if="fullListingVisible">Hide Full Listing</span><span v-else>View Full Listing</span></base-text-icon-button>
 
       </section>
-      <div class="add-upcoming-shows" v-else-if="loggedIn">
+      <div class="add-upcoming-shows" v-else-if="loggedIn && userID == profileID">
         <base-text-icon-button @click="displaySettingsDialog('Manage Shows')" buttonType="button" mode="text-icon-button text-icon-button--plus">Add and edit shows</base-text-icon-button>
       </div>
 
@@ -176,6 +180,7 @@
 import vClickOutside from 'click-outside-vue3'
 import TheHeader from '../components/layouts/TheHeader.vue';
 import BaseTextIconButton from '../components/UI/BaseTextIconButton.vue';
+// import BaseTextIconLink from '../components/UI/BaseTextIconLink.vue';
 import BaseDialog from '../components/UI/BaseDialog.vue';
 import ChooseFileButton from '../components/UI/ChooseFileButton.vue';
 import BaseButton from '../components/UI/BaseButton.vue';
@@ -188,6 +193,7 @@ export default {
   components:{
     TheHeader,
     BaseTextIconButton,
+    // BaseTextIconLink,
     BaseDialog,
     ChooseFileButton,
     BaseButton,
@@ -200,8 +206,11 @@ export default {
   data() {
     return{
       loggedIn: true,
+      userID: 'not-down-to-folk',
+      profileID: '',
       profileName: '',
       profileLocation: '',
+      profileContactDetails:[],
       profileImageURL: true,
       profileGenres: [],
       profileShows: [],
@@ -501,6 +510,7 @@ export default {
     
     const url = this.$route.params.profileURL;
     const selectedUser = this.profiles.find(profile => profile.profileURL === url);
+    this.profileID = selectedUser.profileURL;
     this.profileName = selectedUser.profileName;
     //this.profileImageURL = selectedUser.profileImageURL;
     this.profileGenres = selectedUser.profileGenres;
@@ -590,6 +600,50 @@ export default {
       .text-icon-button{
         color: #fff;
       }
+    }
+
+    .cta-secondary-reverse{
+      text-decoration: none;
+      margin-top:$spacing-m;
+      @include cta;
+      @include cta--secondary-reverse;
+
+      @media(min-width:$desktop){
+        align-self: flex-start;
+      }
+    }
+  }
+
+  .fallback-mailto{
+    color:#fff;
+    position: relative;
+    padding-left: rem(33);
+
+    @media(min-width:$desktop){
+      padding-left: rem(41);
+    }
+
+    &:before{
+      position: absolute;
+      font-family: "Font Awesome 5 Pro";
+      font-weight: 300;
+      margin-right: $spacing-xs;
+      width: rem(25);
+      text-align: center;
+      content:'\f0e0';
+      text-decoration: underline;
+      left: 0;
+      top: rem(3);
+      
+
+      @media(min-width:$desktop){
+        margin-right: $spacing-s;
+        top: rem(2);
+      }
+    }
+
+    &:before{
+      text-decoration: none;
     }
   }
 

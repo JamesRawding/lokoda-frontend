@@ -1,6 +1,7 @@
 <template>
 <main>
-    <img src="../assets/images/lokoda-logo-reverse.svg" alt="lokoda logo">
+    <!-- <img src="../assets/images/lokoda-logo-reverse.svg" alt="lokoda logo"> -->
+    <img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo-reverse_bjnnfx.svg" alt="lokoda logo">
     <h1>Log In</h1>
     <p>Welcome back</p>
 

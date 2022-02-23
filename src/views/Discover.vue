@@ -15,7 +15,8 @@
       <div class="grid-parent">
         <base-card v-for="band in alphabetisedBandResults" :key="band">
           <img :src=band.image :alt=band.alt>
-          <a :href=band.url> <h3>{{band.name}}</h3></a>
+          <!-- <a :href=band.url> <h3>{{band.name}}</h3></a> -->
+          <router-link :to="'/profile' + band.url"><h3>{{band.name}}</h3></router-link>
           <span class="location">{{band.location}}</span>
           <base-pill v-for="genre in band.genres" :key="genre + band.name">
             {{genre}}
@@ -31,7 +32,8 @@
       <div class="grid-parent">
         <base-card v-for="promoter in alphabetisedPromoterResults" :key='promoter'>
           <img :src=promoter.image :alt=promoter.alt>
-          <a :href=promoter.url> <h3>{{promoter.name}}</h3></a>
+          <!-- <a :href=promoter.url> <h3>{{promoter.name}}</h3></a> -->
+          <router-link :to="'/profile' + promoter.url"><h3>{{promoter.name}}</h3></router-link>
           <span class="location">{{promoter.location}}</span>
           <base-pill v-for="genre in promoter.genres" :key="genre + promoter.name">
             {{genre}}
