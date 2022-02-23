@@ -230,7 +230,8 @@ export default {
           profileLocation: 'Hull'
         }
       ],
-      allGenres:['Alternative', 'Blues', 'Classic Rock', 'Country', 'Emo', 'Folk', 'Grime','Grunge', 'Hardcore', 'Hip Hop', 'Metal', 'Pop'],
+      allGenres:['Alternative','Blues','Classical','Country','Electronic','Folk','Funk',
+              'Hip-Hop','Indie','Jazz','Latin','Metal','Pop','R&B','Reggae','Rock','Soul'],
       heroDialogVisible: false,
       genresDialogVisible: false,
       embedDialogVisible: false,

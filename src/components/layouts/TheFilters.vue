@@ -44,7 +44,8 @@ export default {
   emits:['changedGenre', 'changedDistance', 'changedNameSearch', 'changedLocationSearch'],
   data(){
     return{
-      genres:['Any', 'Alternative','Folk', 'Funk', 'Rock', 'Punk'],
+      genres:['Any', 'Alternative','Blues','Classical','Country','Electronic','Folk','Funk',
+              'Hip-Hop','Indie','Jazz','Latin','Metal','Pop','R&B','Reggae','Rock','Soul'],
       genreDropdown: 'Any',
       distances:['0 - 15', '15 - 20', '20 - 30', '30 - 40'],
       distanceDropdown: '0 - 15',
