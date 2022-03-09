@@ -27,9 +27,9 @@ export default {
       width: rem(25);
       text-align: center;
 
-      @media(min-width:$desktop){
-        margin-right: $spacing-s;
-      }
+      // @media(min-width:$desktop){
+      //   margin-right: $spacing-s;
+      // }
     }
 
     &--account:before{

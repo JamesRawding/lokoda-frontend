@@ -15,8 +15,8 @@
           <strong>Name</strong><span>{{currentName}}</span>
           <strong>Location</strong> <span>{{currentLocation}}</span>
         </div>
-        <transition name="fade" mode="out-in">
-          <div>
+        
+          <transition>
             <base-dialog v-if="photoDialogVisible"  @closeDialog="hideSettingsDialog('Profile Picture')">
               <div class="profile-pic">
                 <img src="../assets/images/dummy-profile-pic.jpg" alt="profile image">
@@ -30,6 +30,8 @@
                 <base-button buttonType="submit" mode="cta cta--primary">Save</base-button>
               </form>
             </base-dialog>
+            </transition>
+            <transition>
             <base-dialog v-if="passwordDialogVisible"  @closeDialog="hideSettingsDialog('Manage Password')">
               <strong>Manage Password</strong>
               <form @submit.prevent="submitForm">
@@ -45,6 +47,8 @@
                 <base-button buttonType="submit" mode="cta cta--primary">Save</base-button>
               </form>
             </base-dialog>
+            </transition>
+            <transition>
             <base-dialog v-if="locationDialogVisible"  @closeDialog="hideSettingsDialog('Change Location')">
               <strong>Change Location</strong>
               <form @submit.prevent="submitLocation">
@@ -54,6 +58,8 @@
                 <base-button buttonType="submit" mode="cta cta--primary">Save</base-button>
               </form>
             </base-dialog>
+            </transition>
+            <transition>
             <base-dialog v-if="nameDialogVisible"  @closeDialog="hideSettingsDialog('Change Name')">
               <strong>Change Name</strong>
               <form @submit.prevent="submitName">
@@ -63,6 +69,8 @@
                 <base-button buttonType="submit" mode="cta cta--primary">Save</base-button>
               </form>
             </base-dialog>
+            </transition>
+            <transition>
             <base-dialog mode="modal-dialog modal-dialog--warning" v-if="deleteAccountDialogVisible"  @closeDialog="hideSettingsDialog('Delete Account')">
               <strong>Delete Account</strong>
               <p>Are you sure? This cant be undone!</p>
@@ -71,6 +79,8 @@
                 <base-button @click="displaySettingsDialog('Confirm Delete')" buttonType="button" mode="cta cta--warning">Delete</base-button>
               </div>
             </base-dialog>
+            </transition>
+            
             <base-dialog mode="modal-dialog modal-dialog--warning" v-if="confirmDeleteAccountDialogVisible"  @closeDialog="hideSettingsDialog('Confirm Delete')">
               <strong>Are you sure?</strong>
               <p>Last chance, no turning back...</p>
@@ -79,8 +89,9 @@
                   <base-button @click="displaySettingsDialog('Confirm Delete')" buttonType="button" mode="cta cta--warning">Delete</base-button>
                 </div>
             </base-dialog>
-          </div>
-        </transition>
+          
+          
+       
       </div>
       <div class="sidebar-nav">
         <base-text-icon-button @click="displaySettingsDialog('Profile Picture')" mode="text-icon-button text-icon-button--photo" :class="{'text-icon-button--active': photoDialogVisible}" buttonType="button">Edit Profile Picture</base-text-icon-button>

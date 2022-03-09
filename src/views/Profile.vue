@@ -10,6 +10,7 @@
         <div v-else-if="loggedIn && userID == profileID">
           <base-text-icon-button @click="displaySettingsDialog('Hero Image')" mode="text-icon-button text-icon-button--plus">Add Image</base-text-icon-button>
         </div>
+        <transition>
         <base-dialog mode="modal-dialog" v-if="heroDialogVisible"  @closeDialog="hideSettingsDialog('Hero Image')">
           <strong>Select Image</strong>
           <div v-if="profileImageURL" class="hero-image-thumb">
@@ -23,6 +24,7 @@
             <base-button buttonType="submit" mode="cta cta--primary">Save</base-button>
           </form>
         </base-dialog>
+        </transition>
       </div>
 
       <div class="hero-section__details">
@@ -38,6 +40,7 @@
         <div class="hero-section__genres" v-else-if="loggedIn && userID == profileID">
           <base-text-icon-button  @click="displaySettingsDialog('Genres')" mode="text-icon-button text-icon-button--plus">Add Genres</base-text-icon-button>
         </div>
+        <transition>
         <base-dialog mode="modal-dialog" v-if="genresDialogVisible"  @closeDialog="hideSettingsDialog('Genres')">
           <strong class="display-block">Select Genres</strong>
           <base-pill-button buttonType="button" @click="selectGenres(genre)" :class="{'pill-button--selected': this.profileGenres.includes(genre)}" mode="pill-button pill-button--default" v-for="genre in allGenres" :key="genre">
@@ -45,6 +48,7 @@
           </base-pill-button>
           <base-button @click="hideSettingsDialog('Genres')" buttonType="button" mode="cta cta--primary">Save</base-button>
         </base-dialog>
+        </transition>
 
         <router-link v-if="loggedIn && userID != profileID" class="cta-secondary-reverse" :to="{name:'Messages', params: {profileID} }">Get In Touch</router-link>
         <a v-if="!loggedIn" class="fallback-mailto" :href="'mailto:'+ profileEmail">Get In Touch</a>
@@ -62,6 +66,7 @@
         <base-text-icon-button @click="displaySettingsDialog('Embed Player')" mode="text-icon-button text-icon-button--plus">Embed Music Player</base-text-icon-button>
         <span>e.g. Spotify, Soundcloud, Bandcamp etc</span>
       </div>
+      <transition>
       <base-dialog mode="modal-dialog" v-if="embedDialogVisible"  @closeDialog="hideSettingsDialog('Embed Player')">
         <base-input inputId="playerEmbed" inputType="text" v-model="profilePlayerEmbed" :isRequired="false" >
           <template #label>Embed Music Player</template>
@@ -69,7 +74,7 @@
         </base-input>
         <base-button @click="hideSettingsDialog('Embed Player')" buttonType="button" mode="cta cta--primary">Save</base-button>
       </base-dialog>
-
+      </transition>
       <section class="upcoming-shows" v-if="profileShows.length">
         <h2>Upcoming Shows</h2>
         <base-icon-button v-if="loggedIn && userID == profileID" @click="displaySettingsDialog('Manage Shows')" buttonType="button" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit shows"></base-icon-button>
@@ -88,7 +93,7 @@
       </div>
 
 
-
+      <transition>
       <base-dialog mode="modal-dialog" v-if="showsDialogVisible"  @closeDialog="hideSettingsDialog('Manage Shows')">
         <strong>Manage Shows</strong>
         <base-text-icon-button @click="displaySettingsDialog('Add Show')" mode="text-icon-button text-icon-button--plus" buttonType="button">Add Show</base-text-icon-button>
@@ -105,7 +110,8 @@
 
         <base-button @click="hideSettingsDialog('Manage Shows')" buttonType="button" mode="cta cta--primary">Save</base-button>
       </base-dialog>
-
+      </transition>
+      <transition>
       <base-dialog mode="modal-dialog modal-dialog--add-show" v-if="addShowDialogVisible"  @closeDialog="hideSettingsDialog('Add Show')">
         <strong>Enter Show Details</strong>
         <form @submit.prevent="submitShowForm">
@@ -133,7 +139,8 @@
           <base-button buttonType="submit" mode="cta cta--primary">Save Show</base-button>
         </form>
       </base-dialog>
-
+      </transition>
+      <transition>
       <base-dialog mode="modal-dialog modal-dialog--add-show" v-if="editShowDialogVisible"  @closeDialog="hideSettingsDialog('Edit Show')">
         <strong>Edit Show Details</strong>
         <form @submit.prevent="submitEditShowForm">
@@ -161,7 +168,8 @@
           <base-button buttonType="submit" mode="cta cta--primary">Save Show</base-button>
         </form>
       </base-dialog>
-
+      </transition>
+      <transition>
       <base-dialog mode="modal-dialog modal-dialog--warning modal-dialog--delete-show" v-if="deleteShowDialogVisible"  @closeDialog="hideSettingsDialog('Delete Show')">
         <strong>Are you sure you want to delete this show?</strong>
         <p><span class="display-block">{{selectedShow.showVenue}}</span>
@@ -171,6 +179,7 @@
           <base-button @click="confirmDeleteShow" buttonType="button" mode="cta cta--warning">Delete</base-button>
         </div>
       </base-dialog>
+      </transition>
     </div>
 
   </main>
@@ -206,7 +215,7 @@ export default {
   data() {
     return{
       loggedIn: true,
-      userID: 'not-down-to-folk',
+      userID: 'down-to-folk',
       profileID: '',
       profileName: '',
       profileLocation: '',

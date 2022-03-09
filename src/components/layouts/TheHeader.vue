@@ -16,7 +16,7 @@
     </div>
 
     
-    <transition name="fade" mode="out-in">
+    <transition>
       <base-dialog  @closeDialog="hideProfileDialog" v-if="isProfileDialogDisplayed">
         <strong>Profile Options</strong>
         <base-text-icon-link mode="text-icon-link text-icon-link--profile" path="/profile">View Profile</base-text-icon-link>
@@ -24,9 +24,7 @@
         <base-text-icon-button mode="text-icon-button text-icon-button--qr">Print QR Code</base-text-icon-button>
         <base-text-icon-button @click="logout" mode="text-icon-button text-icon-button--logout">Log Out</base-text-icon-button>
       </base-dialog>
-    </transition>
-    
-    
+    </transition>    
   </header>
 </template>
 

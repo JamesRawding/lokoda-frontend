@@ -9,10 +9,12 @@
           <div class="messages-header__button-container">
             <base-text-icon-button @click="showContacts" mode="text-icon-button text-icon-button--new-message" aria-label="new message"><span class="sr-text">New</span></base-text-icon-button>
             <base-text-icon-button @click="showMessagesOptions" mode="text-icon-button text-icon-button--ellipsis" aria-label="manage messages"><span class="sr-text">Manage</span></base-text-icon-button>
+            <transition>
             <base-dialog  @closeDialog="hideMessagesOptions" v-if="isMessagesOptionsDisplayed">
               <strong>Message Options</strong>
               <base-text-icon-button @click="selectMessagesToDelete" mode="text-icon-button text-icon-button--trash">Delete Messages</base-text-icon-button>
             </base-dialog>
+            </transition>
           </div>
         </div>
         <search-bar @searched="searchMessages" v-if="messages.length > 0" searchId="searchMessages" ariaLabel="search messages" searchPlaceholder="Search Messages"></search-bar>
@@ -67,15 +69,7 @@
         </div>
       </section>
 
-      <div class="delete-messages-count" v-if="messagesToDelete">
-        <span>{{deleteMessagesCount}} message<span v-if="deleteMessagesIDs.length > 1">s</span> selected</span>
-        <ul class="delete-messages-count__list">
-          <li class="delete-messages-count__list-item" v-for="message in deleteMessagesIDs" :key="message.messageID">
-            <img src="../assets/images/dummy-profile-pic.jpg" alt="">
-          </li>
-        </ul>
-        <base-button v-if="deleteMessagesIDs.length >= 1" @click="deleteSelectedMessages"  role="button" mode="cta cta--primary">Delete Message<span v-if="deleteMessagesIDs.length > 1">s</span></base-button>
-      </div>
+      
 
 
       <section v-else-if="contactsListVisible">
@@ -85,11 +79,13 @@
           <div class="messages-header__button-container">
             <base-text-icon-button @click="showMessageList" mode="text-icon-button text-icon-button--back">Messages</base-text-icon-button>
             <base-text-icon-button @click="showContactsOptions" mode="text-icon-button text-icon-button--ellipsis" aria-label="manage contacts"><span class="sr-text">Manage</span></base-text-icon-button>
+            <transition>
             <base-dialog  @closeDialog="hideContactsOptions" v-if="isContactsOptionsDisplayed">
               <strong>Contacts Options</strong>
               <base-text-icon-button @click="selectContactsToBlock" mode="text-icon-button text-icon-button--block">Block Contacts</base-text-icon-button>
               <base-text-icon-button @click="selectContactsToDelete" mode="text-icon-button text-icon-button--trash">Delete Contacts</base-text-icon-button>
             </base-dialog>
+            </transition>
           </div>
           
         </div>
@@ -162,25 +158,7 @@
         </div>
       </section>
 
-      <div class="block-contacts-count" v-if="contactsToBlock">
-        <span>{{blockContactsCount}} contact<span v-if="blockContactsIDs.length > 1">s</span> selected</span>
-        <ul class="block-contacts-count__list">
-          <li class="block-contacts-count__list-item" v-for="contact in blockContactsIDs" :key="contact.contactID">
-            <img src="../assets/images/dummy-profile-pic.jpg" alt="">
-          </li>
-        </ul>
-        <base-button @click="blockSelectedContacts" v-if="blockContactsIDs.length >= 1"   role="button" mode="cta cta--primary">Block Contact<span v-if="blockContactsIDs.length > 1">s</span></base-button>
-      </div>
-
-      <div class="delete-contacts-count" v-if="contactsToDelete">
-        <span>{{deleteContactsCount}} contact<span v-if="deleteContactsIDs.length > 1">s</span> selected</span>
-        <ul class="delete-contacts-count__list">
-          <li class="delete-contacts-count__list-item" v-for="contact in deleteContactsIDs" :key="contact.contactID">
-            <img src="../assets/images/dummy-profile-pic.jpg" alt="">
-          </li>
-        </ul>
-        <base-button @click="deleteSelectedContacts" v-if="deleteContactsIDs.length >= 1"   role="button" mode="cta cta--primary">Delete Contact<span v-if="deleteContactsIDs.length > 1">s</span></base-button>
-      </div>
+      
 
       <section v-else-if="groupContactsListVisible">
         <div class="messages-header">
@@ -222,6 +200,39 @@
         </div>
       </section>
 
+      
+
+
+      <div class="delete-messages-count" v-if="messagesToDelete">
+        <span>{{deleteMessagesCount}} message<span v-if="deleteMessagesIDs.length > 1">s</span> selected</span>
+        <ul class="delete-messages-count__list">
+          <li class="delete-messages-count__list-item" v-for="message in deleteMessagesIDs" :key="message.messageID">
+            <img src="../assets/images/dummy-profile-pic.jpg" alt="">
+          </li>
+        </ul>
+        <base-button v-if="deleteMessagesIDs.length >= 1" @click="deleteSelectedMessages"  role="button" mode="cta cta--primary">Delete Message<span v-if="deleteMessagesIDs.length > 1">s</span></base-button>
+      </div>
+
+      <div class="block-contacts-count" v-if="contactsToBlock">
+        <span>{{blockContactsCount}} contact<span v-if="blockContactsIDs.length > 1">s</span> selected</span>
+        <ul class="block-contacts-count__list">
+          <li class="block-contacts-count__list-item" v-for="contact in blockContactsIDs" :key="contact.contactID">
+            <img src="../assets/images/dummy-profile-pic.jpg" alt="">
+          </li>
+        </ul>
+        <base-button @click="blockSelectedContacts" v-if="blockContactsIDs.length >= 1"   role="button" mode="cta cta--primary">Block Contact<span v-if="blockContactsIDs.length > 1">s</span></base-button>
+      </div>
+
+      <div class="delete-contacts-count" v-if="contactsToDelete">
+        <span>{{deleteContactsCount}} contact<span v-if="deleteContactsIDs.length > 1">s</span> selected</span>
+        <ul class="delete-contacts-count__list">
+          <li class="delete-contacts-count__list-item" v-for="contact in deleteContactsIDs" :key="contact.contactID">
+            <img src="../assets/images/dummy-profile-pic.jpg" alt="">
+          </li>
+        </ul>
+        <base-button @click="deleteSelectedContacts" v-if="deleteContactsIDs.length >= 1"   role="button" mode="cta cta--primary">Delete Contact<span v-if="deleteContactsIDs.length > 1">s</span></base-button>
+      </div>
+
       <div class="group-chat-start" v-if="groupChatContacts.length > 0">
         <span v-if="groupChatContacts.length === 1">{{groupChatCount}} contact selected</span>
         <span v-else>{{groupChatCount}} contacts selected</span>
@@ -244,7 +255,7 @@
         </div>
       </section>
 
-
+      
       <section v-if="newMessage" class="active-messages active-messages--new">
         <div class="active-messages__header">
           <base-button @click="cancelMessage" buttonType="button" mode="active-messages__cancel-btn">Cancel <span class="sr-only">new message</span></base-button>
@@ -272,12 +283,14 @@
           <base-icon-button @click="manageActiveMessage" buttonType="button" mode="icon-button icon-button--ellipsis" ariaLabel="more options"></base-icon-button>
           
         </div>
+        <transition>
         <base-dialog  @closeDialog="hideActiveMessageOptions" v-if="isActiveMessageOptionsDisplayed">
           <strong>Message Options</strong>
           <base-text-icon-button v-if="messageRecipientNames.length > 1" @click="leaveGroup" mode="text-icon-button text-icon-button--logout">Leave Group</base-text-icon-button>
           <base-text-icon-button v-else @click="blockSender" mode="text-icon-button text-icon-button--block">Block Sender</base-text-icon-button>
           <base-text-icon-button @click="deleteActiveMessage" mode="text-icon-button text-icon-button--trash">Delete Message</base-text-icon-button>
         </base-dialog>
+        </transition>
         <ul class="active-messages__messages-list">
           <li 
             v-for="messages in activeMessages" :key="messages.messageTime + messages.messageDate" 

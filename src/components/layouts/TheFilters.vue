@@ -1,5 +1,5 @@
 <template>
-  <base-text-icon-button @click="filtersVisible = !filtersVisible" buttonType="button" mode="text-icon-button text-icon-button--filter">Filter</base-text-icon-button>
+  <base-text-icon-button @click="filtersVisible = !filtersVisible" buttonType="button" mode="text-icon-button text-icon-button--filter"><span v-if="filtersVisible">Close filter</span><span v-else>Filter</span></base-text-icon-button>
   <div :class="{'filters-container--active' : filtersVisible}" class="filters-container">
     <search-bar @searched="searchLocationValue" searchId="locationSearch" searchPlaceholder="e.g Sheffield, S10">
       <template #label>Search by location</template>
@@ -102,7 +102,7 @@ export default {
 
     &--active{
       box-shadow: $box-shadow;
-      height: 442px;
+      height: 530px;
       padding:$spacing-s
     }
 

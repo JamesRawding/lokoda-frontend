@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-//import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 
 const routes = [
@@ -87,12 +86,16 @@ const routes = [
   // },
 ]
 
-
-
-
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
+  routes,
+  // scrollBehavior(_, _2, savedPosition){
+  //   //console.log(to, from, savedPosition)
+  //   if(savedPosition){
+  //     return savedPosition
+  //   }
+  //   return {left: 0, top:0}
+  // }
 })
 
 router.afterEach((to) => {

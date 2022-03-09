@@ -33,6 +33,7 @@ export default {
     background-color: $copy;
     color: #fff;
     text-align: center;
+    max-width: none;
   }
 
   h1{
