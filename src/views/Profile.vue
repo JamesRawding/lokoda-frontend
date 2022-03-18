@@ -5,9 +5,9 @@
       <div class="hero-section__image-block">
         <div class="hero-section__image-container" v-if="profileImageURL">
           <img src="../assets/images/dummy-hero-img.jpg" :alt="profileName + ' profile image'">
-          <base-icon-button v-if="loggedIn && userID == profileID" @click="displaySettingsDialog('Hero Image')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit image"></base-icon-button>
+          <base-icon-button v-if="$store.state.loggedIn && userID == profileID" @click="displaySettingsDialog('Hero Image')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit image"></base-icon-button>
         </div>
-        <div v-else-if="loggedIn && userID == profileID">
+        <div v-else-if="$store.state.loggedIn && userID == profileID">
           <base-text-icon-button @click="displaySettingsDialog('Hero Image')" mode="text-icon-button text-icon-button--plus">Add Image</base-text-icon-button>
         </div>
         <transition>
@@ -35,9 +35,9 @@
           <base-pill v-for="genre in profileGenres" :key="genre + profileName">
             {{genre}}
           </base-pill>
-          <base-icon-button v-if="loggedIn && userID == profileID" @click="displaySettingsDialog('Genres')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit genres"></base-icon-button>
+          <base-icon-button v-if="$store.state.loggedIn && userID == profileID" @click="displaySettingsDialog('Genres')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit genres"></base-icon-button>
         </div>
-        <div class="hero-section__genres" v-else-if="loggedIn && userID == profileID">
+        <div class="hero-section__genres" v-else-if="$store.state.loggedIn && userID == profileID">
           <base-text-icon-button  @click="displaySettingsDialog('Genres')" mode="text-icon-button text-icon-button--plus">Add Genres</base-text-icon-button>
         </div>
         <transition>
@@ -50,8 +50,8 @@
         </base-dialog>
         </transition>
 
-        <router-link v-if="loggedIn && userID != profileID" class="cta-secondary-reverse" :to="{name:'Messages', params: {profileID} }">Get In Touch</router-link>
-        <a v-if="!loggedIn" class="fallback-mailto" :href="'mailto:'+ profileEmail">Get In Touch</a>
+        <router-link v-if="$store.state.loggedIn && userID != profileID" class="cta-secondary-reverse" :to="{name:'Messages', params: {profileID} }">Get In Touch</router-link>
+        <a v-if="!$store.state.loggedIn" class="fallback-mailto" :href="'mailto:'+ profileEmail">Get In Touch</a>
 
       </div> 
     </section>
@@ -60,9 +60,9 @@
 
       <section class="player-embed-block" v-if="profilePlayerEmbed">
         <h2>there is a player</h2>
-        <base-icon-button v-if="loggedIn && userID == profileID" @click="displaySettingsDialog('Embed Player')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit music player embed"></base-icon-button>
+        <base-icon-button v-if="$store.state.loggedIn && userID == profileID" @click="displaySettingsDialog('Embed Player')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit music player embed"></base-icon-button>
       </section>
-      <div class="add-player-embed" v-else-if="loggedIn && userID == profileID">
+      <div class="add-player-embed" v-else-if="$store.state.loggedIn && userID == profileID">
         <base-text-icon-button @click="displaySettingsDialog('Embed Player')" mode="text-icon-button text-icon-button--plus">Embed Music Player</base-text-icon-button>
         <span>e.g. Spotify, Soundcloud, Bandcamp etc</span>
       </div>
@@ -77,8 +77,8 @@
       </transition>
       <section class="upcoming-shows" v-if="profileShows.length">
         <h2>Upcoming Shows</h2>
-        <base-icon-button v-if="loggedIn && userID == profileID" @click="displaySettingsDialog('Manage Shows')" buttonType="button" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit shows"></base-icon-button>
-        <show-card @editThisShow="editShow(show)" @deleteThisShow="deleteShow(show)" v-for="show in profileShowsResults" :key="show" :loggedIn=this.loggedIn>
+        <base-icon-button v-if="$store.state.loggedIn && userID == profileID" @click="displaySettingsDialog('Manage Shows')" buttonType="button" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit shows"></base-icon-button>
+        <show-card @editThisShow="editShow(show)" @deleteThisShow="deleteShow(show)" v-for="show in profileShowsResults" :key="show">
           <template #month>{{show.showMonth}}</template>
           <template #day>{{show.showDay}}</template>
           <template #year>{{show.showYear}}</template>
@@ -88,7 +88,7 @@
         <base-text-icon-button v-if="profileShows.length > 3" @click="toggleShowListings" mode="text-icon-button text-icon-button--list" buttonType="button"> <span v-if="fullListingVisible">Hide Full Listing</span><span v-else>View Full Listing</span></base-text-icon-button>
 
       </section>
-      <div class="add-upcoming-shows" v-else-if="loggedIn && userID == profileID">
+      <div class="add-upcoming-shows" v-else-if="$store.state.loggedIn && userID == profileID">
         <base-text-icon-button @click="displaySettingsDialog('Manage Shows')" buttonType="button" mode="text-icon-button text-icon-button--plus">Add and edit shows</base-text-icon-button>
       </div>
 
@@ -98,7 +98,7 @@
         <strong>Manage Shows</strong>
         <base-text-icon-button @click="displaySettingsDialog('Add Show')" mode="text-icon-button text-icon-button--plus" buttonType="button">Add Show</base-text-icon-button>
         <div class="show-container">
-          <show-card @editThisShow="editShow(show)" @deleteThisShow="deleteShow(show)" v-for="show in profileShowsResults" :key="show" :loggedIn=this.loggedIn>
+          <show-card @editThisShow="editShow(show)" @deleteThisShow="deleteShow(show)" v-for="show in profileShowsResults" :key="show">
             <template #month>{{show.showMonth}}</template>
             <template #day>{{show.showDay}}</template>
             <template #year>{{show.showYear}}</template>
@@ -189,7 +189,6 @@
 import vClickOutside from 'click-outside-vue3'
 import TheHeader from '../components/layouts/TheHeader.vue';
 import BaseTextIconButton from '../components/UI/BaseTextIconButton.vue';
-// import BaseTextIconLink from '../components/UI/BaseTextIconLink.vue';
 import BaseDialog from '../components/UI/BaseDialog.vue';
 import ChooseFileButton from '../components/UI/ChooseFileButton.vue';
 import BaseButton from '../components/UI/BaseButton.vue';
@@ -202,7 +201,6 @@ export default {
   components:{
     TheHeader,
     BaseTextIconButton,
-    // BaseTextIconLink,
     BaseDialog,
     ChooseFileButton,
     BaseButton,
@@ -211,11 +209,10 @@ export default {
     BasePillButton,
     BaseInput,
     ShowCard
-  },
+  }, 
   data() {
     return{
-      loggedIn: true,
-      userID: 'down-to-folk',
+      userID: 'not-down-to-folk',
       profileID: '',
       profileName: '',
       profileLocation: '',
@@ -628,6 +625,8 @@ export default {
     color:#fff;
     position: relative;
     padding-left: rem(33);
+    margin-top: $spacing-s;
+    display: block;
 
     @media(min-width:$desktop){
       padding-left: rem(41);

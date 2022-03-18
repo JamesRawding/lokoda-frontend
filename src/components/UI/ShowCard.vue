@@ -10,7 +10,7 @@
       <span class="show-card__venue"><slot name="venue"></slot></span>
     </div>
 
-    <div class="show-card__buttons" v-if="loggedIn">
+    <div class="show-card__buttons" v-if="$store.state.loggedIn">
       <base-icon-button @click="editShow" mode="icon-button icon-button--ellipsis" ariaLabel="Edit show"></base-icon-button>
       <base-icon-button @click="deleteShow" mode="icon-button icon-button--trash" ariaLabel="Delete show"></base-icon-button>
     </div>
@@ -21,7 +21,6 @@
 import BaseCard from '../UI/BaseCard.vue'
 import BaseIconButton from '../UI/BaseIconButton.vue'
 export default {
-  props:['loggedIn'],
   emits:['editThisShow', 'deleteThisShow'],
   components:{
     BaseCard,

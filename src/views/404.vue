@@ -1,7 +1,7 @@
 <template>
   <main class="page-container">
     <!-- <the-header></the-header> -->
-    <router-link v-if="loggedIn" to="/profile"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo-reverse_bjnnfx.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
+    <router-link v-if="$store.state.loggedIn" to="/profile"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo-reverse_bjnnfx.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
     <router-link v-else to="/"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo-reverse_bjnnfx.svg" alt="lokoda logo"><span class="sr-only">Log in</span></router-link>
 
     <section>
@@ -13,16 +13,6 @@
   
 </template>
 
-<script>
-
-export default {
-  data(){
-    return{
-      loggedIn: true
-    }
-  }
-}
-</script>
 
 <style lang="scss" scoped>
   .page-container{

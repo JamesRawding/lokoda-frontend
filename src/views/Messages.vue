@@ -330,8 +330,7 @@ export default {
   },
   props:['profileID'],
   data(){
-    return{
-      messagesUnread: 0,
+    return{ 
       searchMessageValue: '',
       searchContactValue: '',
       messagesListVisible: true,
@@ -547,7 +546,7 @@ export default {
       chosenMessage.messageActive = true;
       if(chosenMessage.messageRead == false){
         chosenMessage.messageRead = true;
-        this.messagesUnread -=1;
+        this.$store.commit('messagesUnreadDecrement');
       }
       this.messagesSelected = true;
       this.messagesListVisible = true;
@@ -951,7 +950,6 @@ export default {
       const container = this.$el.querySelector(".active-messages__messages-list");
       container.scrollTop = container.scrollHeight;
     }
-    console.log('messages unread ' + this.messagesUnread)
   },
   mounted(){
     if(this.profileID){
@@ -960,11 +958,10 @@ export default {
 
     for (let i = 0; i < this.messages.length; i++) {
       if(this.messages[i].messageRead == false){
-        this.messagesUnread += 1;
+        //this.$store.commit('messagesUnreadIncrement');
       } 
     }
 
-    console.log('messages unread ' + this.messagesUnread)
   }
 }
 </script>

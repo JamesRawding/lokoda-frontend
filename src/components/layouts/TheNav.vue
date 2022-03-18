@@ -1,10 +1,10 @@
 <template>
   <nav>
-    <div v-if="loggedIn">
+    <div v-if="$store.state.loggedIn">
       <router-link class="header-link header-link--profile" to="/profile"><span class="sr-only">user profile</span></router-link>
       <router-link class="header-link header-link--discover" to="/discover"><span class="header-link__text">Discover</span></router-link>
-      <router-link v-if="unreadMessageCount < 1" class="header-link header-link--messages" to="/messages"><span class="header-link__text">Messages</span></router-link>
-      <router-link v-else class="header-link header-link--message" to="/messages"><span class="header-link__message-count">{{unreadMessageCount}}</span><span class="header-link__text">Messages</span></router-link>
+      <router-link v-if="$store.state.messagesUnread < 1" class="header-link header-link--messages" to="/messages"><span class="header-link__text">Messages</span></router-link>
+      <router-link v-else class="header-link header-link--message" to="/messages"><span class="header-link__message-count">{{$store.state.messagesUnread}}</span><span class="header-link__text">Messages</span></router-link>
     </div>
     <div v-else>
       <router-link class="header-link header-link--home" to="/">log in</router-link>
@@ -13,18 +13,7 @@
     </div>
   </nav>
 </template>
-
-<script>
-
-export default {
-  props:['loggedIn'],
-  data(){
-    return {
-      unreadMessageCount: 0
-    }
-  },
-}
-</script>
+ 
 
 <style lang="scss" scoped>
   nav{

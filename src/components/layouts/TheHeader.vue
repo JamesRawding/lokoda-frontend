@@ -2,16 +2,16 @@
   <header>
     <!-- <router-link v-if="loggedIn" to="/profile"><img src="../../assets/images/lokoda-logo.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
     <router-link v-else to="/"><img src="../../assets/images/lokoda-logo.svg" alt="lokoda logo"><span class="sr-only">Log in</span></router-link> -->
-    <router-link v-if="loggedIn" to="/profile"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
+    <router-link v-if="$store.state.loggedIn" to="/profile"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
     <router-link v-else to="/"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">Log in</span></router-link>
     <div class="header-nav-items">
-      <header-nav :loggedIn="loggedIn"></header-nav>
-      <button @click="showProfileDialog" class="profile-settings-button" aria-label="view profile settings" v-if="loggedIn && isProfileDialogDisplayed">
+      <header-nav></header-nav>
+      <button @click="showProfileDialog" class="profile-settings-button" aria-label="view profile settings" v-if="$store.state.loggedIn && isProfileDialogDisplayed">
        
-        <profile-pic v-if="loggedIn"></profile-pic>
+        <profile-pic v-if="$store.state.loggedIn"></profile-pic>
       </button>
-      <button  @click="showProfileDialog" v-click-outside="hideProfileDialog" class="profile-settings-button" aria-label="view profile settings" v-else-if="loggedIn">
-        <profile-pic v-if="loggedIn"></profile-pic>
+      <button  @click="showProfileDialog" v-click-outside="hideProfileDialog" class="profile-settings-button" aria-label="view profile settings" v-else-if="$store.state.loggedIn">
+        <profile-pic v-if="$store.state.loggedIn"></profile-pic>
       </button>
     </div>
 
@@ -35,7 +35,7 @@ import ProfilePic from '../UI/ProfilePic.vue';
 import BaseDialog from '../UI/BaseDialog.vue';
 import BaseTextIconButton from '../UI/BaseTextIconButton.vue';
 import BaseTextIconLink from '../UI/BaseTextIconLink.vue';
-
+ 
 export default {
   components:{
     HeaderNav,
@@ -44,10 +44,9 @@ export default {
     BaseTextIconButton,
     BaseTextIconLink
   },
-  emits:['loggedOut'],
+  //emits:['loggedOut'],
   data(){
     return {
-      loggedIn: true,
       isProfileDialogDisplayed: false,
     }
   },
@@ -59,7 +58,7 @@ export default {
       this.isProfileDialogDisplayed = false
     },
     logout(){
-      this.loggedIn = false;
+      this.$store.commit('logout');
       this.isProfileDialogDisplayed = false
     }
   },
