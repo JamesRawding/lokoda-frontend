@@ -952,14 +952,37 @@ export default {
     }
   },
   mounted(){
-    if(this.profileID){
-      console.log(this.profileID)
-    }
+    // if(this.profileID){
+    //   console.log(this.profileID)
+    // }
 
     for (let i = 0; i < this.messages.length; i++) {
       if(this.messages[i].messageRead == false){
         //this.$store.commit('messagesUnreadIncrement');
       } 
+    }
+
+    this.contacts.push(this.$store.state.newContact);
+
+    if(this.$store.state.newContact.contactID != ''){
+      this.contactsListVisible = false;
+      this.messagesListVisible = true;
+      if(this.messages.find(message => message.messageID === this.$store.state.newContact.contactID)){
+        this.selectedMessage(this.$store.state.newContact.contactID);
+        this.$store.commit('resetNewContact');
+      }else{
+        this.newMessage = true;
+        const chosenContact = this.$store.state.newContact;
+        this.messageRecipientNames = chosenContact.contactName;
+        this.messageID = chosenContact.contactID
+        this.messages.unshift({
+          messageID: chosenContact.contactID,
+          messageRecipientNames: [chosenContact.contactName],
+          recipientMessages:[],
+          messageActive: true
+        });
+        this.$store.commit('resetNewContact');
+      }
     }
 
   }

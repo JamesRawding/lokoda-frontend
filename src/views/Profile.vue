@@ -50,7 +50,7 @@
         </base-dialog>
         </transition>
 
-        <router-link v-if="$store.state.loggedIn && userID != profileID" class="cta-secondary-reverse" :to="{name:'Messages', params: {profileID} }">Get In Touch</router-link>
+        <router-link @click="createNewContact" v-if="$store.state.loggedIn && userID != profileID" class="cta-secondary-reverse" :to="{name:'Messages', params: {profileID} }">Get In Touch</router-link>
         <a v-if="!$store.state.loggedIn" class="fallback-mailto" :href="'mailto:'+ profileEmail">Get In Touch</a>
 
       </div> 
@@ -257,6 +257,15 @@ export default {
     
   },
   methods:{
+    createNewContact(){
+      this.$store.commit({
+        type: 'createNewContact',
+        contactID: this.profileID,
+        contactName: this.profileName,
+        contactProfilePic: this.profileImageURL
+      })
+
+    },
      displaySettingsDialog(evt){
       if(evt == 'Hero Image'){
         this.heroDialogVisible = true

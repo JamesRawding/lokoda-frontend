@@ -12,6 +12,12 @@ const store = createStore({
     return {
       loggedIn: true,
       messagesUnread: 2,
+      newContact: {
+        contactID: '',
+        contactName: '',
+        contactProfilePic: '',
+        contactBlocked: false
+      }
     };
   },
   mutations:{
@@ -23,6 +29,16 @@ const store = createStore({
     },
     messagesUnreadDecrement(state){
       state.messagesUnread -=1;
+    },
+    createNewContact(state, payload){
+      state.newContact.contactID = payload.contactID;
+      state.newContact.contactName = payload.contactName;
+      state.newContact.contactProfilePic = payload.contactProfilePic;
+    },
+    resetNewContact(state){
+      state.newContact.contactID = '';
+      state.newContact.contactName = '';
+      state.newContact.contactProfilePic = '';
     }
   }
 });
