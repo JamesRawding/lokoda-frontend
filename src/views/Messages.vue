@@ -963,20 +963,14 @@ export default {
     }
 
 
-    //this.contacts.push(this.$store.state.newContact);
-
     const newContact = {
       contactID: this.$store.state.newContact.contactID,
       contactName: this.$store.state.newContact.contactName,
       contactProfilePic: this.$store.state.newContact.contactProfilePic,
       contactBlocked: false
     }
-    console.log(this.contacts)
     this.contacts.push(newContact);
-    console.log(this.$store.state.newContact)
-    console.log(this.contacts)
-    //this.$store.commit('resetNewContact');
-    console.log(this.contacts)
+    
     
 
     if(this.$store.state.newContact.contactID != ''){
