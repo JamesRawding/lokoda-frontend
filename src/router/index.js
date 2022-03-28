@@ -60,6 +60,14 @@ const routes = [
     }
   },
   {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('../views/Profile.vue'),
+    meta: {
+      title: 'Profile',
+    }
+  },
+  {
     path: '/profile/:profileURL',
     name: 'Profile',
     component: () => import('../views/Profile.vue'),

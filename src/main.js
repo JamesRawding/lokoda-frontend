@@ -7,20 +7,68 @@ import { FocusTrap } from 'focus-trap-vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 
+
 const store = createStore({
   state(){
     return {
       loggedIn: true,
+      userID: '',
       messagesUnread: 2,
       newContact: {
         contactID: '',
         contactName: '',
         contactProfilePic: '',
         contactBlocked: false
-      }
+      },
+      profiles:[],
+      profile:{
+        profileType:'',
+        profileURL: '',
+        profileImageURL: '',
+        profileName: '',
+        profileLocation: '',
+        profileGenres: [],
+        profileShows: [],
+        profilePlayerEmbed: ''
+      },
+      genres:[ 'Alternative','Blues','Classical','Country','Electronic','Folk','Funk',
+              'Hip-Hop','Indie','Jazz','Latin','Metal','Pop','R&B','Reggae','Rock','Soul'],
     };
   },
   mutations:{
+    login(state){
+      state.loggedIn = true;
+    },
+    loggedIn(state){
+
+      function getCookie(cname) {
+        let name = cname + "=";
+        let ca = document.cookie.split(';');
+        for(let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+      }
+      
+      function checkCookie() {
+        let user = getCookie("loggedIn");
+        if (user != "") {
+          //alert("Welcome again " + user);
+          state.loggedIn = true;
+        } else {
+          state.loggedIn = false;
+        }
+      }
+
+      checkCookie();
+    },
+    
     logout(state){
       state.loggedIn = false;
     },
@@ -42,6 +90,9 @@ const store = createStore({
     }
   }
 });
+
+
+
 const app = createApp(App);
 app.use(store);
 app.component('FocusTrap', FocusTrap);

@@ -3,13 +3,13 @@
     <label :for="fileUploadID">
       <slot></slot>
     </label>
-    <input :class="mode" type="file" :id="fileUploadID" :name="fileUploadName">
+    <input @input="$emit('update:modelValue', $event.target.value)" :class="mode" accept="image/png, image/jpeg" type="file" :id="fileUploadID" :name="fileUploadName">
   </div> 
 </template>
 
 <script>
 export default {
-  props: ['mode', 'fileUploadID', 'fileUploadName']
+  props: ['mode', 'fileUploadID', 'fileUploadName', 'modelValue']
 }
 </script>
 

@@ -8,7 +8,9 @@
 
 <script>
 export default {
- 
+ created(){
+   return this.$store.commit('loggedIn')
+ }
 }
 </script>
 
@@ -213,6 +215,32 @@ a{
   .v-enter-from,
   .v-leave-to {
     opacity: 0;
+  }
+
+
+  .spinner{
+    -webkit-animation:spin 4s linear infinite;
+    -moz-animation:spin 4s linear infinite;
+    animation:spin 4s linear infinite;
+    margin-right: $spacing-s;
+    display: inline-block;
+    &:before{
+      content:'\f110';
+      font-family: "Font Awesome 5 Pro";
+    }
+  }
+
+  @-moz-keyframes spin { 
+    100% { -moz-transform: rotate(360deg); } 
+  }
+  @-webkit-keyframes spin { 
+      100% { -webkit-transform: rotate(360deg); } 
+  }
+  @keyframes spin { 
+      100% { 
+          -webkit-transform: rotate(360deg); 
+          transform:rotate(360deg); 
+      } 
   }
 
   .page-container{

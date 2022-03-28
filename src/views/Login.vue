@@ -54,7 +54,23 @@ export default {
        axios.post('/login', this.form)
             .then((res) => {
                 console.log(res);
+                
+                this.$router.push('/profile/a8d6e035-ab80-11ec-a1d7-c8bcc88ea0d9');
+                
+
+            
+                function setCookie(cname, cvalue, exdays) {
+                  const d = new Date();
+                  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+                  let expires = "expires="+d.toUTCString();
+                  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+                }
+
+                setCookie('loggedIn','user is logged in', 2 );
+
+                this.$store.commit('login')
             });
+            
     }
   }
 }

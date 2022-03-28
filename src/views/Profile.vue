@@ -4,7 +4,7 @@
     <section class="hero-section">
       <div class="hero-section__image-block">
         <div class="hero-section__image-container" v-if="profileImageURL">
-          <img src="../assets/images/dummy-hero-img.jpg" :alt="profileName + ' profile image'">
+          <img :src="profileImageURL" :alt="profileName + ' profile image'">
           <base-icon-button v-if="$store.state.loggedIn && userID == profileID" @click="displaySettingsDialog('Hero Image')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit image"></base-icon-button>
         </div>
         <div v-else-if="$store.state.loggedIn && userID == profileID">
@@ -14,14 +14,15 @@
         <base-dialog mode="modal-dialog" v-if="heroDialogVisible"  @closeDialog="hideSettingsDialog('Hero Image')">
           <strong>Select Image</strong>
           <div v-if="profileImageURL" class="hero-image-thumb">
-            <img src="../assets/images/dummy-hero-img.jpg" :alt="profileName + ' profile image'">
+            <img :src="profileImageURL" :alt="profileName + ' profile image'">
           </div>
+          <div v-if="imageUploading" class="hero-image-uploading"><span class="spinner"></span>Image Uploading</div>
           <form @submit.prevent="submitForm">
-            <choose-file-button mode="test" fileUploadID="uploadImage" fileUploadName="filename">
+            <choose-file-button @change="uploadImage" fileUploadID="uploadImage" fileUploadName="filename">
               Choose New Image
             </choose-file-button>
-            <base-text-icon-button @click="displaySettingsDialog('Delete Hero')" mode="text-icon-button text-icon-button--trash" buttonType="button">Delete Image</base-text-icon-button>
-            <base-button buttonType="submit" mode="cta cta--primary">Save</base-button>
+            <base-text-icon-button @click="deleteHero" mode="text-icon-button text-icon-button--trash" buttonType="button">Delete Image</base-text-icon-button>
+            <base-button @click="hideSettingsDialog('Hero Image')" buttonType="submit" mode="cta cta--primary">Save</base-button>
           </form>
         </base-dialog>
         </transition>
@@ -59,7 +60,7 @@
     <div class="profile-body">
 
       <section class="player-embed-block" v-if="profilePlayerEmbed">
-        <h2>there is a player</h2>
+        <iframe :src="profilePlayerEmbed" width="100%" height="380" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
         <base-icon-button v-if="$store.state.loggedIn && userID == profileID" @click="displaySettingsDialog('Embed Player')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit music player embed"></base-icon-button>
       </section>
       <div class="add-player-embed" v-else-if="$store.state.loggedIn && userID == profileID">
@@ -186,6 +187,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import vClickOutside from 'click-outside-vue3'
 import TheHeader from '../components/layouts/TheHeader.vue';
 import BaseTextIconButton from '../components/UI/BaseTextIconButton.vue';
@@ -212,32 +214,38 @@ export default {
   }, 
   data() {
     return{
-      userID: 'not-down-to-folk',
+      userID: 'a8d6e035-ab80-11ec-a1d7-c8bcc88ea0d9',
+      imageUploading: false,
+      profileURL: '',
       profileID: '',
       profileName: '',
       profileLocation: '',
       profileContactDetails:[],
-      profileImageURL: true,
+      profileImageURL: '',
       profileGenres: [],
       profileShows: [],
       profilePlayerEmbed: '',
       profiles:[
         {
           profileURL: 'down-to-folk',
-          profileImageURL: '../assets/images/dummy-hero-img.jpg',
+          profileImageURL: '',
           profileName: 'Down to Folk',
           profileLocation: 'Sheffield',
           profileGenres: [],
           profileShows: [],
+          profilePlayerEmbed: ''
         },
         {
-          profileURL: 'goldie-lookin-chain',
+          profileURL: 'a8d6e035-ab80-11ec-a1d7-c8bcc88ea0d9',
+          profileImageURL:'',
           profileName: 'Goldie lookin chain',
-          profileLocation: 'Hull'
+          profileLocation: 'Hull',
+          profileGenres: [],
+          profileShows: [],
+          profilePlayerEmbed: '',
         }
       ],
-      allGenres:['Alternative','Blues','Classical','Country','Electronic','Folk','Funk',
-              'Hip-Hop','Indie','Jazz','Latin','Metal','Pop','R&B','Reggae','Rock','Soul'],
+      allGenres:this.$store.state.genres,
       heroDialogVisible: false,
       genresDialogVisible: false,
       embedDialogVisible: false,
@@ -292,6 +300,8 @@ export default {
         this.genresDialogVisible = false
       }
       if(evt == 'Embed Player'){
+        this.profilePlayerEmbed = this.profilePlayerEmbed.match(/\bhttps?:\/\/\S+/gi)[0];
+        this.profiles.find(profile => profile.profileName).profilePlayerEmbed = this.profilePlayerEmbed;
         this.embedDialogVisible = false
       }
       if(evt == 'Manage Shows'){
@@ -309,7 +319,7 @@ export default {
     },
     selectGenres(evt){
       const genre = evt
-      const selectedGenres = this.profiles.find(profile => profile.profileName).profileGenres;
+      const selectedGenres = this.profiles.find(profile => profile.profileName).profileGenres = this.profileGenres;
       const index = selectedGenres.indexOf(evt);
       
       
@@ -322,7 +332,7 @@ export default {
       }
     },
     submitShowForm(){
-      const shows = this.profiles.find(profile => profile.profileName).profileShows;
+      const shows = this.profiles.find(profile => profile.profileName).profileShows = this.profileShows;
       
       if(this.showDay.startsWith('0')){
         this.showDay = this.showDay.substring(1)
@@ -393,7 +403,7 @@ export default {
     
     editShow(evt){
       const show = evt
-      const shows = this.profiles.find(profile => profile.profileName).profileShows;
+      const shows = this.profiles.find(profile => profile.profileName).profileShows = this.profileShows;
       const index = shows.indexOf(evt);
       this.selectedShow = show;
       this.selectedShowIndex = index;
@@ -493,7 +503,7 @@ export default {
     },
     deleteShow(evt){
       const show = evt
-      const shows = this.profiles.find(profile => profile.profileName).profileShows;
+      const shows = this.profiles.find(profile => profile.profileName).profileShows = this.profileShows;
       const index = shows.indexOf(evt);
       this.selectedShow = show;
       this.selectedShowIndex = index;
@@ -501,7 +511,7 @@ export default {
       this.showsDialogVisible = false
     },
     confirmDeleteShow(){
-      const shows = this.profiles.find(profile => profile.profileName).profileShows;
+      const shows = this.profiles.find(profile => profile.profileName).profileShows = this.profileShows;
 
       if(shows.includes(this.selectedShow)){
         if (this.selectedShowIndex > -1) {
@@ -511,7 +521,27 @@ export default {
       this.deleteShowDialogVisible = false;
       this.selectedShow = '';
       this.selectedShowIndex = ''
-    }
+    },
+
+    uploadImage(event){
+      const formData = new FormData;
+      formData.append('file', event.target.files[0]);
+      formData.append('upload_preset', 'vfbrvxkj');
+      this.profileImageURL = "";
+      this.imageUploading = true;
+      axios.post('https://api.cloudinary.com/v1_1/dgddraffq/image/upload', formData)
+        .then((res) => {
+           let publicID = res.data.public_id;
+           this.imageUploading = false;
+           this.profileImageURL = "https://res.cloudinary.com/dgddraffq/image/upload/f_auto,q_auto:best,c_fill,g_faces/v1648123420/"+publicID+".jpg";
+           this.profiles.find(profile => profile.profileName).profileImageURL = this.profileImageURL;
+      });
+    },
+
+    deleteHero(){
+      this.profileImageURL = '';
+    },
+    
   },
   computed:{
     profileShowsResults(){
@@ -528,10 +558,11 @@ export default {
     const selectedUser = this.profiles.find(profile => profile.profileURL === url);
     this.profileID = selectedUser.profileURL;
     this.profileName = selectedUser.profileName;
-    //this.profileImageURL = selectedUser.profileImageURL;
+    this.profileImageURL = selectedUser.profileImageURL;
     this.profileGenres = selectedUser.profileGenres;
     this.profileLocation = selectedUser.profileLocation;
     this.profileShows = selectedUser.profileShows;
+    this.profilePlayerEmbed = selectedUser.profilePlayerEmbed;
 
   },
   directives: {
@@ -634,7 +665,7 @@ export default {
     color:#fff;
     position: relative;
     padding-left: rem(33);
-    margin-top: $spacing-s;
+    margin-top: $spacing-l;
     display: block;
 
     @media(min-width:$desktop){
@@ -839,11 +870,20 @@ export default {
     }
   }
 
-  .hero-image-thumb{
+  .hero-image-thumb,
+  .hero-image-uploading{
     margin-top:$spacing-s;
 
     img{
       width: 100%;
     }
   }
+
+  .hero-image-uploading{
+    background-color: $lightgrey;
+    padding: $spacing-m;
+    border-radius: $border-radius-reg;
+    text-align: center;
+  }
+
 </style>

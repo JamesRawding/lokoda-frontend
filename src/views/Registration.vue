@@ -102,6 +102,7 @@ export default {
        axios.post('/register', this.form)
             .then((res) => {
                 console.log(res);
+                this.$router.push('/profile')
             });
     },
     accountTypeSelected(box) {

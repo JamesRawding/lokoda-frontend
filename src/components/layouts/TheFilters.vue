@@ -1,10 +1,10 @@
 <template>
   <base-text-icon-button @click="filtersVisible = !filtersVisible" buttonType="button" mode="text-icon-button text-icon-button--filter"><span v-if="filtersVisible">Close filter</span><span v-else>Filter</span></base-text-icon-button>
   <div :class="{'filters-container--active' : filtersVisible}" class="filters-container">
-    <search-bar @searched="searchLocationValue" searchId="locationSearch" searchPlaceholder="e.g Sheffield, S10">
+    <search-bar @searched="searchLocationValue" searchId="locationSearch" searchPlaceholder="e.g Sheffield">
       <template #label>Search by location</template>
     </search-bar>
-    <search-bar @searched="searchNameValue" searchId="nameSearch" searchPlaceholder="e.g Bandy McBandface">
+    <search-bar @searched="searchNameValue" searchId="nameSearch" searchPlaceholder="e.g Joan Bloggs">
       <template #label>Search by name</template>
     </search-bar>
     <base-dropdown @changed="genreValue" dropdownId="genreDropdown" v-model="genreDropdown" :isRequired="false" >
@@ -44,8 +44,7 @@ export default {
   emits:['changedGenre', 'changedDistance', 'changedNameSearch', 'changedLocationSearch'],
   data(){
     return{
-      genres:['Any', 'Alternative','Blues','Classical','Country','Electronic','Folk','Funk',
-              'Hip-Hop','Indie','Jazz','Latin','Metal','Pop','R&B','Reggae','Rock','Soul'],
+      genres:this.$store.state.genres,
       genreDropdown: 'Any',
       distances:['0 - 15', '15 - 20', '20 - 30', '30 - 40'],
       distanceDropdown: '0 - 15',
@@ -64,7 +63,7 @@ export default {
     },
     searchNameValue(value){
       const searchValue = value;
-      this.$emit('changedNameSearch', searchValue);
+      this.$emit('changedNameSearch', searchValue.toLowerCase());
     },
     searchLocationValue(value){
       if(value === ''){
@@ -73,8 +72,11 @@ export default {
         this.locationEntered = true;
       }
       const searchValue = value;
-      this.$emit('changedLocationSearch', searchValue);
+      this.$emit('changedLocationSearch', searchValue.toLowerCase());
     }
+  },
+  created(){
+    return this.genres.unshift('Any')
   }
 }
 
