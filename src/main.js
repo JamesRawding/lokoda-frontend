@@ -31,8 +31,6 @@ const store = createStore({
         profileShows: [],
         profilePlayerEmbed: ''
       },
-      genres:[ 'Alternative','Blues','Classical','Country','Electronic','Folk','Funk',
-              'Hip-Hop','Indie','Jazz','Latin','Metal','Pop','R&B','Reggae','Rock','Soul'],
     };
   },
   mutations:{

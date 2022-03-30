@@ -55,7 +55,7 @@
           <router-link :to="'/profile' + band.url"><h3>{{band.name}}</h3></router-link>
           <span class="location">{{band.location}}</span>
           <base-pill v-for="genre in band.genres" :key="genre + band.name">
-            {{genre}}
+            {{genre.genre}}
           </base-pill>
         </base-card>
       </div>
@@ -72,7 +72,7 @@
           <router-link :to="'/profile' + promoter.url"><h3>{{promoter.name}}</h3></router-link>
           <span class="location">{{promoter.location}}</span>
           <base-pill v-for="genre in promoter.genres" :key="genre + promoter.name">
-            {{genre}}
+            {{genre.genre}}
           </base-pill>
         </base-card> 
       </div>
@@ -118,7 +118,21 @@ export default {
           name: 'Down To Folk',
           url: '/down-to-folk',
           location: 'sheffield',
-          genres: ['Folk','Hip-Hop', 'Pop']
+          genres: [
+            {
+              id: 6,
+              genre: 'Folk'
+            },
+            {
+              id: 10,
+              genre: 'Hip Hop'
+            },
+            {
+              id: 12,
+              genre: 'Pop'
+            },
+            
+          ]
 
         },
         {
@@ -127,7 +141,16 @@ export default {
           name: 'Goldie Lookin Chain',
           url: '/goldie-lookin-chain',
           location: 'hull',
-          genres: ['Rock','Metal']
+          genres: [
+            {
+              id: 11,
+              genre: 'Metal'
+            },
+            {
+              id: 9,
+              genre: 'Hardcore'
+            }
+          ]
 
         },
         {
@@ -136,7 +159,20 @@ export default {
           name: 'Shawoddywoddy',
           url: '',
           location: 'glasgow',
-          genres: ['Glam','Alternative', 'Funk']
+          genres: [
+            {
+              id: 1,
+              genre: 'Alternative'
+            },
+            {
+              id: 7,
+              genre: 'Grime'
+            },
+            {
+              id: 5,
+              genre: 'Emo'
+            },
+          ]
 
         },
         {
@@ -145,7 +181,12 @@ export default {
           name: 'Down To Folk',
           url: '',
           location: 'sheffield',
-          genres: ['Folk','Hip-Hop', 'Pop', 'Funk']
+          genres: [
+            {
+              id: 1,
+              genre: 'Alternative'
+            },
+          ]
 
         }
       ],
@@ -156,7 +197,20 @@ export default {
           name: 'Sheer Music',
           url: '',
           location: 'sheffield',
-          genres: ['Folk','Hip-Hop', 'Pop', 'Rap', 'Country']
+          genres: [
+            {
+              id: 1,
+              genre: 'Alternative'
+            },
+            {
+              id: 7,
+              genre: 'Grime'
+            },
+            {
+              id: 5,
+              genre: 'Emo'
+            },
+          ]
 
         },
         {
@@ -165,7 +219,20 @@ export default {
           name: 'Johnny Promoter',
           url: '',
           location: 'swansea',
-          genres: ['Rock','Metal']
+          genres: [
+            {
+              id: 1,
+              genre: 'Alternative'
+            },
+            {
+              id: 7,
+              genre: 'Grime'
+            },
+            {
+              id: 5,
+              genre: 'Emo'
+            },
+          ]
 
         },
         {
@@ -174,7 +241,20 @@ export default {
           name: 'Promotion ltd',
           url: '',
           location: 'hull',
-          genres: ['Glam','Alternative', 'Funk']
+          genres: [
+            {
+              id: 1,
+              genre: 'Alternative'
+            },
+            {
+              id: 7,
+              genre: 'Grime'
+            },
+            {
+              id: 5,
+              genre: 'Emo'
+            },
+          ]
 
         },
         {
@@ -183,7 +263,13 @@ export default {
           name: 'Gigs r us',
           url: '',
           location: 'sheffield',
-          genres: ['Folk','Hip-Hop', 'Pop']
+          genres: [
+            {
+              id: 1,
+              genre: 'Alternative'
+            },
+            
+          ]
 
         }
       ]
@@ -202,6 +288,7 @@ export default {
     },
     selectedGenre(value){
       this.genreDropdownValue = value
+      console.log(value)
     },
     selectedDistance(value){
       console.log(value)
@@ -236,6 +323,7 @@ export default {
       }
 
       if(this.genreDropdownValue && this.genreDropdownValue !== 'Any'){
+       
         bandResults = bandResults.filter((m) =>{
           return (m.genres.indexOf(this.genreDropdownValue) > -1)
         })
@@ -286,7 +374,8 @@ export default {
           return 0;
       });
     }
-  }
+  },
+  
 }
 </script>
 

@@ -34,7 +34,7 @@
 
         <div class="hero-section__genres" v-if="profileGenres.length">
           <base-pill v-for="genre in profileGenres" :key="genre + profileName">
-            {{genre}}
+            {{genre.genre}}
           </base-pill>
           <base-icon-button v-if="$store.state.loggedIn && userID == profileID" @click="displaySettingsDialog('Genres')" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit genres"></base-icon-button>
         </div>
@@ -45,7 +45,7 @@
         <base-dialog mode="modal-dialog" v-if="genresDialogVisible"  @closeDialog="hideSettingsDialog('Genres')">
           <strong class="display-block">Select Genres</strong>
           <base-pill-button buttonType="button" @click="selectGenres(genre)" :class="{'pill-button--selected': this.profileGenres.includes(genre)}" mode="pill-button pill-button--default" v-for="genre in allGenres" :key="genre">
-            {{genre}}
+            {{genre.genre}}
           </base-pill-button>
           <base-button @click="hideSettingsDialog('Genres')" buttonType="button" mode="cta cta--primary">Save</base-button>
         </base-dialog>
@@ -245,7 +245,7 @@ export default {
           profilePlayerEmbed: '',
         }
       ],
-      allGenres:this.$store.state.genres,
+      allGenres:[],
       heroDialogVisible: false,
       genresDialogVisible: false,
       embedDialogVisible: false,
@@ -302,6 +302,13 @@ export default {
       if(evt == 'Embed Player'){
         this.profilePlayerEmbed = this.profilePlayerEmbed.match(/\bhttps?:\/\/\S+/gi)[0];
         this.profiles.find(profile => profile.profileName).profilePlayerEmbed = this.profilePlayerEmbed;
+        // axios.post('/add_embed_url', {
+        //   url: this.profilePlayerEmbed,
+        // })
+        //     .then((res) => {
+        //         console.log(res);
+                
+        //     });
         this.embedDialogVisible = false
       }
       if(evt == 'Manage Shows'){
@@ -319,6 +326,7 @@ export default {
     },
     selectGenres(evt){
       const genre = evt
+      //console.log(genre)
       const selectedGenres = this.profiles.find(profile => profile.profileName).profileGenres = this.profileGenres;
       const index = selectedGenres.indexOf(evt);
       
@@ -329,6 +337,14 @@ export default {
         }
       }else{
         selectedGenres.push(genre);
+        // axios.post('/add_genre', {
+        //   user_id: this.userID, 
+        //   genre_id: genre.id
+        // })
+        //     .then((res) => {
+        //         console.log(res);
+                
+        //     });
       }
     },
     submitShowForm(){
@@ -389,6 +405,18 @@ export default {
         showVenue: this.showVenue,
       }
 
+      // axios.post('/new_show', {
+        //  city: this.showCity,
+        //  venue: this.showVenue,
+        //  day: this.showDay,
+        //  month: this.showMonth,
+        //  year: this.showYear,
+        // })
+        //     .then((res) => {
+        //         console.log(res);
+                
+        //     });
+
       shows.unshift(newShow);
       this.showDay = '';
       this.showMonth = '';
@@ -396,6 +424,7 @@ export default {
       this.showCity = '';
       this.showVenue = '';
       this.addShowDialogVisible = false
+
     },
     toggleShowListings(){
       this.fullListingVisible = !this.fullListingVisible
@@ -536,6 +565,14 @@ export default {
            this.profileImageURL = "https://res.cloudinary.com/dgddraffq/image/upload/f_auto,q_auto:best,c_fill,g_faces/v1648123420/"+publicID+".jpg";
            this.profiles.find(profile => profile.profileName).profileImageURL = this.profileImageURL;
       });
+      // axios.post('/add_image', {
+        //   url: this.profileImageURL,
+        // })
+        //     .then((res) => {
+        //         console.log(res);
+                
+        //     });
+
     },
 
     deleteHero(){
@@ -564,10 +601,21 @@ export default {
     this.profileShows = selectedUser.profileShows;
     this.profilePlayerEmbed = selectedUser.profilePlayerEmbed;
 
+      // axios.get('get_user_genres')
+      //       .then((res) => {
+      //           console.log(res);
+      //       });
   },
   directives: {
     clickOutside: vClickOutside.directive
-  }
+  },
+   mounted(){
+   axios.get('/get_genres')
+    .then((res) => {
+        this.allGenres = res.data
+    });
+   
+ }
 }
 </script>
 

@@ -10,10 +10,11 @@
     <base-dropdown @changed="genreValue" dropdownId="genreDropdown" v-model="genreDropdown" :isRequired="false" >
       <template #label>Genre</template>
       <template #options>
-        <option v-for="genre in genres" :key="genre" :value="genre">{{genre}}</option>
+        <option>Any</option>
+        <option v-for="genre in genres" :key="genre" :value="genre.id">{{genre.genre}}</option>
       </template>
     </base-dropdown>
-    <base-dropdown v-if="!locationEntered" @changed="distanceValue" dropdownId="distanceDropdown" v-model="distanceDropdown" :isRequired="false" isDisabled>
+    <!-- <base-dropdown v-if="!locationEntered" @changed="distanceValue" dropdownId="distanceDropdown" v-model="distanceDropdown" :isRequired="false" isDisabled>
       <template #label>Distance</template>
       <template #options>
         <option v-for="distance in distances" :key="distance" :value="distance">{{distance}} miles</option>
@@ -24,12 +25,13 @@
       <template #options>
         <option v-for="distance in distances" :key="distance" :value="distance">{{distance}} miles</option>
       </template>
-    </base-dropdown>
+    </base-dropdown> -->
     <base-button @click="filtersVisible = !filtersVisible" mode="cta cta--secondary" buttonType="button">View Results</base-button>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import BaseDropdown from '../UI/BaseDropdown.vue';
 import BaseTextIconButton from '../UI/BaseTextIconButton.vue';
 import SearchBar from '../UI/SearchBar.vue';
@@ -44,7 +46,8 @@ export default {
   emits:['changedGenre', 'changedDistance', 'changedNameSearch', 'changedLocationSearch'],
   data(){
     return{
-      genres:this.$store.state.genres,
+      //genres:this.$store.state.genres,
+      genres:[],
       genreDropdown: 'Any',
       distances:['0 - 15', '15 - 20', '20 - 30', '30 - 40'],
       distanceDropdown: '0 - 15',
@@ -54,6 +57,7 @@ export default {
   },
   methods:{
     genreValue(value){
+      console.log(value)
       const genreValue = value;
       this.$emit('changedGenre', genreValue);
     },
@@ -75,9 +79,13 @@ export default {
       this.$emit('changedLocationSearch', searchValue.toLowerCase());
     }
   },
-  created(){
-    return this.genres.unshift('Any')
-  }
+  mounted(){
+   axios.get('/get_genres')
+    .then((res) => {
+        this.genres = res.data
+    });
+   
+ }
 }
 
 </script>
@@ -98,7 +106,7 @@ export default {
       margin: $spacing-m 0 0 0;
       padding: 0;
       grid-column-gap: rem(32);
-      grid-template-columns:1fr 1fr 1fr 1fr;
+      grid-template-columns:1fr 1fr 1fr;
       box-shadow: none;
     }
 
