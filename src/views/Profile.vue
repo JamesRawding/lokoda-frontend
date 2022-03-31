@@ -13,10 +13,11 @@
         <transition>
         <base-dialog mode="modal-dialog" v-if="heroDialogVisible"  @closeDialog="hideSettingsDialog('Hero Image')">
           <strong>Select Image</strong>
-          <div v-if="profileImageURL" class="hero-image-thumb">
-            <img :src="profileImageURL" :alt="profileName + ' profile image'">
+          <div class="hero-image-thumb">
+            <div v-if="!profileImageURL && !imageUploading">Add image below</div>
+            <div v-if="imageUploading" class="hero-image-uploading"><span class="spinner"></span>Image Uploading</div>
+            <img v-if="profileImageURL" :src="profileImageURL" :alt="profileName + ' profile image'">
           </div>
-          <div v-if="imageUploading" class="hero-image-uploading"><span class="spinner"></span>Image Uploading</div>
           <form @submit.prevent="submitForm">
             <choose-file-button @change="uploadImage" fileUploadID="uploadImage" fileUploadName="filename">
               Choose New Image
@@ -406,16 +407,16 @@ export default {
       }
 
       // axios.post('/new_show', {
-        //  city: this.showCity,
-        //  venue: this.showVenue,
-        //  day: this.showDay,
-        //  month: this.showMonth,
-        //  year: this.showYear,
-        // })
-        //     .then((res) => {
-        //         console.log(res);
+      //    city: this.showCity,
+      //    venue: this.showVenue,
+      //    day: this.showDay,
+      //    month: this.showMonth,
+      //    year: this.showYear,
+      //   })
+      //       .then((res) => {
+      //           console.log(res);
                 
-        //     });
+      //       });
 
       shows.unshift(newShow);
       this.showDay = '';
@@ -564,14 +565,15 @@ export default {
            this.imageUploading = false;
            this.profileImageURL = "https://res.cloudinary.com/dgddraffq/image/upload/f_auto,q_auto:best,c_fill,g_faces/v1648123420/"+publicID+".jpg";
            this.profiles.find(profile => profile.profileName).profileImageURL = this.profileImageURL;
+           this.$store.commit('setHeroImage', this.profileImageURL);
       });
-      // axios.post('/add_image', {
-        //   url: this.profileImageURL,
-        // })
-        //     .then((res) => {
-        //         console.log(res);
+      axios.post('/add_image', {
+          url: this.profileImageURL,
+        })
+            .then((res) => {
+                console.log(res);
                 
-        //     });
+            });
 
     },
 
@@ -595,16 +597,12 @@ export default {
     const selectedUser = this.profiles.find(profile => profile.profileURL === url);
     this.profileID = selectedUser.profileURL;
     this.profileName = selectedUser.profileName;
-    this.profileImageURL = selectedUser.profileImageURL;
+    //this.profileImageURL = selectedUser.profileImageURL;
+    this.profileImageURL = this.$store.state.profile.profileImageURL;
     this.profileGenres = selectedUser.profileGenres;
     this.profileLocation = selectedUser.profileLocation;
     this.profileShows = selectedUser.profileShows;
     this.profilePlayerEmbed = selectedUser.profilePlayerEmbed;
-
-      // axios.get('get_user_genres')
-      //       .then((res) => {
-      //           console.log(res);
-      //       });
   },
   directives: {
     clickOutside: vClickOutside.directive
@@ -614,6 +612,15 @@ export default {
     .then((res) => {
         this.allGenres = res.data
     });
+
+    // axios.get('get_user_genres')
+    // .then((res) => {
+    //     console.log(res);
+    // });
+    // axios.get('get_shows_for_profile')
+    // .then((res) => {
+    //     console.log(res);
+    // });
    
  }
 }
@@ -648,18 +655,28 @@ export default {
       color: #fff;
     }
 
+    p{
+      margin-top:$spacing-xs;
+      &:before{
+        content: '\f3c5';
+        font-family: "Font Awesome 5 Pro";
+        margin-right: $spacing-xs;
+        font-weight: 300;
+      }
+    }
+
     &__image-block{
       background-color: $lightgrey;
       display: flex;
       justify-content: center;
       align-items: center;
       position: relative;
-      height: rem(200);
+      max-height: rem(200);
       overflow: hidden;
 
       @media(min-width:$desktop){
         order: 2;
-        height: auto;
+        max-height: rem(400);
       }
 
       .icon-button{
@@ -918,9 +935,18 @@ export default {
     }
   }
 
-  .hero-image-thumb,
-  .hero-image-uploading{
+  .hero-image-thumb{
     margin-top:$spacing-s;
+    height: rem(200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: rem(1) dashed $mid-grey;
+
+    @media(min-width:$desktop){
+     height: rem(250);
+    }
 
     img{
       width: 100%;
@@ -928,10 +954,23 @@ export default {
   }
 
   .hero-image-uploading{
-    background-color: $lightgrey;
+    width: 100%;
+    height: 100%;
     padding: $spacing-m;
-    border-radius: $border-radius-reg;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .pill-button:before{
+    font-family: "Font Awesome 5 Pro";
+    font-weight: 300;
+    content: '\f067';
+    margin-right: $spacing-xs;
+  }
+
+  .pill-button--selected:before{
+    content: '\f068';
   }
 
 </style>

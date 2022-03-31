@@ -5,7 +5,9 @@
     <h1>Log In</h1>
     <p>Welcome back</p>
 
+
     <form @submit.prevent="submitForm">
+      <p class="error-message" v-if="incorrectLogin">Something doesn't seem right, is your email/password correct?</p>
       <base-input class="dark" inputId="email" inputType="email" v-model="form.email" :isRequired="false" >
         <template #label>Email</template>
       </base-input>
@@ -45,17 +47,29 @@ export default {
     return{
         form: { 
           email:'',
-          password:''
-        }
+          password:'',
+        },
+        incorrectLogin: false,
     }
   },
   methods: {
     submitForm() {
        axios.post('/login', this.form)
             .then((res) => {
-                console.log(res);
+                console.log(res.data);
                 
                 this.$router.push('/profile/a8d6e035-ab80-11ec-a1d7-c8bcc88ea0d9');
+
+                if(res.data.includes('token')){
+                  console.log('has token')
+                  this.$store.commit('login')
+                  this.$router.push('/profile/a8d6e035-ab80-11ec-a1d7-c8bcc88ea0d9');
+                  //pass profile data to vuex object
+                }else{
+                  console.log('no token')
+                  this.incorrectLogin = true;
+                  //some kind of error message
+                }
                 
 
             

@@ -18,16 +18,19 @@
         
           <transition>
             <base-dialog v-if="photoDialogVisible"  @closeDialog="hideSettingsDialog('Profile Picture')">
-              <div class="profile-pic">
-                <img src="../assets/images/dummy-profile-pic.jpg" alt="profile image">
-              </div>
-              <strong>Edit Photo</strong>
               
+              <strong>Edit Photo</strong>
+              <div class="avatar-image-thumb">
+                <div v-if="!avatarImageURL && !imageUploading">Add image below</div>
+                <div v-if="imageUploading" class="avatar-image-uploading"><span class="spinner"></span>Image Uploading</div>
+                <img v-if="avatarImageURL" :src="avatarImageURL" :alt="currentName + ' profile image'">
+              </div>
               <form @submit.prevent="submitForm">
-                <choose-file-button mode="test" fileUploadID="uploadImage" fileUploadName="filename">
+                <choose-file-button @change="uploadImage" fileUploadID="uploadImage" fileUploadName="filename">
                   Choose New Image
                 </choose-file-button>
-                <base-button buttonType="submit" mode="cta cta--primary">Save</base-button>
+                <base-text-icon-button @click="deleteAvatar" mode="text-icon-button text-icon-button--trash" buttonType="button">Delete Image</base-text-icon-button>
+                <base-button @closeDialog="hideSettingsDialog('Profile Picture')" buttonType="submit" mode="cta cta--primary">Save</base-button>
               </form>
             </base-dialog>
             </transition>
@@ -38,13 +41,14 @@
                 <password-input inputId="currentPassword" v-model="currentPassword" :isRequired="false" >
                   <template #label>Current Password</template>
                 </password-input>
+                 <p class="error-message password-mismatch" v-if="passwordMismatch">Those passwords don't match</p>
                 <password-input inputId="newPassword" v-model="newPassword" :isRequired="false" >
                   <template #label>New Password</template>
                 </password-input>
                 <password-input inputId="confirmPassword" v-model="confirmPassword" :isRequired="false" >
                   <template #label>Confirm Password</template>
                 </password-input>
-                <base-button buttonType="submit" mode="cta cta--primary">Save</base-button>
+                <base-button @click="setNewPassword" buttonType="submit" mode="cta cta--primary">Save</base-button>
               </form>
             </base-dialog>
             </transition>
@@ -96,8 +100,8 @@
       <div class="sidebar-nav">
         <base-text-icon-button @click="displaySettingsDialog('Profile Picture')" mode="text-icon-button text-icon-button--photo" :class="{'text-icon-button--active': photoDialogVisible}" buttonType="button">Edit Profile Picture</base-text-icon-button>
         <base-text-icon-button @click="displaySettingsDialog('Manage Password')" mode="text-icon-button text-icon-button--key" :class="{'text-icon-button--active': passwordDialogVisible}" buttonType="button">Manage Password</base-text-icon-button>
-        <base-text-icon-button @click="displaySettingsDialog('Change Location')" mode="text-icon-button text-icon-button--marker" :class="{'text-icon-button--active': locationDialogVisible}" buttonType="button">Change Location</base-text-icon-button>
         <base-text-icon-button @click="displaySettingsDialog('Change Name')" mode="text-icon-button text-icon-button--tag" :class="{'text-icon-button--active': nameDialogVisible}" buttonType="button">Change Name</base-text-icon-button>
+        <base-text-icon-button @click="displaySettingsDialog('Change Location')" mode="text-icon-button text-icon-button--marker" :class="{'text-icon-button--active': locationDialogVisible}" buttonType="button">Change Location</base-text-icon-button>
         <base-text-icon-button @click="displaySettingsDialog('Delete Account')" mode="text-icon-button text-icon-button--trash" :class="{'text-icon-button--active': deleteAccountDialogVisible || confirmDeleteAccountDialogVisible}" buttonType="button">Delete Account</base-text-icon-button>
       </div>
     </div>
@@ -105,6 +109,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import vClickOutside from 'click-outside-vue3'
 import TheHeader from '../components/layouts/TheHeader.vue';
 import BaseDialog from '../components/UI/BaseDialog.vue';
@@ -125,19 +130,22 @@ export default {
   },
   data() {
     return{
+      avatarImageURL: '',
+      imageUploading: false,
       photoDialogVisible: false,
       passwordDialogVisible: false,
       locationDialogVisible: false,
       nameDialogVisible: false,
       deleteAccountDialogVisible: false,
       confirmDeleteAccountDialogVisible: false,
-      currentName: 'Name from account',
-      currentLocation: 'Location from account',
+      currentName: this.$store.state.profile.profileName,
+      currentLocation: this.$store.state.profile.profileLocation,
       currentPassword: '',
       newPassword: '',
       confirmPassword: '',
       newLocation: '',
-      newName: ''
+      newName: '',
+      passwordMismatch: false
 
     } 
   },
@@ -186,17 +194,57 @@ export default {
     },
     submitName(){
       this.currentName = this.newName;
+      this.$store.commit('setNewProfileName', this.newName);
       this.newName = '';
       this.nameDialogVisible = false
     },
     submitLocation(){
       this.currentLocation = this.newLocation;
+      this.$store.commit('setNewProfileLocation', this.newLocation);
       this.newLocation = '';
       this.locationDialogVisible = false
+    },
+
+     uploadImage(event){
+      const formData = new FormData;
+      formData.append('file', event.target.files[0]);
+      formData.append('upload_preset', 'vfbrvxkj');
+      this.avatarImageURL = "";
+      this.imageUploading = true;
+      axios.post('https://api.cloudinary.com/v1_1/dgddraffq/image/upload', formData)
+        .then((res) => {
+           let publicID = res.data.public_id;
+           this.imageUploading = false;
+           this.avatarImageURL = "https://res.cloudinary.com/dgddraffq/image/upload/f_auto,q_auto:best,c_fill,g_faces/v1648123420/"+publicID+".jpg";
+           //this.profiles.find(profile => profile.profileName).profileImageURL = this.profileImageURL;
+           this.$store.commit('setAvatarImage', this.avatarImageURL);
+      });
+      axios.post('/add_image', {
+          url: this.avatarImageURL,
+        })
+            .then((res) => {
+                console.log(res);
+                
+            });
+
+    },
+    deleteAvatar(){
+      this.avatarImageURL = '';
+    },
+    setNewPassword(){
+      if(this.newPassword != this.confirmPassword){
+        this.passwordMismatch = true;
+      }else{
+        //Password matches
+      }
     }
   },
   directives: {
     clickOutside: vClickOutside.directive
+  },
+  computed(){
+      this.currentName = this.$store.state.profile.profileName;
+      this.currentLocation = this.$store.state.profile.profileLocation;
   }
 }
 </script>
@@ -296,20 +344,29 @@ export default {
     }
   }
 
-  .profile-pic{
-    margin: 0 auto;
+  .avatar-image-thumb{
+    margin-top:$spacing-s;
+    height: rem(200);
+    width: rem(200);
     border-radius: 100%;
-    overflow: hidden;
-    width: 100%;
-    max-width: rem(200);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom:$spacing-m;
+    overflow: hidden;
+    border: rem(1) dashed $mid-grey;
 
     img{
-      width:100%;
+      width: 100%;
     }
+  }
+
+  .avatar-image-uploading{
+    width: 100%;
+    height: 100%;
+    padding: $spacing-m;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .sidebar-nav{
@@ -321,6 +378,10 @@ export default {
       padding: $spacing-m;
       border-radius: $border-radius-reg;
     }
+  }
+
+  .password-mismatch{
+    margin-top:$spacing-m;
   }
 
 

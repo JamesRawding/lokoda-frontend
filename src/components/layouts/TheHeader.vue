@@ -2,7 +2,7 @@
   <header>
     <!-- <router-link v-if="loggedIn" to="/profile"><img src="../../assets/images/lokoda-logo.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
     <router-link v-else to="/"><img src="../../assets/images/lokoda-logo.svg" alt="lokoda logo"><span class="sr-only">Log in</span></router-link> -->
-    <router-link v-if="$store.state.loggedIn" to="/profile"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
+    <router-link v-if="$store.state.loggedIn" :to="this.$store.state.profile.profileURL"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
     <router-link v-else to="/"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">Log in</span></router-link>
     <div class="header-nav-items">
       <header-nav></header-nav>
@@ -19,7 +19,7 @@
     <transition>
       <base-dialog  @closeDialog="hideProfileDialog" v-if="isProfileDialogDisplayed">
         <strong>Profile Options</strong>
-        <base-text-icon-link mode="text-icon-link text-icon-link--profile" path="/profile">View Profile</base-text-icon-link>
+        <base-text-icon-link mode="text-icon-link text-icon-link--profile" :path="this.$store.state.profile.profileURL">View Profile</base-text-icon-link>
         <base-text-icon-link mode="text-icon-link text-icon-link--account" path="/account-settings">Account Settings</base-text-icon-link>
         <base-text-icon-button mode="text-icon-button text-icon-button--qr">Print QR Code</base-text-icon-button>
         <base-text-icon-button @click="logout" mode="text-icon-button text-icon-button--logout">Log Out</base-text-icon-button>

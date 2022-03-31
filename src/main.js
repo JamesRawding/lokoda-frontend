@@ -11,7 +11,7 @@ import VueAxios from 'vue-axios';
 const store = createStore({
   state(){
     return {
-      loggedIn: true,
+      loggedIn: false,
       userID: '',
       messagesUnread: 2,
       newContact: {
@@ -23,13 +23,18 @@ const store = createStore({
       profiles:[],
       profile:{
         profileType:'',
-        profileURL: '',
+        profileURL: '/profile/a8d6e035-ab80-11ec-a1d7-c8bcc88ea0d9',
         profileImageURL: '',
         profileName: '',
         profileLocation: '',
         profileGenres: [],
         profileShows: [],
-        profilePlayerEmbed: ''
+        profilePlayerEmbed: '',
+        profileAvatarURL:'',
+        profileEmail:'',
+        profileMessages:[],
+        profileContacts:[],
+        profilePassword:'',
       },
     };
   },
@@ -85,6 +90,18 @@ const store = createStore({
       state.newContact.contactID = '';
       state.newContact.contactName = '';
       state.newContact.contactProfilePic = '';
+    },
+    setHeroImage(state, payload){
+      state.profile.profileImageURL = payload;
+    },
+    setAvatarImage(state, payload){
+      state.profile.profileAvatarURL = payload;
+    },
+    setNewProfileName(state, payload){
+      state.profile.profileName = payload;
+    },
+    setNewProfileLocation(state, payload){
+      state.profile.profileLocation = payload;
     }
   }
 });

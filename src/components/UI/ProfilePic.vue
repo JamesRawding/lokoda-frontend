@@ -1,6 +1,6 @@
 <template>
-  <div v-if="profileImageSet" class="profile-image">
-    <img src="../../assets/images/dummy-profile-pic.jpg" alt="profile image">
+  <div v-if="avatarURL" class="profile-image">
+    <img :src="avatarURL" :alt="this.$store.state.profile.profileName + 'profile image'">
   </div>
   <div v-else class="profile-image profile-image--fallback"></div>
 </template>
@@ -10,7 +10,7 @@
 export default {
   data(){
     return {
-      profileImageSet: true
+      avatarURL: this.$store.state.profile.profileAvatarURL,
     }
   },
 }

@@ -10,15 +10,9 @@
 //import axios from 'axios';
 export default {
  created(){
+
    return this.$store.commit('loggedIn')
  },
-//  mounted(){
-//    axios.get('/get_genres')
-//     .then((res) => {
-//         this.$store.commit('populateGenres',res.data)
-        
-//     });
-//  }
 }
 </script>
 
@@ -120,6 +114,7 @@ body{
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size:$copy-mobile;
+  color: $copy;
 
   @media(min-width:$desktop){
     font-size:$copy-desktop;
@@ -135,13 +130,13 @@ body{
 }
 
 p{
-  color: $copy;
   line-height: $copy-line-height;
 }
 
 h1,
 h2,
 h3{
+  color: inherit;
   font-weight: bold;
   line-height: $heading-line-height;
 }
@@ -189,6 +184,10 @@ a{
   text-decoration: underline;
   text-decoration-thickness: rem(1);
   text-underline-offset: 0.1em;
+
+  // p,h1,h2,h3,span{
+  //   color: $link;
+  // }
 
   &:hover{
     text-decoration-thickness: rem(2);
@@ -280,6 +279,16 @@ a{
     overflow: hidden;
     padding: 0;
     position: absolute;
+}
+
+.error-message{
+  background-color: $rag-red;
+  color:#fff;
+  border-radius: $border-radius-reg;
+  padding: $spacing-s;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: $box-shadow;
 }
 </style>
 
