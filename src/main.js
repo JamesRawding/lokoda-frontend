@@ -13,6 +13,7 @@ const store = createStore({
     return {
       loggedIn: false,
       userID: '',
+      token: '',
       messagesUnread: 2,
       newContact: {
         contactID: '',
@@ -39,8 +40,10 @@ const store = createStore({
     };
   },
   mutations:{
-    login(state){
+    login(state, payload){
       state.loggedIn = true;
+      state.userID = payload.userID;
+      state.token = payload.token;
     },
     loggedIn(state){
 

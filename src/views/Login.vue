@@ -56,21 +56,13 @@ export default {
     submitForm() {
        axios.post('/login', this.form)
             .then((res) => {
-                console.log(res.data);
                 
-                this.$router.push('/profile/a8d6e035-ab80-11ec-a1d7-c8bcc88ea0d9');
-
-                if(res.data.includes('token')){
-                  console.log('has token')
-                  this.$store.commit('login')
-                  this.$router.push('/profile/a8d6e035-ab80-11ec-a1d7-c8bcc88ea0d9');
-                  //pass profile data to vuex object
-                }else{
-                  console.log('no token')
-                  this.incorrectLogin = true;
-                  //some kind of error message
-                }
-                
+                this.$store.commit({
+                    type: 'login',
+                    userID: res.data.id,
+                    token: res.data.token
+                });
+                this.$router.push('/profile/' + res.data.id);
 
             
                 function setCookie(cname, cvalue, exdays) {
@@ -82,7 +74,6 @@ export default {
 
                 setCookie('loggedIn','user is logged in', 2 );
 
-                this.$store.commit('login')
             });
             
     }
