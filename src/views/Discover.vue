@@ -3,7 +3,7 @@
     <the-header></the-header>
     <section class="discover-intro">
       <h1>Discover</h1>
-      <p>Find artists/promoters in your area. Search by <strong>city/postcode</strong> or by <strong>name</strong>.</p>
+      <p>Find artists/promoters in your area. Search by <strong>city</strong> or by <strong>name</strong>.</p>
     </section>
     <div class="segmented-controls">
       <base-button :class="{'segmented-control--active': artistsVisible}" mode="cta cta--secondary" buttonType="button" @click="showResultType('artist')">Artists</base-button>
@@ -382,11 +382,11 @@ export default {
 <style lang="scss" scoped>
   .discover-intro{
     text-align: center;
-    margin-top:$spacing-m;
+    margin-top:$spacing-l;
 
-    @media(min-width:$desktop){
-      margin-top:$spacing-l;
-    }
+    // @media(min-width:$desktop){
+    //   margin-top:$spacing-l;
+    // }
 
     p{
       margin-top:$spacing-s;

@@ -2,7 +2,7 @@
 <focus-trap>
   <dialog :class="mode" open>
     <div v-click-outside="clickToClose" class="dialog-inner">
-      <base-icon-button mode="icon-button icon-button--close" @click="clickToClose">Close dialog</base-icon-button>
+      <base-icon-button mode="icon-button icon-button--close" ariaLabel="Close dialog" @click="clickToClose"></base-icon-button>
       <slot></slot>
     </div>
   </dialog>

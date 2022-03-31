@@ -96,6 +96,7 @@ $spacing-xl: rem(128);
 @mixin baseLabel{
   display: block;
   font-weight: bold;
+  //color: $copy;
 
   span{
     margin-left:$spacing-s;

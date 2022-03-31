@@ -58,6 +58,7 @@ export default {
     right: 0;
     color: $copy;
     background-color: transparent;
+    margin-right: $spacing-xs;
 
     @media(min-width:$desktop){
       bottom: rem(4);

@@ -5,7 +5,9 @@
     <h1>Log In</h1>
     <p>Welcome back</p>
 
+
     <form @submit.prevent="submitForm">
+      <p class="error-message" v-if="incorrectLogin">Something doesn't seem right, is your email/password correct?</p>
       <base-input class="dark" inputId="email" inputType="email" v-model="form.email" :isRequired="false" >
         <template #label>Email</template>
       </base-input>
@@ -45,8 +47,9 @@ export default {
     return{
         form: { 
           email:'',
-          password:''
-        }
+          password:'',
+        },
+        incorrectLogin: false,
     }
   },
   methods: {
@@ -60,7 +63,6 @@ export default {
                     token: res.data.token
                 });
                 this.$router.push('/profile/' + res.data.id);
-                //this.$router.push('/profile/a8d6e035-ab80-11ec-a1d7-c8bcc88ea0d9'); 
 
             
                 function setCookie(cname, cvalue, exdays) {

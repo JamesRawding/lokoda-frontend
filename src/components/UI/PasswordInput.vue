@@ -93,6 +93,7 @@ export default {
     bottom:0;
     right: 0;
     color: $copy;
+    margin-right: $spacing-xs;
 
     @media(min-width:$desktop){
       bottom: rem(4);
