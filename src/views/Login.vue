@@ -53,10 +53,14 @@ export default {
     submitForm() {
        axios.post('/login', this.form)
             .then((res) => {
-                console.log(res);
                 
-                this.$router.push('/profile/a8d6e035-ab80-11ec-a1d7-c8bcc88ea0d9');
-                
+                this.$store.commit({
+                    type: 'login',
+                    userID: res.data.id,
+                    token: res.data.token
+                });
+                this.$router.push('/profile/' + res.data.id);
+                //this.$router.push('/profile/a8d6e035-ab80-11ec-a1d7-c8bcc88ea0d9'); 
 
             
                 function setCookie(cname, cvalue, exdays) {
@@ -68,7 +72,6 @@ export default {
 
                 setCookie('loggedIn','user is logged in', 2 );
 
-                this.$store.commit('login')
             });
             
     }

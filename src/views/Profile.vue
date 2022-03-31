@@ -214,7 +214,7 @@ export default {
   }, 
   data() {
     return{
-      userID: 'a8d6e035-ab80-11ec-a1d7-c8bcc88ea0d9',
+      userID: this.$store.state.userID,
       imageUploading: false,
       profileURL: '',
       profileID: '',
@@ -236,7 +236,7 @@ export default {
           profilePlayerEmbed: ''
         },
         {
-          profileURL: 'a8d6e035-ab80-11ec-a1d7-c8bcc88ea0d9',
+          profileURL: this.$store.state.userID,
           profileImageURL:'',
           profileName: 'Goldie lookin chain',
           profileLocation: 'Hull',
