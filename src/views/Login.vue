@@ -62,7 +62,8 @@ export default {
                     userID: res.data.id,
                     token: res.data.token
                 });
-                this.$router.push('/profile/' + res.data.id);
+                
+                
 
             
                 function setCookie(cname, cvalue, exdays) {
@@ -72,7 +73,8 @@ export default {
                   document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
                 }
 
-                setCookie('loggedIn','user is logged in', 2 );
+                setCookie('loggedIn',res.data.id, 2 );
+                this.$router.push('/profile/' + res.data.id);
 
             });
             

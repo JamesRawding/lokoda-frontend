@@ -13,6 +13,7 @@ const store = createStore({
     return {
       loggedIn: false,
       userID: '',
+      cookieID: '',
       token: '',
       messagesUnread: 2,
       newContact: {
@@ -24,7 +25,7 @@ const store = createStore({
       profiles:[],
       profile:{
         profileType:'',
-        profileURL: '/profile/a8d6e035-ab80-11ec-a1d7-c8bcc88ea0d9',
+        profileURL: '',
         profileImageURL: '',
         profileName: '',
         profileLocation: '',
@@ -64,19 +65,31 @@ const store = createStore({
       
       function checkCookie() {
         let user = getCookie("loggedIn");
-        if (user != "") {
+        if (user !== '' ) {
           //alert("Welcome again " + user);
           state.loggedIn = true;
+          state.cookieID = user;
         } else {
           state.loggedIn = false;
         }
       }
+
+      // if(state.token !=""){
+      //   state.loggedIn = true;
+      // }else{
+      //   state.loggedIn = false;
+      // }
 
       checkCookie();
     },
     
     logout(state){
       state.loggedIn = false;
+      function deleteCookie(name) {
+        document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      }
+      deleteCookie('loggedIn')
+
     },
     messagesUnreadIncrement(state){
       state.messagesUnread += 1;
@@ -94,8 +107,17 @@ const store = createStore({
       state.newContact.contactName = '';
       state.newContact.contactProfilePic = '';
     },
+    setProfileURL(state, payload){
+      state.profile.profileURL = payload;
+    },
     setHeroImage(state, payload){
       state.profile.profileImageURL = payload;
+    },
+    deleteHeroImage(state){
+      state.profile.profileImageURL = '';
+    },
+    setEmbedURL(state, payload){
+      state.profile.profilePlayerEmbed = payload;
     },
     setAvatarImage(state, payload){
       state.profile.profileAvatarURL = payload;

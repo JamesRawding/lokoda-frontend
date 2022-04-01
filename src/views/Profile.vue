@@ -215,7 +215,7 @@ export default {
   }, 
   data() {
     return{
-      userID: this.$store.state.userID,
+      userID: this.$store.state.cookieID,
       imageUploading: false,
       profileURL: '',
       profileID: '',
@@ -237,7 +237,7 @@ export default {
           profilePlayerEmbed: ''
         },
         {
-          profileURL: this.$store.state.userID,
+          profileURL: 'a8d6e035-ab80-11ec-a1d7-c8bcc88ea0d9',
           profileImageURL:'',
           profileName: 'Goldie lookin chain',
           profileLocation: 'Hull',
@@ -598,11 +598,15 @@ export default {
     this.profileID = selectedUser.profileURL;
     this.profileName = selectedUser.profileName;
     //this.profileImageURL = selectedUser.profileImageURL;
-    this.profileImageURL = this.$store.state.profile.profileImageURL;
     this.profileGenres = selectedUser.profileGenres;
     this.profileLocation = selectedUser.profileLocation;
     this.profileShows = selectedUser.profileShows;
     this.profilePlayerEmbed = selectedUser.profilePlayerEmbed;
+
+      // axios.get('get_user_genres')
+      //       .then((res) => {
+      //           console.log(res);
+      //       });
   },
   directives: {
     clickOutside: vClickOutside.directive
@@ -612,15 +616,6 @@ export default {
     .then((res) => {
         this.allGenres = res.data
     });
-
-    // axios.get('get_user_genres')
-    // .then((res) => {
-    //     console.log(res);
-    // });
-    // axios.get('get_shows_for_profile')
-    // .then((res) => {
-    //     console.log(res);
-    // });
    
  }
 }
