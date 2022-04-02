@@ -80,12 +80,12 @@
       <section class="upcoming-shows" v-if="profileShows.length">
         <h2>Upcoming Shows</h2>
         <base-icon-button v-if="$store.state.loggedIn && userID == profileID" @click="displaySettingsDialog('Manage Shows')" buttonType="button" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit shows"></base-icon-button>
-        <show-card @editThisShow="editShow(show)" @deleteThisShow="deleteShow(show)" v-for="show in profileShowsResults" :key="show">
+        <show-card @editThisShow="editShow(show)" @deleteThisShow="deleteShow(show)" v-for="show in profileShows" :key="show">
           <template #month>{{show.showMonth}}</template>
           <template #day>{{show.showDay}}</template>
           <template #year>{{show.showYear}}</template>
-          <template #city>{{show.showCity}}</template>
-          <template #venue>{{show.showVenue}}</template>
+          <template #city>{{show.city}}</template>
+          <template #venue>{{show.venue}}</template>
         </show-card>
         <base-text-icon-button v-if="profileShows.length > 3" @click="toggleShowListings" mode="text-icon-button text-icon-button--list" buttonType="button"> <span v-if="fullListingVisible">Hide Full Listing</span><span v-else>View Full Listing</span></base-text-icon-button>
 
