@@ -226,26 +226,6 @@ export default {
       profileGenres: [],
       profileShows: [],
       profilePlayerEmbed: '',
-      profiles:[
-        {
-          profileURL: 'down-to-folk',
-          profileImageURL: '',
-          profileName: 'Down to Folk',
-          profileLocation: 'Sheffield',
-          profileGenres: [],
-          profileShows: [],
-          profilePlayerEmbed: ''
-        },
-        {
-          profileURL: 'a8d6e035-ab80-11ec-a1d7-c8bcc88ea0d9',
-          profileImageURL:'',
-          profileName: 'Goldie lookin chain',
-          profileLocation: 'Hull',
-          profileGenres: [],
-          profileShows: [],
-          profilePlayerEmbed: '',
-        }
-      ],
       allGenres:[],
       heroDialogVisible: false,
       genresDialogVisible: false,
@@ -328,7 +308,7 @@ export default {
     selectGenres(evt){
       const genre = evt
       //console.log(genre)
-      const selectedGenres = this.profiles.find(profile => profile.profileName).profileGenres = this.profileGenres;
+      const selectedGenres = this.profileGenres;
       const index = selectedGenres.indexOf(evt);
       
       
@@ -338,18 +318,16 @@ export default {
         }
       }else{
         selectedGenres.push(genre);
-        // axios.post('/add_genre', {
-        //   user_id: this.userID, 
-        //   genre_id: genre.id
-        // })
-        //     .then((res) => {
-        //         console.log(res);
-                
-        //     });
+         axios.post('/add_genre', {
+           user_id: this.userID, 
+           genre_id: genre.id
+         }).then((res) => {
+            console.log(res);
+         });
       }
     },
     submitShowForm(){
-      const shows = this.profiles.find(profile => profile.profileName).profileShows = this.profileShows;
+      const shows = this.profileShows;
       
       if(this.showDay.startsWith('0')){
         this.showDay = this.showDay.substring(1)
@@ -406,17 +384,15 @@ export default {
         showVenue: this.showVenue,
       }
 
-      // axios.post('/new_show', {
-      //    city: this.showCity,
-      //    venue: this.showVenue,
-      //    day: this.showDay,
-      //    month: this.showMonth,
-      //    year: this.showYear,
-      //   })
-      //       .then((res) => {
-      //           console.log(res);
-                
-      //       });
+       axios.post('/add_show', {
+           city: this.showCity,
+           venue: this.showVenue,
+           day: parseInt(this.showDay, 10),
+           month: parseInt(month, 10),
+           year: parseInt(this.showYear, 10),
+       }).then((res) => {
+           console.log(res);
+       });
 
       shows.unshift(newShow);
       this.showDay = '';
@@ -597,9 +573,7 @@ export default {
     clickOutside: vClickOutside.directive
   },
   mounted(){
-        axios.get('/get_genres').then((res) => {
-            this.allGenres = res.data
-        });
+        this.allGenres = this.$store.state.genres;
         axios.get('/profile').then((res) => {
             this.profileID = res.data.id;
             this.profileName = res.data.name;
@@ -609,9 +583,11 @@ export default {
         });
        axios.get('/get_user_genres').then((res) => {
            this.profileGenres = res.data;
+           this.$store.state.profile.profileGenres = res.data;
        });
        axios.get('/get_user_shows').then((res) => {
            this.profileShows = res.data;
+           this.$store.state.profile.profileShows = res.data;
        });
   }
 }

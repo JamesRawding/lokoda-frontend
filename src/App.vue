@@ -7,12 +7,17 @@
 </template>
 
 <script>
-//import axios from 'axios';
+import axios from 'axios';
 export default {
  created(){
 
    return this.$store.commit('loggedIn')
  },
+    mounted(){
+        axios.get('/get_genres').then((res) => {
+            this.$store.state.genres = res.data
+        });
+    }
 }
 </script>
 

@@ -22,6 +22,7 @@ const store = createStore({
         contactProfilePic: '',
         contactBlocked: false
       },
+      genres:[],
       profiles:[],
       profile:{
         profileType:'',
