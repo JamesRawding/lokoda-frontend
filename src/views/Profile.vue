@@ -215,9 +215,9 @@ export default {
   }, 
   data() {
     return{
-      userID: this.$store.state.cookieID,
+      userID: this.$store.state.userID,
       imageUploading: false,
-      profileURL: '',
+      profileURL: this.$store.state.userID,
       profileID: '',
       profileName: '',
       profileLocation: '',
@@ -591,33 +591,29 @@ export default {
       }
     }
   },
-  created(){
-    
-    const url = this.$route.params.profileURL;
-    const selectedUser = this.profiles.find(profile => profile.profileURL === url);
-    this.profileID = selectedUser.profileURL;
-    this.profileName = selectedUser.profileName;
-    //this.profileImageURL = selectedUser.profileImageURL;
-    this.profileGenres = selectedUser.profileGenres;
-    this.profileLocation = selectedUser.profileLocation;
-    this.profileShows = selectedUser.profileShows;
-    this.profilePlayerEmbed = selectedUser.profilePlayerEmbed;
-
-      // axios.get('get_user_genres')
-      //       .then((res) => {
-      //           console.log(res);
-      //       });
+    created(){
   },
   directives: {
     clickOutside: vClickOutside.directive
   },
-   mounted(){
-   axios.get('/get_genres')
-    .then((res) => {
-        this.allGenres = res.data
-    });
-   
- }
+  mounted(){
+        axios.get('/get_genres').then((res) => {
+            this.allGenres = res.data
+        });
+        axios.get('/profile').then((res) => {
+            this.profileID = res.data.id;
+            this.profileName = res.data.name;
+            this.profileImageURL = res.data.image_url;
+            this.profilePlayerEmbed = res.data.embed_url;
+            this.profileLocation = res.data.location;
+        });
+       axios.get('/get_user_genres').then((res) => {
+           this.profileGenres = res.data;
+       });
+       axios.get('/get_user_shows').then((res) => {
+           this.profileShows = res.data;
+       });
+  }
 }
 </script>
 

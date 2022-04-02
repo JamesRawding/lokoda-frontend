@@ -1,29 +1,26 @@
 <template>
-<main>
-    <!-- <img src="../assets/images/lokoda-logo-reverse.svg" alt="lokoda logo"> -->
-    <img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo-reverse_bjnnfx.svg" alt="lokoda logo">
-    <h1>Log In</h1>
-    <p>Welcome back</p>
+    <main>
+        <!-- <img src="../assets/images/lokoda-logo-reverse.svg" alt="lokoda logo"> -->
+        <img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo-reverse_bjnnfx.svg" alt="lokoda logo">
+        <h1>Log In</h1>
+        <p>Welcome back</p>
 
+        <form @submit.prevent="submitForm">
+            <p class="error-message" v-if="incorrectLogin">Something doesn't seem right, is your email/password correct?</p>
+            <base-input class="dark" inputId="email" inputType="email" v-model="form.email" :isRequired="false" >
+                <template #label>Email</template>
+            </base-input>
+            <password-input class="dark" inputId="password" v-model="form.password" :isRequired="false" >
+                <template #label>Password</template>
+            </password-input>
+            <div class="link-container">
+                <router-link to="/password-reset">Forgot password?</router-link>
+            </div>
+            <base-button buttonType="submit" mode="cta cta--primary">Log In</base-button>
+        </form>
+        <span class="registration-text">Not got an account? <router-link to="/registration">Sign up now</router-link></span>
 
-    <form @submit.prevent="submitForm">
-      <p class="error-message" v-if="incorrectLogin">Something doesn't seem right, is your email/password correct?</p>
-      <base-input class="dark" inputId="email" inputType="email" v-model="form.email" :isRequired="false" >
-        <template #label>Email</template>
-      </base-input>
-      <password-input class="dark" inputId="password" v-model="form.password" :isRequired="false" >
-        <template #label>Password</template>
-      </password-input>
-      <div class="link-container">
-        <router-link to="/password-reset">Forgot password?</router-link>
-      </div>
-      <base-button buttonType="submit" mode="cta cta--primary">Log In</base-button>
-    </form>
-    <span class="registration-text">Not got an account? <router-link to="/registration">Sign up now</router-link></span>
-    
-    
-
-</main>
+    </main>
 </template>
 <script>
 import axios from 'axios';
@@ -39,7 +36,6 @@ export default {
   mounted() {
       axios.get('/health_check')
           .then (response => {
-              console.log("Back end health check okay");
               console.log(response);
           });
   },
@@ -63,19 +59,7 @@ export default {
                     token: res.data.token
                 });
                 
-                
-
-            
-                function setCookie(cname, cvalue, exdays) {
-                  const d = new Date();
-                  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-                  let expires = "expires="+d.toUTCString();
-                  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-                }
-
-                setCookie('loggedIn',res.data.id, 2 );
                 this.$router.push('/profile/' + res.data.id);
-
             });
             
     }
