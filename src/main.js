@@ -66,13 +66,17 @@ const store = createStore({
       
       function checkCookie() {
         let user = getCookie("loggedIn");
+        
         if (user !== '' ) {
           //alert("Welcome again " + user);
           state.loggedIn = true;
           state.cookieID = user;
+          state.userID = user;
+          state.token = true;
         } else {
           state.loggedIn = false;
         }
+
       }
 
       // if(state.token !=""){
@@ -82,6 +86,7 @@ const store = createStore({
       // }
 
       checkCookie();
+      //console.log(state.userID)
     },
     
     logout(state){

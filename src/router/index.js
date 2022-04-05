@@ -3,7 +3,7 @@ import Login from '../views/Login.vue'
 
 const routes = [
   {
-    path: '/',
+    path: '/login',
     name: 'Login',
     component: Login,
     meta: {
@@ -32,6 +32,14 @@ const routes = [
     component: () => import('../views/CreateNewPassword.vue'),
     meta: {
       title: 'Create New Password',
+    }
+  },
+  {
+    path: '/',
+    name: 'Discover',
+    component: () => import('../views/Discover.vue'),
+    meta: {
+      title: 'Discover',
     }
   },
   {

@@ -45,7 +45,7 @@
         <transition>
         <base-dialog mode="modal-dialog" v-if="genresDialogVisible"  @closeDialog="hideSettingsDialog('Genres')">
           <strong class="display-block">Select Genres</strong>
-          <base-pill-button buttonType="button" @click="selectGenres(genre)" :class="{'pill-button--selected': this.profileGenres.includes(genre)}" mode="pill-button pill-button--default" v-for="genre in allGenres" :key="genre">
+          <base-pill-button buttonType="button" @click="selectGenres(genre)" :class="{'pill-button--selected': selectedProfileGenres(genre)}" mode="pill-button pill-button--default" v-for="genre in allGenres" :key="genre">
             {{genre.genre}}
           </base-pill-button>
           <base-button @click="hideSettingsDialog('Genres')" buttonType="button" mode="cta cta--primary">Save</base-button>
@@ -220,6 +220,7 @@ export default {
       profileURL: this.$store.state.userID,
       profileID: '',
       profileName: '',
+      profileEmail: '',
       profileLocation: '',
       profileContactDetails:[],
       profileImageURL: '',
@@ -282,14 +283,14 @@ export default {
       }
       if(evt == 'Embed Player'){
         this.profilePlayerEmbed = this.profilePlayerEmbed.match(/\bhttps?:\/\/\S+/gi)[0];
-        this.profiles.find(profile => profile.profileName).profilePlayerEmbed = this.profilePlayerEmbed;
-        // axios.post('/add_embed_url', {
-        //   url: this.profilePlayerEmbed,
-        // })
-        //     .then((res) => {
-        //         console.log(res);
+        //this.profiles.find(profile => profile.profileName).profilePlayerEmbed = this.profilePlayerEmbed;
+        axios.post('/add_embed_url', {
+          url: this.profilePlayerEmbed,
+        })
+            .then((res) => {
+                console.log(res);
                 
-        //     });
+            });
         this.embedDialogVisible = false
       }
       if(evt == 'Manage Shows'){
@@ -310,20 +311,28 @@ export default {
       //console.log(genre)
       const selectedGenres = this.profileGenres;
       const index = selectedGenres.indexOf(evt);
+       console.log(selectedGenres)
+      // console.log(genre)
       
       
       if(selectedGenres.includes(genre)){
         if (index > -1) {
           selectedGenres.splice(index, 1);
+        //   axios.delete('/add_genre', {
+        //    user_id: this.userID, 
+        //    genre_id: genre.id
+        //  }).then((res) => {
+        //     console.log(res);
+        //  });
         }
       }else{
         selectedGenres.push(genre);
-         axios.post('/add_genre', {
-           user_id: this.userID, 
-           genre_id: genre.id
-         }).then((res) => {
-            console.log(res);
-         });
+        //  axios.post('/add_genre', {
+        //    user_id: this.userID, 
+        //    genre_id: genre.id
+        //  }).then((res) => {
+        //     console.log(res);
+        //  });
       }
     },
     submitShowForm(){
@@ -372,9 +381,9 @@ export default {
           this.showMonth = "Dec";
       }
 
-      if(!this.showYear.startsWith('20') && this.showYear.length != 3){
-        this.showYear = '20'+this.showYear
-      }
+      // if(!this.showYear.startsWith('20') && this.showYear.length != 3){
+      //   this.showYear = '20'+this.showYear
+      // }
 
       const newShow = {
         showDay: this.showDay,
@@ -409,13 +418,17 @@ export default {
     
     editShow(evt){
       const show = evt
-      const shows = this.profiles.find(profile => profile.profileName).profileShows = this.profileShows;
-      const index = shows.indexOf(evt);
+      //const shows = this.profiles.find(profile => profile.profileName).profileShows = this.profileShows;
+     const shows = this.profileShows;
+     const index = shows.indexOf(evt);
+     
       this.selectedShow = show;
       this.selectedShowIndex = index;
-      if(!show.showDay.startsWith('0') && show.showDay.length == 1){
-        show.showDay = '0'+show.showDay
-      }
+      console.log(this.selectedShow)
+      // console.log(this.selectedShowIndex)
+      // if(!show.showDay.startsWith('0') && show.showDay.length == 1){
+      //   show.showDay = '0'+show.showDay
+      // }
       const month = show.showMonth;
       switch (month){
         case 'Jan':
@@ -509,7 +522,8 @@ export default {
     },
     deleteShow(evt){
       const show = evt
-      const shows = this.profiles.find(profile => profile.profileName).profileShows = this.profileShows;
+      //const shows = this.profiles.find(profile => profile.profileName).profileShows = this.profileShows;
+      const shows = this.profileShows;
       const index = shows.indexOf(evt);
       this.selectedShow = show;
       this.selectedShowIndex = index;
@@ -517,8 +531,11 @@ export default {
       this.showsDialogVisible = false
     },
     confirmDeleteShow(){
-      const shows = this.profiles.find(profile => profile.profileName).profileShows = this.profileShows;
-
+      const shows = this.profileShows;
+      //const shows = this.profiles.find(profile => profile.profileName).profileShows = this.profileShows;
+  console.log(shows);
+  console.log(this.selectedShow)
+  console.log(this.selectedShowIndex)
       if(shows.includes(this.selectedShow)){
         if (this.selectedShowIndex > -1) {
           shows.splice(this.selectedShowIndex, 1);
@@ -540,7 +557,7 @@ export default {
            let publicID = res.data.public_id;
            this.imageUploading = false;
            this.profileImageURL = "https://res.cloudinary.com/dgddraffq/image/upload/f_auto,q_auto:best,c_fill,g_faces/v1648123420/"+publicID+".jpg";
-           this.profiles.find(profile => profile.profileName).profileImageURL = this.profileImageURL;
+           //this.profiles.find(profile => profile.profileName).profileImageURL = this.profileImageURL;
            this.$store.commit('setHeroImage', this.profileImageURL);
       });
       axios.post('/add_image', {
@@ -556,6 +573,15 @@ export default {
     deleteHero(){
       this.profileImageURL = '';
     },
+    selectedProfileGenres(genre){
+      for (let i = 0; i < this.profileGenres.length; i++) {
+        let selectedGenres = this.profileGenres[i].genre
+
+        if(selectedGenres == genre.genre){
+          return true;
+        }
+      }  
+    }
     
   },
   computed:{
@@ -565,7 +591,8 @@ export default {
       }else{
         return this.profileShows
       }
-    }
+    },
+    
   },
     created(){
   },
@@ -573,23 +600,59 @@ export default {
     clickOutside: vClickOutside.directive
   },
   mounted(){
-        this.allGenres = this.$store.state.genres;
-        axios.get('/profile').then((res) => {
+        //this.allGenres = this.$store.state.genres;
+        const url = this.$route.params.profileURL;
+        if(this.$store.state.userID == url){
+          //console.log('token')
+           axios.get('/get_user_genres').then((res) => {
+              this.profileGenres = res.data;
+              console.log(res.data)
+              //this.$store.state.profile.profileGenres = res.data;
+          });
+          axios.get('/get_user_shows').then((res) => {
+              this.profileShows = res.data;
+              this.$store.state.profile.profileShows = res.data;
+          });
+        }else{
+          //console.log('no token')
+          //  axios.get('/get_shows_for_profile',{ 
+          //     params: { 
+          //       id: url 
+          //     } 
+          //     }).then((res) => {
+          //       console.log(res)
+          //   });
+        }
+        //console.log(url);
+        // axios.get('/profile').then((res) => {
+        //     this.profileID = res.data.id;
+        //     this.profileName = res.data.name;
+        //     this.profileEmail = res.data.email;
+        //     this.profileImageURL = res.data.image_url;
+        //     this.profilePlayerEmbed = res.data.embed_url;
+        //     this.profileLocation = res.data.location;
+        //     //console.log(res)
+        // });
+      
+
+      
+
+
+        axios.get('/profile/' + url).then((res) => {
+          console.log(res.data)
             this.profileID = res.data.id;
             this.profileName = res.data.name;
+            this.profileEmail = res.data.email;
             this.profileImageURL = res.data.image_url;
             this.profilePlayerEmbed = res.data.embed_url;
             this.profileLocation = res.data.location;
+       });
+
+       axios.get('/get_genres').then((res) => {
+            this.allGenres = res.data
         });
-       axios.get('/get_user_genres').then((res) => {
-           this.profileGenres = res.data;
-           this.$store.state.profile.profileGenres = res.data;
-       });
-       axios.get('/get_user_shows').then((res) => {
-           this.profileShows = res.data;
-           this.$store.state.profile.profileShows = res.data;
-       });
   }
+
 }
 </script>
 
