@@ -290,5 +290,11 @@ a{
   text-align: center;
   box-shadow: $box-shadow;
 }
+
+.page-loading-message{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 </style>
 

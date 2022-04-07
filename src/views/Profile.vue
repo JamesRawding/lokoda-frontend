@@ -1,5 +1,10 @@
 <template>
-  <main class="page-container">
+  <main class="page-loading-message" v-if="profileDataLoading && profileShowsLoading">
+    <div>
+      <span class="spinner"></span>Profile loading
+    </div>
+  </main>
+  <main v-else class="page-container">
     <the-header></the-header>
     <section class="hero-section">
       <div class="hero-section__image-block">
@@ -81,9 +86,9 @@
         <h2>Upcoming Shows</h2>
         <base-icon-button v-if="$store.state.loggedIn && userID == profileID" @click="displaySettingsDialog('Manage Shows')" buttonType="button" mode="icon-button icon-button--edit icon-button--round" ariaLabel="edit shows"></base-icon-button>
         <show-card @editThisShow="editShow(show)" @deleteThisShow="deleteShow(show)" v-for="show in profileShows" :key="show">
-          <template #month>{{show.showMonth}}</template>
-          <template #day>{{show.showDay}}</template>
-          <template #year>{{show.showYear}}</template>
+          <template #month>{{convertedMonth(show)}}</template>
+          <template #day>{{convertedDay(show)}}</template>
+          <template #year>{{convertedYear(show)}}</template>
           <template #city>{{show.city}}</template>
           <template #venue>{{show.venue}}</template>
         </show-card>
@@ -100,12 +105,12 @@
         <strong>Manage Shows</strong>
         <base-text-icon-button @click="displaySettingsDialog('Add Show')" mode="text-icon-button text-icon-button--plus" buttonType="button">Add Show</base-text-icon-button>
         <div class="show-container">
-          <show-card @editThisShow="editShow(show)" @deleteThisShow="deleteShow(show)" v-for="show in profileShowsResults" :key="show">
-            <template #month>{{show.showMonth}}</template>
-            <template #day>{{show.showDay}}</template>
-            <template #year>{{show.showYear}}</template>
-            <template #city>{{show.showCity}}</template>
-            <template #venue>{{show.showVenue}}</template>
+          <show-card @editThisShow="editShow(show)" @deleteThisShow="deleteShow(show)" v-for="show in profileShows" :key="show">
+            <template #month>{{convertedMonth(show)}}</template>
+            <template #day>{{convertedDay(show)}}</template>
+            <template #year>{{convertedYear(show)}}</template>
+            <template #city>{{show.city}}</template>
+            <template #venue>{{show.venue}}</template>
           </show-card>
         </div>
         <base-text-icon-button v-if="profileShows.length > 3" @click="toggleShowListings" mode="text-icon-button text-icon-button--list" buttonType="button"> <span v-if="fullListingVisible">Hide Full Listing</span><span v-else>View Full Listing</span></base-text-icon-button>
@@ -117,23 +122,23 @@
       <base-dialog mode="modal-dialog modal-dialog--add-show" v-if="addShowDialogVisible"  @closeDialog="hideSettingsDialog('Add Show')">
         <strong>Enter Show Details</strong>
         <form @submit.prevent="submitShowForm">
-          <base-input inputId="showCity" inputType="text" v-model="showCity" :isRequired="true" >
+          <base-input inputId="showCity" inputType="text" v-model="city" :isRequired="true" >
             <template #label>City</template>
           </base-input>
-          <base-input inputId="showVenue" inputType="text" v-model="showVenue" :isRequired="true" >
+          <base-input inputId="showVenue" inputType="text" v-model="venue" :isRequired="true" >
             <template #label>Venue</template>
           </base-input>
           <fieldset class="add-show-date-fields">
             <legend>Select Date<span>(required)</span></legend>
             <span class="legend-helper">e.g. 02/08/2022</span>
             <div class="add-show-date-fields__inner">
-              <base-input inputId="showDay" inputType="text" inputPattern="[0-9]*" inputMode="numeric" v-model="showDay" :isRequired="true" >
+              <base-input inputId="showDay" inputType="text" inputPattern="[0-9]*" inputMode="numeric" v-model="day" :isRequired="true" >
               <template #label>Day</template>
               </base-input>
-              <base-input inputId="showMonth" inputType="text" inputPattern="[0-9]*" inputMode="numeric" v-model="showMonth" :isRequired="true" >
+              <base-input inputId="showMonth" inputType="text" inputPattern="[0-9]*" inputMode="numeric" v-model="month" :isRequired="true" >
                 <template #label>Month</template>
               </base-input>
-              <base-input inputId="showYear" inputType="text" inputPattern="[0-9]*" inputMode="numeric" v-model="showYear" :isRequired="true" >
+              <base-input inputId="showYear" inputType="text" inputPattern="[0-9]*" inputMode="numeric" v-model="year" :isRequired="true" >
                 <template #label>Year</template>
               </base-input>
             </div>
@@ -146,23 +151,23 @@
       <base-dialog mode="modal-dialog modal-dialog--add-show" v-if="editShowDialogVisible"  @closeDialog="hideSettingsDialog('Edit Show')">
         <strong>Edit Show Details</strong>
         <form @submit.prevent="submitEditShowForm">
-          <base-input inputId="editShowCity" inputType="text" v-model="selectedShow.showCity" :isRequired="true" >
+          <base-input inputId="editShowCity" inputType="text" v-model="selectedShow.city" :isRequired="true" >
             <template #label>City</template>
           </base-input>
-          <base-input inputId="editShowVenue" inputType="text" v-model="selectedShow.showVenue" :isRequired="true" >
+          <base-input inputId="editShowVenue" inputType="text" v-model="selectedShow.venue" :isRequired="true" >
             <template #label>Venue</template>
           </base-input>
           <fieldset class="add-show-date-fields">
             <legend>Select Date <span>(required)</span></legend>
             <span class="legend-helper">e.g. 02/08/2022</span>
             <div class="add-show-date-fields__inner">
-              <base-input inputId="editShowDay" inputType="text" inputPattern="[0-9]*" inputMode="numeric"  v-model="selectedShow.showDay" :isRequired="true" >
+              <base-input inputId="editShowDay" inputType="text" inputPattern="[0-9]*" inputMode="numeric"  v-model="selectedShow.day" :isRequired="true" >
                 <template #label>Day</template>
               </base-input>
-              <base-input inputId="editShowMonth" inputType="text" inputPattern="[0-9]*" inputMode="numeric"  v-model="selectedShow.showMonth" :isRequired="true" >
+              <base-input inputId="editShowMonth" inputType="text" inputPattern="[0-9]*" inputMode="numeric"  v-model="selectedShow.month" :isRequired="true" >
                 <template #label>Month</template>
               </base-input>
-              <base-input inputId="editShowYear" inputType="text" inputPattern="[0-9]*" inputMode="numeric"  v-model="selectedShow.showYear" :isRequired="true" >
+              <base-input inputId="editShowYear" inputType="text" inputPattern="[0-9]*" inputMode="numeric"  v-model="selectedShow.year" :isRequired="true" >
                 <template #label>Year</template>
               </base-input>
             </div>
@@ -175,7 +180,7 @@
       <base-dialog mode="modal-dialog modal-dialog--warning modal-dialog--delete-show" v-if="deleteShowDialogVisible"  @closeDialog="hideSettingsDialog('Delete Show')">
         <strong>Are you sure you want to delete this show?</strong>
         <p><span class="display-block">{{selectedShow.showVenue}}</span>
-        <span class="display-block">{{selectedShow.showDay}} {{selectedShow.showMonth}} {{selectedShow.showYear}}</span></p>
+        <span class="display-block">{{selectedShow.day}} {{selectedShow.month}} {{selectedShow.year}}</span></p>
         <div class="dialog-cta-container">
           <base-button @click="hideSettingsDialog('Delete Show')" buttonType="button" mode="cta cta--secondary">Cancel</base-button>
           <base-button @click="confirmDeleteShow" buttonType="button" mode="cta cta--warning">Delete</base-button>
@@ -214,9 +219,12 @@ export default {
     ShowCard
   }, 
   data() {
+    this.convertedMonthValue = '';
     return{
       userID: this.$store.state.userID,
       imageUploading: false,
+      profileDataLoading: false,
+      profileShowsLoading: false,
       profileURL: this.$store.state.userID,
       profileID: '',
       profileName: '',
@@ -225,6 +233,7 @@ export default {
       profileContactDetails:[],
       profileImageURL: '',
       profileGenres: [],
+      //formattedProfileShows: [],
       profileShows: [],
       profilePlayerEmbed: '',
       allGenres:[],
@@ -236,13 +245,13 @@ export default {
       addShowDialogVisible: false,
       editShowDialogVisible: false,
       fullListingVisible: false,
-      selectedShow: '',
+      selectedShow: [],
       selectedShowIndex: '',
-      showDay: '',
-      showMonth: '',
-      showYear: '',
-      showCity: '',
-      showVenue: '',
+      day: '',
+      month: '',
+      year: '',
+      city: '',
+      venue: '',
     }
     
   },
@@ -284,7 +293,7 @@ export default {
       if(evt == 'Embed Player'){
         this.profilePlayerEmbed = this.profilePlayerEmbed.match(/\bhttps?:\/\/\S+/gi)[0];
         //this.profiles.find(profile => profile.profileName).profilePlayerEmbed = this.profilePlayerEmbed;
-        axios.post('/add_embed_url', {
+        axios.post('/embed_url', {
           url: this.profilePlayerEmbed,
         })
             .then((res) => {
@@ -318,99 +327,52 @@ export default {
       if(selectedGenres.includes(genre)){
         if (index > -1) {
           selectedGenres.splice(index, 1);
-        //   axios.delete('/add_genre', {
-        //    user_id: this.userID, 
-        //    genre_id: genre.id
-        //  }).then((res) => {
-        //     console.log(res);
-        //  });
+          axios.post('/delete_genre', {
+           user_id: this.userID, 
+           genre_id: genre.id
+         }).then((res) => {
+            console.log(res);
+         });
         }
       }else{
         selectedGenres.push(genre);
-        //  axios.post('/add_genre', {
-        //    user_id: this.userID, 
-        //    genre_id: genre.id
-        //  }).then((res) => {
-        //     console.log(res);
-        //  });
+         axios.post('/add_genre', {
+           user_id: this.userID, 
+           genre_id: genre.id
+         }).then((res) => {
+            console.log(res);
+         });
       }
     },
     submitShowForm(){
       const shows = this.profileShows;
-      
-      if(this.showDay.startsWith('0')){
-        this.showDay = this.showDay.substring(1)
-      }
-      
-      const month = this.showMonth;
-      switch (month){
-        case '01':
-          this.showMonth = "Jan";
-          break;
-        case '02':
-          this.showMonth = "Feb";
-          break;
-        case '03':
-          this.showMonth = "Mar";
-          break;
-        case '04':
-          this.showMonth = "Apr";
-          break;
-        case '05':
-          this.showMonth = "May";
-          break;
-        case '06':
-          this.showMonth = "Jun";
-          break;
-        case '07':
-          this.showMonth = "Jul";
-          break;
-        case '08':
-          this.showMonth = "Aug";
-          break;
-        case '09':
-          this.showMonth = "Sep";
-          break;
-        case '10':
-          this.showMonth = "Oct";
-          break;
-        case '11':
-          this.showMonth = "Nov";
-          break;
-        case '12':
-          this.showMonth = "Dec";
-      }
 
-      // if(!this.showYear.startsWith('20') && this.showYear.length != 3){
-      //   this.showYear = '20'+this.showYear
-      // }
-
-      const newShow = {
-        showDay: this.showDay,
-        showMonth: this.showMonth,
-        showYear: this.showYear,
-        showCity: this.showCity,
-        showVenue: this.showVenue,
-      }
-
-       axios.post('/add_show', {
-           city: this.showCity,
-           venue: this.showVenue,
-           day: parseInt(this.showDay, 10),
-           month: parseInt(month, 10),
-           year: parseInt(this.showYear, 10),
+      axios.post('/add_show', {
+           city: this.city,
+           venue: this.venue,
+           day: parseInt(this.day, 10),
+           month: parseInt(this.month, 10),
+           year: parseInt(this.year, 10),
        }).then((res) => {
            console.log(res);
        });
+    
+
+      const newShow = {
+        day: parseInt(this.day, 10),
+        month: parseInt(this.month, 10),
+        year: parseInt(this.year, 10),
+        city: this.city,
+        venue: this.venue,
+      }
 
       shows.unshift(newShow);
-      this.showDay = '';
-      this.showMonth = '';
-      this.showYear = '';
-      this.showCity = '';
-      this.showVenue = '';
-      this.addShowDialogVisible = false
-
+      this.day = '';
+      this.month = '';
+      this.year = '';
+      this.city = '';
+      this.venue = '';
+      this.addShowDialogVisible = false;
     },
     toggleShowListings(){
       this.fullListingVisible = !this.fullListingVisible
@@ -421,103 +383,61 @@ export default {
       //const shows = this.profiles.find(profile => profile.profileName).profileShows = this.profileShows;
      const shows = this.profileShows;
      const index = shows.indexOf(evt);
+
      
       this.selectedShow = show;
       this.selectedShowIndex = index;
-      console.log(this.selectedShow)
-      // console.log(this.selectedShowIndex)
-      // if(!show.showDay.startsWith('0') && show.showDay.length == 1){
-      //   show.showDay = '0'+show.showDay
-      // }
-      const month = show.showMonth;
-      switch (month){
-        case 'Jan':
-          show.showMonth = "01";
-          break;
-        case 'Feb':
-          show.showMonth = "02";
-          break;
-        case 'Mar':
-          show.showMonth = "03";
-          break;
-        case 'Apr':
-          show.showMonth = "04";
-          break;
-        case 'May':
-          show.showMonth = "05";
-          break;
-        case 'Jun':
-          show.showMonth = "06";
-          break;
-        case 'Jul':
-          show.showMonth = "07";
-          break;
-        case 'Aug':
-          show.showMonth = "08";
-          break;
-        case 'Sep':
-          show.showMonth = "09";
-          break;
-        case 'Oct':
-          show.showMonth = "10";
-          break;
-        case 'Nov':
-          show.showMonth = "11";
-          break;
-        case 'Dec':
-          show.showMonth = "12";
-      }
-
       this.editShowDialogVisible = true;
-      this.showsDialogVisible = false
+      this.showsDialogVisible = false;
+      
     },
     submitEditShowForm(){
-       if(this.selectedShow.showDay.startsWith('0')){
-        this.selectedShow.showDay = this.selectedShow.showDay.substring(1)
-      }
+      //  if(this.selectedShow.day.startsWith('0')){
+      //   this.selectedShow.day = this.selectedShow.day.substring(1)
+      // }
       
-      const month = this.selectedShow.showMonth;
-      switch (month){
-        case '01':
-          this.selectedShow.showMonth = "Jan";
-          break;
-        case '02':
-          this.selectedShow.showMonth = "Feb";
-          break;
-        case '03':
-          this.selectedShow.showMonth = "Mar";
-          break;
-        case '04':
-          this.selectedShow.showMonth = "Apr";
-          break;
-        case '05':
-          this.selectedShow.showMonth = "May";
-          break;
-        case '06':
-          this.selectedShow.showMonth = "Jun";
-          break;
-        case '07':
-          this.selectedShow.showMonth = "Jul";
-          break;
-        case '08':
-          this.selectedShow.showMonth = "Aug";
-          break;
-        case '09':
-          this.selectedShow.showMonth = "Sep";
-          break;
-        case '10':
-          this.selectedShow.showMonth = "Oct";
-          break;
-        case '11':
-          this.selectedShow.showMonth = "Nov";
-          break;
-        case '12':
-          this.selectedShow.showMonth = "Dec";
-      }
+      // const month = this.selectedShow.month;
+      // switch (month){
+      //   case '01':
+      //     this.selectedShow.month = "Jan";
+      //     break;
+      //   case '02':
+      //     this.selectedShow.month = "Feb";
+      //     break;
+      //   case '03':
+      //     this.selectedShow.month = "Mar";
+      //     break;
+      //   case '04':
+      //     this.selectedShow.month = "Apr";
+      //     break;
+      //   case '05':
+      //     this.selectedShow.month = "May";
+      //     break;
+      //   case '06':
+      //     this.selectedShow.month = "Jun";
+      //     break;
+      //   case '07':
+      //     this.selectedShow.month = "Jul";
+      //     break;
+      //   case '08':
+      //     this.selectedShow.month = "Aug";
+      //     break;
+      //   case '09':
+      //     this.selectedShow.month = "Sep";
+      //     break;
+      //   case '10':
+      //     this.selectedShow.month = "Oct";
+      //     break;
+      //   case '11':
+      //     this.selectedShow.month = "Nov";
+      //     break;
+      //   case '12':
+      //     this.selectedShow.month = "Dec";
+      // }
 
-      if(!this.selectedShow.showYear.startsWith('20') && this.selectedShow.showYear.length != 3){
-        this.selectedShow.showYear = '20'+this.selectedShow.showYear
-      }
+      // if(!this.selectedShow.year.startsWith('20') && this.selectedShow.year.length != 3){
+      //   this.selectedShow.year = '20'+this.selectedShow.year
+      // }
       this.editShowDialogVisible = false
     },
     deleteShow(evt){
@@ -533,9 +453,9 @@ export default {
     confirmDeleteShow(){
       const shows = this.profileShows;
       //const shows = this.profiles.find(profile => profile.profileName).profileShows = this.profileShows;
-  console.log(shows);
-  console.log(this.selectedShow)
-  console.log(this.selectedShowIndex)
+  // console.log(shows);
+  // console.log(this.selectedShow)
+  // console.log(this.selectedShowIndex)
       if(shows.includes(this.selectedShow)){
         if (this.selectedShowIndex > -1) {
           shows.splice(this.selectedShowIndex, 1);
@@ -581,20 +501,79 @@ export default {
           return true;
         }
       }  
-    }
-    
+    },
+    convertedDay(evt){
+      let day = evt.day.toString();
+      if(!day.startsWith('0') && day.length == 1){
+        day = '0'+day
+      }
+      return day;
+    },
+    convertedYear(evt){
+      
+      let year = evt.year.toString();
+      if(!year.startsWith('20') && year.length != 3){
+        year = '20'+year
+      }
+      return year;
+    },
+    convertedMonth(evt){
+      let month = this.convertedMonthValue;
+      month = evt.month.toString();
+      if(!month.startsWith('0') && month.length == 1){
+          month = '0'+month
+      }
+
+      switch (month){
+          case '01':
+            this.convertedMonthValue = "Jan";
+            break;
+          case '02':
+            this.convertedMonthValue = "Feb";
+            break;
+          case '03':
+            this.convertedMonthValue = "Mar";
+            break;
+          case '04':
+            this.convertedMonthValue = "Apr";
+            break;
+          case '05':
+            this.convertedMonthValue = "May";
+            break;
+          case '06':
+            this.convertedMonthValue = "Jun";
+            break;
+          case '07':
+            this.convertedMonthValue = "Jul";
+            break;
+          case '08':
+            this.convertedMonthValue = "Aug";
+            break;
+          case '09':
+            this.convertedMonthValue = "Sep";
+            break;
+          case '10':
+            this.convertedMonthValue = "Oct";
+            break;
+          case '11':
+            this.convertedMonthValue = "Nov";
+            break;
+          case '12':
+            this.convertedMonthValue = "Dec";
+        }
+      return this.convertedMonthValue;
+    },    
   },
   computed:{
+  
     profileShowsResults(){
       if(this.fullListingVisible == false){
-        return this.profileShows.slice(0,3)
+        return this.profileShows.slice(0,2)
       }else{
         return this.profileShows
       }
     },
     
-  },
-    created(){
   },
   directives: {
     clickOutside: vClickOutside.directive
@@ -606,12 +585,19 @@ export default {
           //console.log('token')
            axios.get('/get_user_genres').then((res) => {
               this.profileGenres = res.data;
-              console.log(res.data)
+              //console.log(res.data)
               //this.$store.state.profile.profileGenres = res.data;
           });
+          this.profileDataLoading = true;
           axios.get('/get_user_shows').then((res) => {
+            this.profileDataLoading = false;
+            //console.log(res.data)
+
               this.profileShows = res.data;
-              this.$store.state.profile.profileShows = res.data;
+              //this.formattedProfileShows = res.data;
+              
+              // this.$store.state.profile.profileShows = res.data;
+              //this.convertedShowDateFormat;
           });
         }else{
           //console.log('no token')
@@ -637,9 +623,10 @@ export default {
 
       
 
-
+        this.profileDataLoading = true;
         axios.get('/profile/' + url).then((res) => {
-          console.log(res.data)
+          this.profileDataLoading = false;
+          //console.log(res.data)
             this.profileID = res.data.id;
             this.profileName = res.data.name;
             this.profileEmail = res.data.email;
@@ -650,6 +637,7 @@ export default {
 
        axios.get('/get_genres').then((res) => {
             this.allGenres = res.data
+            //console.log(res.data)
         });
   }
 
