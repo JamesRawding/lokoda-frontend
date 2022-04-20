@@ -81,6 +81,25 @@ $spacing-xl: rem(128);
   }
 }
 
+@mixin baseTextarea{
+  border: rem(1) solid $lightgrey;
+  border-radius:$border-radius-reg;
+  background-color:$form-field-grey;
+  font-family: inherit;
+  font-size: inherit;
+  padding: rem(10) $spacing-xs;
+  width:100%;
+  margin-top: $spacing-xs;
+  -webkit-appearance: none;
+  resize: vertical;
+  min-height: rem(96);
+
+
+  @media(min-width:$desktop){
+    padding: rem(12) $spacing-s;
+  }
+}
+
 ::-webkit-input-placeholder { /* Edge */
   color: $copy;
 }

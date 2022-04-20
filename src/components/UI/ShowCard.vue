@@ -7,9 +7,12 @@
     </div>
     <div class="show-card__location">
       <span class="show-card__city"><slot name="city"></slot></span>
-      <span class="show-card__venue"><slot name="venue"></slot></span>
+      <div>
+        <span class="show-card__venue"><slot name="venue"></slot></span>
+        <span class="show-card__time"> - <slot name="time"></slot></span>
+      </div>
     </div>
-
+    <slot name="status"></slot>
     <div class="show-card__buttons" v-if="$store.state.loggedIn">
       <base-icon-button @click="editShow" mode="icon-button icon-button--ellipsis" ariaLabel="Edit show"></base-icon-button>
       <base-icon-button @click="deleteShow" mode="icon-button icon-button--trash" ariaLabel="Delete show"></base-icon-button>
@@ -44,9 +47,19 @@ export default {
     align-items: center;
     padding:0;
     margin-top: $spacing-s;
+    position: relative;
+    overflow: hidden;
     @media(min-width:$desktop){
       padding-right: $spacing-s;
       margin-top: $spacing-m;
+      cursor: pointer;
+      transition: all .25s ease-in-out;
+      border: 1px solid transparent;
+
+      &:hover,
+      &:focus{
+        border-color: $dark-green;
+      }
     }
 
     &:first-of-type{
@@ -97,6 +110,7 @@ export default {
       flex-direction: column;
       flex: 1 0 auto;
       padding:0 $spacing-s;
+      text-transform: capitalize;
 
       @media(min-width:$desktop){
         padding:0 $spacing-m;
@@ -107,7 +121,8 @@ export default {
       font-weight: bold;
     }
 
-    &__venue{
+    &__venue,
+    &__time{
       font-size: $copy-mobile-s;
       @media(min-width:$desktop){
         font-size: $copy-desktop-s;

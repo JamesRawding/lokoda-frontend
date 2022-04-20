@@ -78,6 +78,7 @@ export default {
     padding: $spacing-s;
     color: $copy;
     position: relative;
+    overflow: auto;
 
     @media(min-width:$desktop){
       padding: $spacing-m;
