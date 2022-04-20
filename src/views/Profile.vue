@@ -75,7 +75,7 @@
         <p>{{ profileLocation }}</p>
 
         <div class="hero-section__genres" v-if="profileGenres.length">
-          <base-pill v-for="genre in profileGenres" :key="genre + profileName">
+          <base-pill v-for="genre in profileGenres" :key="genre">
             {{ genre.genre }}
           </base-pill>
           <base-icon-button
@@ -515,31 +515,32 @@
 
       
     </div>
-  </main>
-  <section class="qr-section" v-if="$store.state.loggedIn && userID == profileID">
-        <img :src="qrImage" :alt="profileName +'qr code'">
-        <h3>Need to share your profile?</h3>
-        <p>This QR code can be printed so you can display at your next show making it easier for your fans to find you.</p>
-        <div v-if="printQRPage" class="qr-section__print-info">
-          <h1>{{profileName}}</h1>
-          <p>Discover on</p>
-          <img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo">
-        </div>
-        <base-button
-        v-if="!printQRPage"
-        @click="printQRImage"
-        buttonType="button"
-        mode="cta cta--secondary"
-        >Print QR Code
-        </base-button>
-        <base-button
-        v-else
-        @click="closePrintQRImage"
-        buttonType="button"
-        mode="cta cta--secondary"
-        >Back to Profile
-        </base-button>
+    <section class="qr-section" v-if="$store.state.loggedIn && userID == profileID">
+      <img :src="qrImage" :alt="profileName +'qr code'">
+      <h3>Need to share your profile?</h3>
+      <p>This QR code can be printed so you can display at your next show making it easier for your fans to find you.</p>
+      <div v-if="printQRPage" class="qr-section__print-info">
+        <h1>{{profileName}}</h1>
+        <p>Discover on</p>
+        <img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo">
+      </div>
+      <base-button
+      v-if="!printQRPage"
+      @click="printQRImage"
+      buttonType="button"
+      mode="cta cta--secondary"
+      >Print QR Code
+      </base-button>
+      <base-button
+      v-else
+      @click="closePrintQRImage"
+      buttonType="button"
+      mode="cta cta--secondary"
+      >Back to Profile
+      </base-button>
     </section>
+  </main>
+  
 </template>
 
 <script>
@@ -648,7 +649,6 @@ export default {
       if (evt == "Embed Player") {
         this.profilePlayerEmbed =
           this.profilePlayerEmbed.match(/\bhttps?:\/\/\S+/gi)[0];
-        //this.profiles.find(profile => profile.profileName).profilePlayerEmbed = this.profilePlayerEmbed;
         axios
           .get("/embed_url")
           .then((res) => {
@@ -702,7 +702,6 @@ export default {
       }
     },
     submitShowForm() {
-      //const shows = this.profileShows;
 
       axios
         .post("/add_show", {
@@ -722,18 +721,6 @@ export default {
             this.profileShows = res.data;
           });
         });
-
-      // const newShow = {
-      //   day: parseInt(this.day, 10),
-      //   month: parseInt(this.month, 10),
-      //   year: parseInt(this.year, 10),
-      //   city: this.city,
-      //   venue: this.venue,
-      //   time: this.time,
-      //   comments: this.comments,
-      // };
-
-      //shows.unshift(newShow);
       this.day = "";
       this.month = "";
       this.year = "";
@@ -755,7 +742,6 @@ export default {
 
     editShow(evt) {
       const show = evt;
-      //const shows = this.profiles.find(profile => profile.profileName).profileShows = this.profileShows;
       const shows = this.profileShows;
       const index = shows.indexOf(evt);
 
@@ -788,7 +774,6 @@ export default {
     },
     cancelShow(evt) {
       const show = evt;
-      //const shows = this.profiles.find(profile => profile.profileName).profileShows = this.profileShows;
       const shows = this.profileShows;
       const index = shows.indexOf(evt);
       this.selectedShow = show;
@@ -798,13 +783,6 @@ export default {
       console.log(this.selectedShow)
     },
     confirmCancelShow() {
-      ///const shows = this.profileShows;
-      //const shows = this.profiles.find(profile => profile.profileName).profileShows = this.profileShows;
-      // if (shows.includes(this.selectedShow)) {
-      //   if (this.selectedShowIndex > -1) {
-      //     shows.splice(this.selectedShowIndex, 1);
-      //   }
-      // }
       
       axios
         .get("/cancel_show/"+this.selectedShow.id, {
@@ -836,7 +814,6 @@ export default {
             "https://res.cloudinary.com/dgddraffq/image/upload/f_auto,q_auto:best,c_fill,g_faces/v1648123420/" +
             publicID +
             ".jpg";
-          //this.profiles.find(profile => profile.profileName).profileImageURL = this.profileImageURL;
           this.$store.commit("setHeroImage", this.profileImageURL);
            axios
             .post("/add_image", {
@@ -957,11 +934,6 @@ export default {
         return this.profileShows;
       }
     },
-
-    // orderedProfileShowResults() {
-    //   let showResults = this.profileShows;
-    //   return showResults;
-    // },
   },
   directives: {
     clickOutside: vClickOutside.directive,
@@ -970,18 +942,15 @@ export default {
     const url = this.$route.params.profileURL;
       axios.get("/get_genres_for_profile/"+url).then((res) => {
         this.profileGenres = res.data;
-        //console.log(this.profileGenres);
       });
       this.profileShowsLoading = true;
       axios.get("/get_shows_for_profile/"+url).then((res) => {
-        //console.log(res.data);
 
         this.profileShows = res.data;
         this.profileShowsLoading = false;
       });
-      axios.get("http://api.qrserver.com/v1/create-qr-code/?data="+location.href+"&size=200x200").then((res) => {
+      axios.get("http://api.qrserver.com/v1/create-qr-code/?data="+location.href+"&size=200x200").then(() => {
        this.qrImage = "http://api.qrserver.com/v1/create-qr-code/?data="+location.href+"&size=200x200"
-       console.log(res);
       });
     this.profileDataLoading = true;
     axios.get("/profile/" + url).then((res) => {
@@ -996,7 +965,6 @@ export default {
 
     axios.get("/get_genres").then((res) => {
       this.allGenres = res.data;
-      //console.log(res.data)
     });
   },
 };
@@ -1179,6 +1147,7 @@ export default {
 .player-embed-block {
   position: relative;
   padding: $spacing-m 0;
+  z-index: -1;
   @media (min-width: $desktop) {
     order: 2;
   }
@@ -1403,7 +1372,7 @@ dialog .cta--primary {
   text-align: center;
   max-width: rem(500);
   margin: 0 auto;
-  padding: $spacing-m 0;
+  padding-top: $spacing-l;
 
 
   h3{
