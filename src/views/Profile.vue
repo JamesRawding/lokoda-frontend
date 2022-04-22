@@ -1,14 +1,14 @@
 <template>
   <main
     class="page-loading-message"
-    v-if="profileDataLoading && profileShowsLoading"
+    v-if="profileDataLoading || profileShowsLoading"
   >
     <div><span class="spinner"></span>Profile loading</div>
   </main>
   <main v-else class="page-container">
     <the-header></the-header>
     <section class="hero-section">
-      <div class="hero-section__image-block">
+      <div class="hero-section__image-block" :class="{'hero-section__image-block--no-image': !profileImageURL}">
         <div class="hero-section__image-container" v-if="profileImageURL">
           <img :src="profileImageURL" :alt="profileName + ' profile image'" />
           <base-icon-button
@@ -982,6 +982,7 @@ export default {
     display: grid;
     grid-template-columns: 5fr 7fr;
     border-radius: $border-radius-reg;
+    overflow: hidden;
   }
 
   &__details {
@@ -1011,7 +1012,7 @@ export default {
   }
 
   &__image-block {
-    background-color: $lightgrey;
+    
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1025,6 +1026,10 @@ export default {
       max-height: rem(400);
     }
 
+    &--no-image{
+      background-color: $lightgrey;
+    }
+
     .icon-button {
       position: absolute;
       bottom: $spacing-s;
@@ -1034,9 +1039,16 @@ export default {
 
   &__image-container {
     width: 100%;
+    height: 100%;
     img {
       width: 100%;
+      height: 100%;
       vertical-align: bottom;
+      object-fit: cover;
+      @media (min-width: $desktop) {
+       border-top-right-radius: $border-radius-reg;
+       border-bottom-right-radius: $border-radius-reg;
+     }
     }
   }
 

@@ -1,5 +1,11 @@
 <template>
-  <main class="page-container">
+<main
+    class="page-loading-message"
+    v-if="profileDataLoading"
+  >
+    <div><span class="spinner"></span>Profile loading</div>
+  </main>
+  <main v-else class="page-container">
     <the-header></the-header>
     <section class="settings-intro">
       <h1>Account</h1>
@@ -12,18 +18,20 @@
         <div class="basic-account-info" :class="{'basic-account-info--active':!photoDialogVisible && !passwordDialogVisible && !locationDialogVisible && !nameDialogVisible }">
           <strong class="basic-account-info__heading">Your Basic Info</strong>
           <p>What people see when looking for your page.</p>
-          <strong>Name</strong><span>{{currentName}}</span>
-          <strong>Location</strong> <span>{{currentLocation}}</span>
+          <strong>Name</strong><span>{{profileName}}</span>
+          <strong>Location</strong> <span>{{profileLocation}}</span>
         </div>
         
           <transition>
             <base-dialog v-if="photoDialogVisible"  @closeDialog="hideSettingsDialog('Profile Picture')">
               
               <strong>Edit Photo</strong>
-              <div class="avatar-image-thumb">
-                <div v-if="!avatarImageURL && !imageUploading">Add image below</div>
-                <div v-if="imageUploading" class="avatar-image-uploading"><span class="spinner"></span>Image Uploading</div>
-                <img v-if="avatarImageURL" :src="avatarImageURL" :alt="currentName + ' profile image'">
+              <div class="avatar-image-thumb-container">
+                <div class="avatar-image-thumb">
+                  <div v-if="!avatarImageURL && !imageUploading">Add image below</div>
+                  <div v-if="imageUploading" class="avatar-image-uploading"><span class="spinner"></span>Image Uploading</div>
+                  <img v-if="avatarImageURL" :src="avatarImageURL" :alt="profileName + ' profile image'">
+                </div>
               </div>
               <form @submit.prevent="submitForm">
                 <choose-file-button @change="uploadImage" fileUploadID="uploadImage" fileUploadName="filename">
@@ -130,6 +138,7 @@ export default {
   },
   data() {
     return{
+      profileDataLoading: false,
       avatarImageURL: '',
       imageUploading: false,
       photoDialogVisible: false,
@@ -138,8 +147,12 @@ export default {
       nameDialogVisible: false,
       deleteAccountDialogVisible: false,
       confirmDeleteAccountDialogVisible: false,
-      currentName: this.$store.state.profile.profileName,
-      currentLocation: this.$store.state.profile.profileLocation,
+      profileID: "",
+      profileName: "",
+      profileEmail: "",
+      profileLocation: "",
+      profileImageURL: "",
+      profilePlayerEmbed: "",
       currentPassword: '',
       newPassword: '',
       confirmPassword: '',
@@ -193,14 +206,36 @@ export default {
       }
     },
     submitName(){
-      this.currentName = this.newName;
+      this.profileName = this.newName;
       this.$store.commit('setNewProfileName', this.newName);
+      axios
+        .post("/profile_update", {
+          name: this.newName,
+          email: this.$store.state.profile.profileEmail,
+          location: this.$store.state.profile.profileLocation,
+          embed_url: this.$store.state.profile.profilePlayerEmbed,
+          image_url: this.$store.state.profile.profileImageURL,
+        })
+        .then((res) => {
+          console.log(res);
+        });
       this.newName = '';
       this.nameDialogVisible = false
     },
     submitLocation(){
-      this.currentLocation = this.newLocation;
+      this.profileLocation = this.newLocation;
       this.$store.commit('setNewProfileLocation', this.newLocation);
+      axios
+        .post("/profile_update", {
+          name: this.$store.state.profile.profileName,
+          email: this.$store.state.profile.profileEmail,
+          location: this.newLocation,
+          embed_url: this.$store.state.profile.profilePlayerEmbed,
+          image_url: this.$store.state.profile.profileImageURL,
+        })
+        .then((res) => {
+          console.log(res);
+        });
       this.newLocation = '';
       this.locationDialogVisible = false
     },
@@ -219,13 +254,13 @@ export default {
            //this.profiles.find(profile => profile.profileName).profileImageURL = this.profileImageURL;
            this.$store.commit('setAvatarImage', this.avatarImageURL);
       });
-      axios.post('/add_image', {
-          url: this.avatarImageURL,
-        })
-            .then((res) => {
-                console.log(res);
+      // axios.post('/add_image', {
+      //     url: this.avatarImageURL,
+      //   })
+      //       .then((res) => {
+      //           console.log(res);
                 
-            });
+      //       });
 
     },
     deleteAvatar(){
@@ -242,9 +277,18 @@ export default {
   directives: {
     clickOutside: vClickOutside.directive
   },
-  computed(){
-      this.currentName = this.$store.state.profile.profileName;
-      this.currentLocation = this.$store.state.profile.profileLocation;
+
+  mounted() {
+    this.profileDataLoading = true;
+    axios.get("/profile/" + this.$store.state.userID).then((res) => {
+      this.profileID = res.data.id;
+      this.profileName = res.data.name;
+      this.profileEmail = res.data.email;
+      this.profileImageURL = res.data.image_url;
+      this.profilePlayerEmbed = res.data.embed_url;
+      this.profileLocation = res.data.location;
+      this.profileDataLoading = false;
+    });
   }
 }
 </script>
@@ -344,8 +388,17 @@ export default {
     }
   }
 
-  .avatar-image-thumb{
+  .avatar-image-thumb-container{
     margin-top:$spacing-s;
+    display: flex;
+    justify-content: center;
+    padding:$spacing-s;
+    background: $lightgrey;
+    border-radius: $border-radius-reg;
+  }
+
+  .avatar-image-thumb{
+    background: #fff;
     height: rem(200);
     width: rem(200);
     border-radius: 100%;
@@ -363,10 +416,19 @@ export default {
   .avatar-image-uploading{
     width: 100%;
     height: 100%;
-    padding: $spacing-m;
+    padding: $spacing-s;
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: $copy-mobile-s;
+
+    @media(min-width:$desktop){
+      font-size: $copy-desktop-xs;
+    }
+
+    .spinner{
+      margin-right: $spacing-xs;
+    }
   }
 
   .sidebar-nav{
