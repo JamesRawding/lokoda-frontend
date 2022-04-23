@@ -650,7 +650,7 @@ export default {
         this.profilePlayerEmbed =
           this.profilePlayerEmbed.match(/\bhttps?:\/\/\S+/gi)[0];
         axios
-          .get("//api/embed_url")
+          .get("/api/embed_url")
           .then((res) => {
             console.log(res);
           });
@@ -680,7 +680,7 @@ export default {
         if (index > -1) {
           
           axios
-            .post("//api/delete_genre", {
+            .post("/api/delete_genre", {
               user_id: this.userID,
               genre_id: genre.genre_id,
             })
