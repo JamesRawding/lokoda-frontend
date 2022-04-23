@@ -99,7 +99,7 @@ export default {
   },
   methods: {
     submitForm() {
-       axios.post('i/api/register', this.form)
+       axios.post('/api/register', this.form)
             .then((res) => {
                 console.log(res);
                 this.$router.push('/profile')
