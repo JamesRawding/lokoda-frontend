@@ -209,7 +209,7 @@ export default {
       this.profileName = this.newName;
       this.$store.commit('setNewProfileName', this.newName);
       axios
-        .post("/profile_update", {
+        .post("api/profile_update", {
           name: this.newName,
           email: this.$store.state.profile.profileEmail,
           location: this.$store.state.profile.profileLocation,
@@ -226,7 +226,7 @@ export default {
       this.profileLocation = this.newLocation;
       this.$store.commit('setNewProfileLocation', this.newLocation);
       axios
-        .post("/profile_update", {
+        .post("api/profile_update", {
           name: this.$store.state.profile.profileName,
           email: this.$store.state.profile.profileEmail,
           location: this.newLocation,
@@ -280,7 +280,7 @@ export default {
 
   mounted() {
     this.profileDataLoading = true;
-    axios.get("/profile/" + this.$store.state.userID).then((res) => {
+    axios.get("api/profile/" + this.$store.state.userID).then((res) => {
       this.profileID = res.data.id;
       this.profileName = res.data.name;
       this.profileEmail = res.data.email;

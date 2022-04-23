@@ -91,7 +91,7 @@ export default {
     }
   },
   mounted() {
-      axios.get('/health_check')
+      axios.get('api/health_check')
           .then (response => {
               console.log("Back end health check okay");
               console.log(response);
@@ -99,7 +99,7 @@ export default {
   },
   methods: {
     submitForm() {
-       axios.post('/register', this.form)
+       axios.post('api/register', this.form)
             .then((res) => {
                 console.log(res);
                 this.$router.push('/profile')

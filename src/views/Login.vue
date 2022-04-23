@@ -54,7 +54,7 @@ export default {
   },
   methods: {
     submitForm() {
-       axios.post('/login', this.form)
+       axios.post('api/login', this.form)
             .then((res) => {
                 
                 this.$store.commit({
