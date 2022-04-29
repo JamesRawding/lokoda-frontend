@@ -2,13 +2,13 @@
   <nav>
     <div v-if="$store.state.loggedIn">
       <router-link class="header-link header-link--profile" :to="'/profile/'+this.$store.state.userID"><span class="sr-only">user profile</span></router-link>
-      <router-link class="header-link header-link--discover" to="/discover"><span class="header-link__text">Discover</span></router-link>
+      <router-link class="header-link header-link--discover" to="/"><span class="header-link__text">Discover</span></router-link>
       <router-link v-if="$store.state.messagesUnread < 1" class="header-link header-link--messages" to="/messages"><span class="header-link__text">Messages</span></router-link>
       <router-link v-else class="header-link header-link--message" to="/messages"><span class="header-link__message-count">{{$store.state.messagesUnread}}</span><span class="header-link__text">Messages</span></router-link>
     </div>
     <div v-else>
       <router-link class="header-link header-link--home" to="/login">log in</router-link>
-      <router-link class="header-link header-link--discover" to="/discover"><span class="header-link__text">Discover</span></router-link>
+      <router-link class="header-link header-link--discover" to="/"><span class="header-link__text">Discover</span></router-link>
       <router-link class="header-link header-link--login" to="/login"><span class="header-link__text">Log In</span></router-link>
     </div>
   </nav>

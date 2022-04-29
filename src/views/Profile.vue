@@ -650,7 +650,9 @@ export default {
         this.profilePlayerEmbed =
           this.profilePlayerEmbed.match(/\bhttps?:\/\/\S+/gi)[0];
         axios
-          .get("/embed_url")
+          .post("/embed_url",{
+            url: this.profilePlayerEmbed
+          })
           .then((res) => {
             console.log(res);
           });
@@ -737,7 +739,7 @@ export default {
     fullShowDetails(show){
       this.selectedFullShowListing = show;
       this.fullShowDetailsVisible = true;
-      console.log(show)
+      //console.log(show)
     },
 
     editShow(evt) {
@@ -780,7 +782,7 @@ export default {
       this.selectedShowIndex = index;
       this.cancelShowDialogVisible = true;
       this.showsDialogVisible = false;
-      console.log(this.selectedShow)
+      //console.log(this.selectedShow)
     },
     confirmCancelShow() {
       
@@ -821,7 +823,7 @@ export default {
             })
             .then((res) => {
               console.log(res);
-              console.log(this.profileImageURL)
+              //console.log(this.profileImageURL)
             });
         });
     },
@@ -999,6 +1001,7 @@ export default {
   h1,
   p {
     color: #fff;
+    text-transform: capitalize;
   }
 
   p {

@@ -3,7 +3,7 @@
     class="page-loading-message"
     v-if="profileDataLoading"
   >
-    <div><span class="spinner"></span>Profile loading</div>
+    <div><span class="spinner"></span>Settings loading</div>
   </main>
   <main v-else class="page-container">
     <the-header></the-header>
@@ -33,19 +33,18 @@
                   <img v-if="avatarImageURL" :src="avatarImageURL" :alt="profileName + ' profile image'">
                 </div>
               </div>
-              <form @submit.prevent="submitForm">
                 <choose-file-button @change="uploadImage" fileUploadID="uploadImage" fileUploadName="filename">
                   Choose New Image
                 </choose-file-button>
                 <base-text-icon-button @click="deleteAvatar" mode="text-icon-button text-icon-button--trash" buttonType="button">Delete Image</base-text-icon-button>
-                <base-button @closeDialog="hideSettingsDialog('Profile Picture')" buttonType="submit" mode="cta cta--primary">Save</base-button>
-              </form>
+                <base-button @click="hideSettingsDialog('Profile Picture')" buttonType="button" mode="cta cta--primary">Save</base-button>
             </base-dialog>
             </transition>
             <transition>
             <base-dialog v-if="passwordDialogVisible"  @closeDialog="hideSettingsDialog('Manage Password')">
               <strong>Manage Password</strong>
               <form @submit.prevent="submitForm">
+                <p class="error-message incorrect-password" v-if="incorrectPassword">The current password doesn't look right</p>
                 <password-input inputId="currentPassword" v-model="currentPassword" :isRequired="false" >
                   <template #label>Current Password</template>
                 </password-input>
@@ -61,22 +60,22 @@
             </base-dialog>
             </transition>
             <transition>
-            <base-dialog v-if="locationDialogVisible"  @closeDialog="hideSettingsDialog('Change Location')">
-              <strong>Change Location</strong>
-              <form @submit.prevent="submitLocation">
-                <base-input inputId="newLocation" inputType="text" v-model="newLocation" :isRequired="false" >
-                  <template #label>New Location</template>
+            <base-dialog v-if="nameDialogVisible"  @closeDialog="hideSettingsDialog('Change Name')">
+              <strong>Change Name</strong>
+              <form @submit.prevent="submitName">
+                <base-input inputId="newName" inputType="text" v-model="newName" :isRequired="true" >
+                  <template #label>New Name</template>
                 </base-input>
                 <base-button buttonType="submit" mode="cta cta--primary">Save</base-button>
               </form>
             </base-dialog>
             </transition>
             <transition>
-            <base-dialog v-if="nameDialogVisible"  @closeDialog="hideSettingsDialog('Change Name')">
-              <strong>Change Name</strong>
-              <form @submit.prevent="submitName">
-                <base-input inputId="newName" inputType="text" v-model="newName" :isRequired="false" >
-                  <template #label>New Name</template>
+            <base-dialog v-if="locationDialogVisible"  @closeDialog="hideSettingsDialog('Change Location')">
+              <strong>Change Location</strong>
+              <form @submit.prevent="submitLocation">
+                <base-input inputId="newLocation" inputType="text" v-model="newLocation" :isRequired="true" >
+                  <template #label>New Location</template>
                 </base-input>
                 <base-button buttonType="submit" mode="cta cta--primary">Save</base-button>
               </form>
@@ -98,7 +97,7 @@
               <p>Last chance, no turning back...</p>
                 <div class="dialog-cta-container">
                   <base-button @click="hideSettingsDialog('Confirm Delete')" buttonType="button" mode="cta cta--secondary">Cancel</base-button>
-                  <base-button @click="displaySettingsDialog('Confirm Delete')" buttonType="button" mode="cta cta--warning">Delete</base-button>
+                  <base-button @click="confirmAccountDeletion" buttonType="button" mode="cta cta--warning">Delete</base-button>
                 </div>
             </base-dialog>
           
@@ -139,7 +138,6 @@ export default {
   data() {
     return{
       profileDataLoading: false,
-      avatarImageURL: '',
       imageUploading: false,
       photoDialogVisible: false,
       passwordDialogVisible: false,
@@ -152,13 +150,15 @@ export default {
       profileEmail: "",
       profileLocation: "",
       profileImageURL: "",
+      avatarImageURL: "",
       profilePlayerEmbed: "",
       currentPassword: '',
       newPassword: '',
       confirmPassword: '',
       newLocation: '',
       newName: '',
-      passwordMismatch: false
+      passwordMismatch: false,
+      incorrectPassword: false
 
     } 
   },
@@ -207,14 +207,14 @@ export default {
     },
     submitName(){
       this.profileName = this.newName;
-      this.$store.commit('setNewProfileName', this.newName);
       axios
         .post("/profile_update", {
           name: this.newName,
-          email: this.$store.state.profile.profileEmail,
-          location: this.$store.state.profile.profileLocation,
-          embed_url: this.$store.state.profile.profilePlayerEmbed,
-          image_url: this.$store.state.profile.profileImageURL,
+          email: this.profileEmail,
+          location: this.profileLocation,
+          embed_url: this.profilePlayerEmbed,
+          avatar_url: this.avatarImageURL,
+          image_url: this.profileImageURL,
         })
         .then((res) => {
           console.log(res);
@@ -224,14 +224,14 @@ export default {
     },
     submitLocation(){
       this.profileLocation = this.newLocation;
-      this.$store.commit('setNewProfileLocation', this.newLocation);
       axios
         .post("/profile_update", {
-          name: this.$store.state.profile.profileName,
-          email: this.$store.state.profile.profileEmail,
+          name: this.profileName,
+          email: this.profileEmail,
           location: this.newLocation,
-          embed_url: this.$store.state.profile.profilePlayerEmbed,
-          image_url: this.$store.state.profile.profileImageURL,
+          embed_url: this.profilePlayerEmbed,
+          image_url: this.profileImageURL,
+          avatar_url: this.avatarImageURL,
         })
         .then((res) => {
           console.log(res);
@@ -248,30 +248,65 @@ export default {
       this.imageUploading = true;
       axios.post('https://api.cloudinary.com/v1_1/dgddraffq/image/upload', formData)
         .then((res) => {
-           let publicID = res.data.public_id;
-           this.imageUploading = false;
-           this.avatarImageURL = "https://res.cloudinary.com/dgddraffq/image/upload/f_auto,q_auto:best,c_fill,g_faces/v1648123420/"+publicID+".jpg";
-           //this.profiles.find(profile => profile.profileName).profileImageURL = this.profileImageURL;
-           this.$store.commit('setAvatarImage', this.avatarImageURL);
-      });
-      // axios.post('/add_image', {
-      //     url: this.avatarImageURL,
-      //   })
-      //       .then((res) => {
-      //           console.log(res);
-                
-      //       });
+          let publicID = res.data.public_id;
+          this.imageUploading = false;
+          this.avatarImageURL = "https://res.cloudinary.com/dgddraffq/image/upload/f_auto,q_auto:best,c_fill,g_faces/v1648123420/"+publicID+".jpg";
+          this.$store.commit('setAvatarImage', this.avatarImageURL);
+           axios
+            .post("/add_avatar", {
+              url: this.avatarImageURL,
+            })
+            .then((res) => {
+              console.log(res);
+              
+            });
 
+      });
     },
     deleteAvatar(){
+      this.$store.commit('deleteAvatarImage');
       this.avatarImageURL = '';
+      axios
+        .get("/delete_avatar")
+        .then((res) => {
+          console.log(res);
+          
+        });
     },
     setNewPassword(){
-      if(this.newPassword != this.confirmPassword){
+      if(this.newPassword != this.confirmPassword && this.newPassword != ""){
         this.passwordMismatch = true;
       }else{
-        //Password matches
+        this.passwordMismatch = false;        
+        axios
+        .post("/update_user_password",{
+          old_password: this.currentPassword,
+          password: this.newPassword
+        })
+        .then((res) => {
+          console.log(res);
+          if(res.data == "Old Password does not match"){
+            this.incorrectPassword = true;
+          }else{
+            this.incorrectPassword = false;
+            this.passwordDialogVisible = false;
+            this.currentPassword = "";
+            this.newPassword = "";
+            this.confirmPassword = "";
+          }
+          
+        });
       }
+    },
+    confirmAccountDeletion(){
+      axios
+        .get("/delete_account")
+        .then((res) => {
+          console.log(res);
+          this.$store.commit('logout');
+          this.confirmDeleteAccountDialogVisible = false
+          this.$router.push('/registration');
+        });
     }
   },
   directives: {
@@ -285,6 +320,7 @@ export default {
       this.profileName = res.data.name;
       this.profileEmail = res.data.email;
       this.profileImageURL = res.data.image_url;
+      this.avatarImageURL = res.data.avatar_url;
       this.profilePlayerEmbed = res.data.embed_url;
       this.profileLocation = res.data.location;
       this.profileDataLoading = false;
@@ -345,6 +381,7 @@ export default {
     }
     span{
       line-height: 1.5;
+      text-transform: capitalize;
     }
 
     strong,
@@ -442,7 +479,8 @@ export default {
     }
   }
 
-  .password-mismatch{
+  .password-mismatch,
+  .incorrect-password{
     margin-top:$spacing-m;
   }
 

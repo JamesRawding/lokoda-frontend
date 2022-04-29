@@ -6,13 +6,26 @@
 </template>
 
 <script>
-
+import axios from 'axios';
 export default {
   data(){
     return {
       avatarURL: this.$store.state.profile.profileAvatarURL,
     }
   },
+  mounted(){
+    if(this.$store.state.userID !== ''){
+      axios.get("/profile/" + this.$store.state.userID).then((res) => {
+        this.$store.commit('setAvatarImage', res.data.avatar_url);
+      });
+    }
+
+  },
+  watch:{
+    '$store.state.profile.profileAvatarURL':function(){
+      this.avatarURL = this.$store.state.profile.profileAvatarURL
+    }
+  }
 }
 </script>
 

@@ -128,6 +128,9 @@ const store = createStore({
     setAvatarImage(state, payload){
       state.profile.profileAvatarURL = payload;
     },
+    deleteAvatarImage(state){
+      state.profile.profileAvatarURL = '';
+    },
     setNewProfileName(state, payload){
       state.profile.profileName = payload;
     },

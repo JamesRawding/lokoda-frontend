@@ -7,7 +7,7 @@
     <section>
       <h1>Looks like the band might be lost backstage!</h1>
       <p>Try searching for Local Artists &amp; Promoters on our Discover page.</p>
-      <router-link to="/discover">Discover <span class="sr-only">Local Artists &amp; Promoters</span></router-link>
+      <router-link to="/">Discover <span class="sr-only">Local Artists &amp; Promoters</span></router-link>
     </section>
   </main>
   

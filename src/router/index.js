@@ -1,11 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from '../views/Login.vue'
+import Discover from '../views/Discover.vue'
 
 const routes = [
   {
+    path: '/',
+    name: 'Discover',
+    component: Discover,
+    meta: {
+      title: 'Discover',
+    }
+  },
+  {
     path: '/login',
     name: 'Login',
-    component: Login,
+    component: () => import('../views/Login.vue'),
     meta: {
       title: 'Log In',
     }
@@ -32,22 +40,6 @@ const routes = [
     component: () => import('../views/CreateNewPassword.vue'),
     meta: {
       title: 'Create New Password',
-    }
-  },
-  {
-    path: '/',
-    name: 'Discover',
-    component: () => import('../views/Discover.vue'),
-    meta: {
-      title: 'Discover',
-    }
-  },
-  {
-    path: '/discover',
-    name: 'Discover',
-    component: () => import('../views/Discover.vue'),
-    meta: {
-      title: 'Discover',
     }
   },
   {
