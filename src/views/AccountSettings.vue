@@ -208,7 +208,7 @@ export default {
     submitName(){
       this.profileName = this.newName;
       axios
-        .post("/profile_update", {
+        .post("/api/profile_update", {
           name: this.newName,
           email: this.profileEmail,
           location: this.profileLocation,
@@ -315,7 +315,7 @@ export default {
 
   mounted() {
     this.profileDataLoading = true;
-    axios.get("/profile/" + this.$store.state.userID).then((res) => {
+    axios.get("/api/profile/" + this.$store.state.userID).then((res) => {
       this.profileID = res.data.id;
       this.profileName = res.data.name;
       this.profileEmail = res.data.email;
