@@ -48,10 +48,10 @@
                 <password-input inputId="currentPassword" v-model="currentPassword" :isRequired="false" >
                   <template #label>Current Password</template>
                 </password-input>
-                 <p class="error-message password-mismatch" v-if="passwordMismatch">Those passwords don't match</p>
                 <password-input inputId="newPassword" v-model="newPassword" :isRequired="false" >
                   <template #label>New Password</template>
                 </password-input>
+                <p class="error-message password-mismatch" v-if="passwordMismatch">Those passwords don't match</p>
                 <password-input inputId="confirmPassword" v-model="confirmPassword" :isRequired="false" >
                   <template #label>Confirm Password</template>
                 </password-input>
@@ -112,6 +112,8 @@
         <base-text-icon-button @click="displaySettingsDialog('Delete Account')" mode="text-icon-button text-icon-button--trash" :class="{'text-icon-button--active': deleteAccountDialogVisible || confirmDeleteAccountDialogVisible}" buttonType="button">Delete Account</base-text-icon-button>
       </div>
     </div>
+
+    <span class="toast-notification" :class="{'toast-notification--active' :profileUpdatedToast}" >Profile updated</span>
   </main>
 </template>
 
@@ -158,7 +160,8 @@ export default {
       newLocation: '',
       newName: '',
       passwordMismatch: false,
-      incorrectPassword: false
+      incorrectPassword: false,
+      profileUpdatedToast: false,
 
     } 
   },
@@ -208,7 +211,7 @@ export default {
     submitName(){
       this.profileName = this.newName;
       axios
-        .post("/api/profile_update", {
+        .post("/profile_update", {
           name: this.newName,
           email: this.profileEmail,
           location: this.profileLocation,
@@ -218,6 +221,13 @@ export default {
         })
         .then((res) => {
           console.log(res);
+
+          if(res.data == "Profile Updated"){
+            this.profileUpdatedToast = true;
+            setTimeout(() => {
+              this.profileUpdatedToast = false;
+            }, 3000)
+          }
         });
       this.newName = '';
       this.nameDialogVisible = false
@@ -235,6 +245,13 @@ export default {
         })
         .then((res) => {
           console.log(res);
+
+          if(res.data == "Profile Updated"){
+            this.profileUpdatedToast = true;
+            setTimeout(() => {
+              this.profileUpdatedToast = false;
+            }, 3000)
+          }
         });
       this.newLocation = '';
       this.locationDialogVisible = false
@@ -258,7 +275,12 @@ export default {
             })
             .then((res) => {
               console.log(res);
-              
+              if(res.data == "Url avatarded"){
+                this.profileUpdatedToast = true;
+                setTimeout(() => {
+                  this.profileUpdatedToast = false;
+                }, 3000)
+              }
             });
 
       });
@@ -270,7 +292,12 @@ export default {
         .get("/delete_avatar")
         .then((res) => {
           console.log(res);
-          
+          if(res.data == "Url unavatarded"){
+              this.profileUpdatedToast = true;
+              setTimeout(() => {
+                this.profileUpdatedToast = false;
+              }, 3000)
+            }
         });
     },
     setNewPassword(){
@@ -315,7 +342,7 @@ export default {
 
   mounted() {
     this.profileDataLoading = true;
-    axios.get("/api/profile/" + this.$store.state.userID).then((res) => {
+    axios.get("/profile/" + this.$store.state.userID).then((res) => {
       this.profileID = res.data.id;
       this.profileName = res.data.name;
       this.profileEmail = res.data.email;

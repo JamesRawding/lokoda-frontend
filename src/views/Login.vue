@@ -37,7 +37,7 @@ export default {
     BaseButton,
   },
   mounted() {
-       axios.get('/api/health_check')
+       axios.get('/health_check')
            .then (response => {
                console.log("Back end health check okay");
                console.log(response);
@@ -54,7 +54,7 @@ export default {
   },
   methods: {
     submitForm() {
-       axios.post('/api/login', this.form)
+       axios.post('/login', this.form)
             .then((res) => {
                 
                 this.$store.commit({

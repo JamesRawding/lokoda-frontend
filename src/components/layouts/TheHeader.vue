@@ -3,7 +3,7 @@
     <!-- <router-link v-if="loggedIn" to="/profile"><img src="../../assets/images/lokoda-logo.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
     <router-link v-else to="/"><img src="../../assets/images/lokoda-logo.svg" alt="lokoda logo"><span class="sr-only">Log in</span></router-link> -->
     <router-link v-if="$store.state.loggedIn" :to="'/profile/'+this.$store.state.userID"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
-    <router-link v-else to="/discover"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">Discover</span></router-link>
+    <router-link v-else to="/"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">Discover</span></router-link>
     <div class="header-nav-items">
       <header-nav></header-nav>
       <button @click="showProfileDialog" class="profile-settings-button" aria-label="view profile settings" v-if="$store.state.loggedIn && isProfileDialogDisplayed">

@@ -46,6 +46,7 @@
             <template #label>Create Password</template>
             <template #helpertext>Must be at least 8 characters long.</template>
           </password-input>
+          <p class="error-message password-mismatch" v-if="passwordMismatch">Those passwords don't match</p>
           <password-input class="dark" inputId="confirmPassword" v-model="form.confirmPassword" :isRequired="true" >
             <template #label>Confirm Password</template>
           </password-input>
@@ -87,11 +88,12 @@ export default {
           location:'',
           password:'',
           confirmPassword:'',
-        }
+        },
+        passwordMismatch: false,
     }
   },
   mounted() {
-      axios.get('/api/health_check')
+      axios.get('/health_check')
           .then (response => {
               console.log("Back end health check okay");
               console.log(response);
@@ -99,11 +101,19 @@ export default {
   },
   methods: {
     submitForm() {
-       axios.post('/api/register', this.form)
-            .then((res) => {
-                console.log(res);
-                this.$router.push('/profile/' + res.data.id);
-            });
+      if(this.form.password != this.form.confirmPassword && this.form.password != ""){
+        this.passwordMismatch = true;
+      }else{
+        console.log(this.form.password);
+        console.log(this.form.confirmPassword);
+        this.passwordMismatch = false;
+        axios.post('/register', this.form)
+          .then((res) => {
+              console.log(res);
+              this.$router.push('/profile/' + res.data.id);
+          });
+      }
+       
     },
     accountTypeSelected(box) {
       if (box === 'artist') {
@@ -245,6 +255,10 @@ export default {
     @media(min-width:$desktop){
       font-size: $copy-desktop-s;
     }
+  }
+
+  .password-mismatch{
+    margin-top:$spacing-m;
   }
 
   

@@ -295,5 +295,37 @@ a{
   align-items: center;
   justify-content: center;
 }
+
+.toast-notification{
+  background-color: transparent;
+  color: transparent;
+  position: fixed;
+  font-weight: bold;
+  padding: $spacing-s;
+  z-index: 1;
+  border-radius: $border-radius-reg;
+  bottom:rem(-50);
+  left: 50%;
+  transform: translateX(-50%);
+  transition: all .25s ease-in-out;
+
+  @media(min-width:$desktop){
+    left: auto;
+    right: rem(-200);
+    bottom: $spacing-m;
+    transform: none;
+  }
+
+  &--active{
+    bottom: $spacing-s;
+    background-color: $dark-green;
+    color: #fff;
+
+    @media(min-width:$desktop){
+      bottom: $spacing-m;
+      right: $spacing-m;
+    }
+  }
+}
 </style>
 

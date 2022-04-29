@@ -7,7 +7,7 @@
       <router-link v-else class="header-link header-link--message" to="/messages"><span class="header-link__message-count">{{$store.state.messagesUnread}}</span><span class="header-link__text">Messages</span></router-link>
     </div>
     <div v-else>
-      <router-link class="header-link header-link--home" to="/login">log in</router-link>
+      <router-link class="header-link header-link--home" to="/login"><span class="header-link__text">log in</span></router-link>
       <router-link class="header-link header-link--discover" to="/"><span class="header-link__text">Discover</span></router-link>
       <router-link class="header-link header-link--login" to="/login"><span class="header-link__text">Log In</span></router-link>
     </div>
@@ -46,6 +46,7 @@
     justify-content: center;
     color: $copy;
     text-decoration: none;
+    position: relative;
 
     @media(min-width:$desktop){
       text-indent: 0;
@@ -58,9 +59,12 @@
       font-family: "Font Awesome 5 Pro";
       font-weight: 300;
       color: $copy;
+      left: auto;
+      position: absolute;
 
       @media(min-width:$desktop){
         margin-right: $spacing-s;
+        position: relative;
       }
     }
 
@@ -75,21 +79,21 @@
     }
 
     &--discover{
-      &::before{
+      &:before{
         content: '\f2b9';
         font-size: rem(30);
       }
     }
 
     &--login{
-      &::before{
+      &:before{
         content: '\f2f6';
         font-size: rem(30);
       }
     }
 
     &--profile{
-      &::before{
+      &:before{
         content: '\f007';
         font-size: rem(30);
       }
@@ -101,7 +105,7 @@
 
     &--message{
       position: relative;
-      &::before{
+      &:before{
         content: '\f27a';
         font-size: rem(30);
       }
@@ -128,7 +132,7 @@
     }
 
     &--messages{
-      &::before{
+      &:before{
         content: '\f4b6';
         font-size: rem(30);
       }
