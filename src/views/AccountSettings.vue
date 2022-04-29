@@ -211,7 +211,7 @@ export default {
     submitName(){
       this.profileName = this.newName;
       axios
-        .post("/profile_update", {
+        .post("/api/profile_update", {
           name: this.newName,
           email: this.profileEmail,
           location: this.profileLocation,
@@ -235,7 +235,7 @@ export default {
     submitLocation(){
       this.profileLocation = this.newLocation;
       axios
-        .post("/profile_update", {
+        .post("/api/profile_update", {
           name: this.profileName,
           email: this.profileEmail,
           location: this.newLocation,
@@ -270,7 +270,7 @@ export default {
           this.avatarImageURL = "https://res.cloudinary.com/dgddraffq/image/upload/f_auto,q_auto:best,c_fill,g_faces/v1648123420/"+publicID+".jpg";
           this.$store.commit('setAvatarImage', this.avatarImageURL);
            axios
-            .post("/add_avatar", {
+            .post("/api/add_avatar", {
               url: this.avatarImageURL,
             })
             .then((res) => {
@@ -289,7 +289,7 @@ export default {
       this.$store.commit('deleteAvatarImage');
       this.avatarImageURL = '';
       axios
-        .get("/delete_avatar")
+        .get("/api/delete_avatar")
         .then((res) => {
           console.log(res);
           if(res.data == "Url unavatarded"){
@@ -306,7 +306,7 @@ export default {
       }else{
         this.passwordMismatch = false;        
         axios
-        .post("/update_user_password",{
+        .post("/api/update_user_password",{
           old_password: this.currentPassword,
           password: this.newPassword
         })
@@ -327,7 +327,7 @@ export default {
     },
     confirmAccountDeletion(){
       axios
-        .get("/delete_account")
+        .get("/api/delete_account")
         .then((res) => {
           console.log(res);
           this.$store.commit('logout');
@@ -342,7 +342,7 @@ export default {
 
   mounted() {
     this.profileDataLoading = true;
-    axios.get("/profile/" + this.$store.state.userID).then((res) => {
+    axios.get("/api/profile/" + this.$store.state.userID).then((res) => {
       this.profileID = res.data.id;
       this.profileName = res.data.name;
       this.profileEmail = res.data.email;

@@ -93,7 +93,7 @@ export default {
     }
   },
   mounted() {
-      axios.get('/health_check')
+      axios.get('/api/health_check')
           .then (response => {
               console.log("Back end health check okay");
               console.log(response);
@@ -107,7 +107,7 @@ export default {
         console.log(this.form.password);
         console.log(this.form.confirmPassword);
         this.passwordMismatch = false;
-        axios.post('/register', this.form)
+        axios.post('/api/register', this.form)
           .then((res) => {
               console.log(res);
               this.$router.push('/profile/' + res.data.id);

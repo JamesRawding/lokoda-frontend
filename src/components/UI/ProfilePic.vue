@@ -15,7 +15,7 @@ export default {
   },
   mounted(){
     if(this.$store.state.userID !== ''){
-      axios.get("/profile/" + this.$store.state.userID).then((res) => {
+      axios.get("/api/profile/" + this.$store.state.userID).then((res) => {
         this.$store.commit('setAvatarImage', res.data.avatar_url);
       });
     }

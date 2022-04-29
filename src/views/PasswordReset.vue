@@ -44,7 +44,7 @@ export default {
   methods: {
     submitForm() {
        console.log(this.email);
-       axios.post('/reset_password',{
+       axios.post('/api/reset_password',{
          email: this.email
        })
         .then((res) => {

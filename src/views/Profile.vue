@@ -650,7 +650,7 @@ export default {
         this.profilePlayerEmbed =
           this.profilePlayerEmbed.match(/\bhttps?:\/\/\S+/gi)[0];
         axios
-          .post("/embed_url",{
+          .post("/api/embed_url",{
             url: this.profilePlayerEmbed
           })
           .then((res) => {
@@ -682,7 +682,7 @@ export default {
         if (index > -1) {
           
           axios
-            .post("/delete_genre", {
+            .post("/api/delete_genre", {
               user_id: this.userID,
               genre_id: genre.genre_id,
             })
@@ -694,7 +694,7 @@ export default {
       } else {
         selectedGenres.push(genre);
         axios
-          .post("/add_genre", {
+          .post("/api/add_genre", {
             user_id: this.userID,
             genre_id: genre.genre_id,
           })
@@ -706,7 +706,7 @@ export default {
     submitShowForm() {
 
       axios
-        .post("/add_show", {
+        .post("/api/add_show", {
           city: this.city,
           venue: this.venue,
           time: this.time,
@@ -719,7 +719,7 @@ export default {
           console.log(res);
 
          
-          axios.get("/get_shows_for_profile/"+this.$route.params.profileURL).then((res) => {
+          axios.get("/api/get_shows_for_profile/"+this.$route.params.profileURL).then((res) => {
             this.profileShows = res.data;
           });
         });
@@ -754,7 +754,7 @@ export default {
     },
     submitEditShowForm() { 
       axios
-        .post("/update_show", {
+        .post("/api/update_show", {
           id: this.selectedShow.id,
           city: this.selectedShow.city,
           venue: this.selectedShow.venue,
@@ -768,7 +768,7 @@ export default {
           console.log(res);
 
          
-          axios.get("/get_shows_for_profile/"+this.$route.params.profileURL).then((res) => {
+          axios.get("/api/get_shows_for_profile/"+this.$route.params.profileURL).then((res) => {
             this.profileShows = res.data;
           });
         });
@@ -787,7 +787,7 @@ export default {
     confirmCancelShow() {
       
       axios
-        .get("/cancel_show/"+this.selectedShow.id, {
+        .get("/api/cancel_show/"+this.selectedShow.id, {
           id: this.selectedShow.id
         })
         .then((res) => {
@@ -818,7 +818,7 @@ export default {
             ".jpg";
           this.$store.commit("setHeroImage", this.profileImageURL);
            axios
-            .post("/add_image", {
+            .post("/api/add_image", {
               url: this.profileImageURL,
             })
             .then((res) => {
@@ -831,7 +831,7 @@ export default {
     deleteHero() {
       this.profileImageURL = "";
       axios
-        .get("/delete_image")
+        .get("/api/delete_image")
         .then((res) => {
           console.log(res);
         });
@@ -839,7 +839,7 @@ export default {
     deleteEmbed(){
       this.profilePlayerEmbed = "";
       axios
-        .post("/unembed_url", {
+        .post("/api/unembed_url", {
           url: '',
         })
         .then((res) => {
@@ -942,11 +942,11 @@ export default {
   },
   mounted() {
     const url = this.$route.params.profileURL;
-      axios.get("/get_genres_for_profile/"+url).then((res) => {
+      axios.get("/api/get_genres_for_profile/"+url).then((res) => {
         this.profileGenres = res.data;
       });
       this.profileShowsLoading = true;
-      axios.get("/get_shows_for_profile/"+url).then((res) => {
+      axios.get("/api/get_shows_for_profile/"+url).then((res) => {
 
         this.profileShows = res.data;
         this.profileShowsLoading = false;
@@ -955,7 +955,7 @@ export default {
        this.qrImage = "http://api.qrserver.com/v1/create-qr-code/?data="+location.href+"&size=200x200"
       });
     this.profileDataLoading = true;
-    axios.get("/profile/" + url).then((res) => {
+    axios.get("/api/profile/" + url).then((res) => {
       this.profileID = res.data.id;
       this.profileName = res.data.name;
       this.profileEmail = res.data.email;
@@ -965,7 +965,7 @@ export default {
       this.profileDataLoading = false;
     });
 
-    axios.get("/get_genres").then((res) => {
+    axios.get("/api/get_genres").then((res) => {
       this.allGenres = res.data;
     });
   },
