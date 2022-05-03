@@ -1,11 +1,14 @@
 <template>
   <header>
-    <!-- <router-link v-if="loggedIn" to="/profile"><img src="../../assets/images/lokoda-logo.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
-    <router-link v-else to="/"><img src="../../assets/images/lokoda-logo.svg" alt="lokoda logo"><span class="sr-only">Log in</span></router-link> -->
-    <router-link v-if="$store.state.loggedIn" :to="'/profile/'+this.$store.state.userID"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
-    <router-link v-else to="/"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">Discover</span></router-link>
+    <div class="header-left">
+      <router-link v-if="$store.state.loggedIn" :to="'/profile/'+this.$store.state.userID"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
+      <router-link v-else to="/"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">Discover</span></router-link>
+      <router-link class="cta cta--primary" v-if="!$store.state.loggedIn" to="/registration">Register</router-link>
+    </div>
     <div class="header-nav-items">
       <header-nav></header-nav>
+      <router-link class="cta cta--primary" v-if="!$store.state.loggedIn" to="/registration">Register</router-link>
+
       <button @click="showProfileDialog" class="profile-settings-button" aria-label="view profile settings" v-if="$store.state.loggedIn && isProfileDialogDisplayed">
        
         <profile-pic v-if="$store.state.loggedIn"></profile-pic>
@@ -76,6 +79,22 @@ export default {
     position: relative;
   }
 
+  .header-left{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width:100%;
+
+    @media(min-width:$desktop){
+      width:auto;
+    }
+    .cta--primary{
+      @media(min-width:$desktop){
+        display: none;
+      }
+    }
+  }
+
   a{
     display: contents;
   }
@@ -88,6 +107,15 @@ export default {
   .header-nav-items{
     display: flex;
     align-items: center;
+
+    .cta--primary{
+      display: none;
+
+      @media(min-width:$desktop){
+        display: inline-block;
+        margin-left:$spacing-m;
+      }
+    }
   }
 
   .profile-settings-button{
@@ -125,6 +153,13 @@ export default {
       left: auto;
       top: rem(60);
     }
+  }
+
+  a.cta--primary{
+    @include cta;
+    @include cta--primary;
+    display:inline-block;
+    text-decoration: none;
   }
 
 </style>

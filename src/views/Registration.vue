@@ -102,6 +102,12 @@ export default {
           });
   },
   methods: {
+    setCookie(cname, cvalue, exdays) {
+      const d = new Date();
+      d.setTime(d.getTime() + (exdays += 3600 * 1000));
+      let expires = "expires="+d.toUTCString();
+      document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    },
     submitForm() {
       if(this.form.password != this.form.confirmPassword && this.form.password != ""){
         this.passwordMismatch = true;
@@ -115,25 +121,14 @@ export default {
             }else{
               this.userExists = false;
               this.$store.commit({
-                    type: 'login',
-                    userID: res.data.id,
-                    token: res.data.token,
-                    cookieID: res.data.id
-                });
-                
-                
-
-            
-                function setCookie(cname, cvalue, exdays) {
-                  const d = new Date();
-                  d.setTime(d.getTime() + (exdays += 3600 * 1000));
-                  let expires = "expires="+d.toUTCString();
-                  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-                }
-                
-
-                setCookie('loggedIn',res.data.id, 2 );
-                this.$router.push('/profile/' + res.data.id);
+                type: 'login',
+                userID: res.data.id,
+                token: res.data.token,
+                cookieID: res.data.id
+              });
+              
+              this.setCookie('loggedIn',res.data.id, 2 );
+              this.$router.push('/profile/' + res.data.id);
             }
           });
       }
