@@ -1,5 +1,6 @@
 <template>
-  <base-text-icon-button @click="filtersVisible = !filtersVisible" buttonType="button" mode="text-icon-button text-icon-button--filter"><span v-if="filtersVisible">Close filter</span><span v-else>Filter</span></base-text-icon-button>
+  <div class="filters-block">
+  <base-text-icon-button @click="filtersVisible = !filtersVisible" buttonType="button" mode="text-icon-button text-icon-button--filter"><span v-if="filtersVisible">Close filters</span><span v-else>Filters</span></base-text-icon-button>
   <div :class="{'filters-container--active' : filtersVisible}" class="filters-container">
     <search-bar @searched="searchLocationValue" searchId="locationSearch" searchPlaceholder="e.g Sheffield">
       <template #label>Search by location</template>
@@ -27,6 +28,7 @@
       </template>
     </base-dropdown> -->
     <base-button @click="filtersVisible = !filtersVisible" mode="cta cta--secondary" buttonType="button">View Results</base-button>
+  </div>
   </div>
 </template>
 
@@ -80,7 +82,7 @@ export default {
     }
   },
   mounted(){
-   axios.get('/get_genres')
+   axios.get('api/get_genres')
     .then((res) => {
         this.genres = res.data
     });
@@ -91,11 +93,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .filters-block{
+    box-shadow: $box-shadow;
+    margin-left:rem(-16);
+    margin-right:rem(-16);
+    padding: 0 $spacing-s;
+    margin-top:$spacing-m;
+
+    @media(min-width:$desktop){
+      box-shadow: none;
+      margin-left: 0;
+      margin-right: 0;
+      padding: 0;
+    }
+  }
   .filters-container{
     height: 0;
     overflow: hidden;
     transition: .25s all ease-in-out;
-    margin-top:$spacing-s;
     margin-left:rem(-16);
     margin-right:rem(-16);
     padding: 0 $spacing-s;
@@ -108,7 +123,12 @@ export default {
       grid-column-gap: rem(32);
       grid-template-columns:1fr 1fr 1fr;
       box-shadow: none;
+      background-color: $lightgrey;
+      padding:0 $spacing-m $spacing-m $spacing-m;
+      border-radius:$border-radius-reg;
     }
+
+
 
     &--active{
       box-shadow: $box-shadow;
@@ -127,7 +147,6 @@ export default {
   }
 
   .text-icon-button{
-    margin-top:$spacing-m;
     margin-left: auto;
 
     @media(min-width:$desktop){

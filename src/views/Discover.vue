@@ -5,11 +5,11 @@
       <h1>Discover</h1>
       <p>Find artists/promoters in your area. Search by <strong>city</strong> or by <strong>name</strong>.</p>
     </section>
-    <div class="segmented-controls">
+    <the-filters @changedNameSearch="enteredNameSearch" @changedLocationSearch="enteredLocationSearch" @changedGenre="selectedGenre" @changedDistance="selectedDistance"></the-filters>
+    <div class="segmented-controls segmented-controls--mobile">
       <base-button :class="{'segmented-control--active': artistsVisible}" mode="cta cta--secondary" buttonType="button" @click="showResultType('artist')">Artists</base-button>
       <base-button :class="{'segmented-control--active': promotersVisible}" mode="cta cta--secondary" buttonType="button" @click="showResultType('promoter')">Promoters</base-button>
     </div>
-    <the-filters @changedNameSearch="enteredNameSearch" @changedLocationSearch="enteredLocationSearch" @changedGenre="selectedGenre" @changedDistance="selectedDistance"></the-filters>
     
     
     <!-- <div>
@@ -48,7 +48,13 @@
 
    <transition name="fade" mode="out-in">
     <div v-if="artistsVisible">
-      <h2><span>Artists from </span>{{currentLocationFilter}}</h2>
+      <div class="results-header">
+        <h2><span>Artists from </span>{{currentLocationFilter}}</h2>
+        <div class="segmented-controls segmented-controls--desktop">
+          <base-button :class="{'segmented-control--active': artistsVisible}" mode="cta cta--secondary" buttonType="button" @click="showResultType('artist')">Artists</base-button>
+          <base-button :class="{'segmented-control--active': promotersVisible}" mode="cta cta--secondary" buttonType="button" @click="showResultType('promoter')">Promoters</base-button>
+        </div>
+      </div>
       <div class="grid-parent">
         <base-card v-for="band in alphabetisedBandResults" :key="band">
           <img :src=band.image :alt=band.alt>
@@ -65,7 +71,13 @@
     </div>
    
     <div v-else>
-      <h2><span>Promoters from </span>{{currentLocationFilter}}</h2>
+      <div class="results-header">
+        <h2><span>Promoters from </span>{{currentLocationFilter}}</h2>
+        <div class="segmented-controls segmented-controls--desktop">
+          <base-button :class="{'segmented-control--active': artistsVisible}" mode="cta cta--secondary" buttonType="button" @click="showResultType('artist')">Artists</base-button>
+          <base-button :class="{'segmented-control--active': promotersVisible}" mode="cta cta--secondary" buttonType="button" @click="showResultType('promoter')">Promoters</base-button>
+        </div>
+      </div>
       <div class="grid-parent">
         <base-card v-for="promoter in alphabetisedPromoterResults" :key='promoter'>
           <img :src=promoter.image :alt=promoter.alt>
@@ -86,6 +98,7 @@
 
 
 <script>
+import axios from "axios";
 import TheHeader from '../components/layouts/TheHeader.vue';
 import TheFilters from '../components/layouts/TheFilters.vue';
 import BaseButton from '../components/UI/BaseButton.vue';
@@ -375,6 +388,11 @@ export default {
       });
     }
   },
+  mounted() {
+    axios.post("api/search",["account_type", "location", "name", "genre"]).then((res) => {
+      console.log(res)
+    });
+  }
 
   
 }
@@ -395,9 +413,28 @@ export default {
   }
 
   .segmented-controls{
-    display: flex;
+    
     justify-content: center;
     margin-top: $spacing-m;
+
+    &--mobile{
+      display: flex;
+    }
+
+    &--desktop{
+      display:none;
+    }
+
+    @media(min-width:$desktop){
+      &--mobile{
+        display:none;
+      }
+
+      &--desktop{
+        display:flex;
+        margin-top:0;
+      }
+    }
     
 
     button{
@@ -465,6 +502,12 @@ export default {
     @media(min-width:$desktop){
       display: none;
     }
+  }
+
+  .results-header{
+    display:flex;
+    justify-content: space-between;
+    align-items: flex-end;
   }
 
   h2{
