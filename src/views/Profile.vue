@@ -539,6 +539,11 @@
       >Back to Profile
       </base-button>
     </section>
+
+    <span class="toast-notification" :class="{'toast-notification--active' :showAddedToast}" >Show added</span>
+    <span class="toast-notification" :class="{'toast-notification--active' :showUpdatedToast}" >Show updated</span>
+    <span class="toast-notification" :class="{'toast-notification--active' :showCancelledToast}" >Show cancelled</span>
+
   </main>
   
 </template>
@@ -610,6 +615,9 @@ export default {
       comments: "",
       qrImage: "",
       printQRPage: false,
+      showAddedToast: false,
+      showUpdatedToast: false,
+      showCancelledToast: false,
     };
   },
   methods: {
@@ -717,11 +725,15 @@ export default {
         })
         .then((res) => {
           console.log(res);
-
-         
           axios.get("/api/get_shows_for_profile/"+this.$route.params.profileURL).then((res) => {
             this.profileShows = res.data;
           });
+          if(res.data == "Show added"){
+              this.showAddedToast = true;
+              setTimeout(() => {
+                this.showAddedToast = false;
+              }, 3000)
+            }
         });
       this.day = "";
       this.month = "";
@@ -766,11 +778,15 @@ export default {
         })
         .then((res) => {
           console.log(res);
-
-         
           axios.get("/api/get_shows_for_profile/"+this.$route.params.profileURL).then((res) => {
             this.profileShows = res.data;
           });
+          if(res.data == "Show updated"){
+              this.showUpdatedToast = true;
+              setTimeout(() => {
+                this.showUpdatedToast = false;
+              }, 3000)
+            }
         });
       this.editShowDialogVisible = false;
     },
@@ -792,6 +808,15 @@ export default {
         })
         .then((res) => {
           console.log(res);
+          axios.get("/api/get_shows_for_profile/"+this.$route.params.profileURL).then((res) => {
+            this.profileShows = res.data;
+          });
+          if(res.data == "Show cancelled"){
+              this.showCancelledToast = true;
+              setTimeout(() => {
+                this.showCancelledToast = false;
+              }, 3000)
+            }
         });
         this.cancelShowDialogVisible = false;
         this.selectedShow = "";

@@ -39,6 +39,7 @@
             <template #label>Location</template>
             <template #helpertext>Enter your city to help your fans find you.</template>
           </base-input>
+          <p class="error-message" v-if="userExists">There is already an account with that email.</p>
           <base-input class="dark" inputId="email" inputType="email" v-model="form.email" :isRequired="true" >
             <template #label>Email</template>
           </base-input>
@@ -90,6 +91,7 @@ export default {
           confirmPassword:'',
         },
         passwordMismatch: false,
+        userExists: false,
     }
   },
   mounted() {
@@ -104,13 +106,35 @@ export default {
       if(this.form.password != this.form.confirmPassword && this.form.password != ""){
         this.passwordMismatch = true;
       }else{
-        console.log(this.form.password);
-        console.log(this.form.confirmPassword);
+       
         this.passwordMismatch = false;
         axios.post('/api/register', this.form)
           .then((res) => {
-              console.log(res);
-              this.$router.push('/profile/' + res.data.id);
+            if(res.data.error == "User already exists!"){
+              this.userExists = true
+            }else{
+              this.userExists = false;
+              this.$store.commit({
+                    type: 'login',
+                    userID: res.data.id,
+                    token: res.data.token,
+                    cookieID: res.data.id
+                });
+                
+                
+
+            
+                function setCookie(cname, cvalue, exdays) {
+                  const d = new Date();
+                  d.setTime(d.getTime() + (exdays += 3600 * 1000));
+                  let expires = "expires="+d.toUTCString();
+                  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+                }
+                
+
+                setCookie('loggedIn',res.data.id, 2 );
+                this.$router.push('/profile/' + res.data.id);
+            }
           });
       }
        

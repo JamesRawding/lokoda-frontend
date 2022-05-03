@@ -112,8 +112,13 @@
         <base-text-icon-button @click="displaySettingsDialog('Delete Account')" mode="text-icon-button text-icon-button--trash" :class="{'text-icon-button--active': deleteAccountDialogVisible || confirmDeleteAccountDialogVisible}" buttonType="button">Delete Account</base-text-icon-button>
       </div>
     </div>
+    <span class="toast-notification" :class="{'toast-notification--active' :nameUpdatedToast}" >Name updated</span>
+    <span class="toast-notification" :class="{'toast-notification--active' :locationUpdatedToast}" >Location updated</span>
+    <span class="toast-notification" :class="{'toast-notification--active' :passwordUpdatedToast}" >Password updated</span>
+    <!-- <span class="toast-notification" :class="{'toast-notification--active' :avatarAddedToast}" >Image uploaded</span>
+    <span class="toast-notification" :class="{'toast-notification--active' :avatarDeletedToast}" >Image deleted</span> -->
 
-    <span class="toast-notification" :class="{'toast-notification--active' :profileUpdatedToast}" >Profile updated</span>
+
   </main>
 </template>
 
@@ -161,7 +166,11 @@ export default {
       newName: '',
       passwordMismatch: false,
       incorrectPassword: false,
-      profileUpdatedToast: false,
+      nameUpdatedToast: false,
+      locationUpdatedToast: false,
+      passwordUpdatedToast: false,
+      // avatarAddedToast: false,
+      // avatarDeletedToast: false,
 
     } 
   },
@@ -223,9 +232,9 @@ export default {
           console.log(res);
 
           if(res.data == "Profile Updated"){
-            this.profileUpdatedToast = true;
+            this.nameUpdatedToast = true;
             setTimeout(() => {
-              this.profileUpdatedToast = false;
+              this.nameUpdatedToast = false;
             }, 3000)
           }
         });
@@ -247,9 +256,9 @@ export default {
           console.log(res);
 
           if(res.data == "Profile Updated"){
-            this.profileUpdatedToast = true;
+            this.locationUpdatedToast = true;
             setTimeout(() => {
-              this.profileUpdatedToast = false;
+              this.locationUpdatedToast = false;
             }, 3000)
           }
         });
@@ -275,12 +284,12 @@ export default {
             })
             .then((res) => {
               console.log(res);
-              if(res.data == "Url avatarded"){
-                this.profileUpdatedToast = true;
-                setTimeout(() => {
-                  this.profileUpdatedToast = false;
-                }, 3000)
-              }
+              // if(res.data == "Url avatarded"){
+              //   this.avatarAddedToast = true;
+              //   setTimeout(() => {
+              //     this.avatarAddedToast = false;
+              //   }, 3000)
+              // }
             });
 
       });
@@ -292,12 +301,12 @@ export default {
         .get("/api/delete_avatar")
         .then((res) => {
           console.log(res);
-          if(res.data == "Url unavatarded"){
-              this.profileUpdatedToast = true;
-              setTimeout(() => {
-                this.profileUpdatedToast = false;
-              }, 3000)
-            }
+          // if(res.data == "Url unavatarded"){
+          //     this.avatarDeletedToast = true;
+          //     setTimeout(() => {
+          //       this.avatarDeletedToast = false;
+          //     }, 3000)
+          //   }
         });
     },
     setNewPassword(){
@@ -320,6 +329,12 @@ export default {
             this.currentPassword = "";
             this.newPassword = "";
             this.confirmPassword = "";
+          }
+          if(res.data == "Password updated"){
+            this.passwordUpdatedToast = true;
+            setTimeout(() => {
+              this.passwordUpdatedToast = false;
+            }, 3000)
           }
           
         });

@@ -309,22 +309,11 @@ a{
   transform: translateX(-50%);
   transition: all .25s ease-in-out;
 
-  @media(min-width:$desktop){
-    left: auto;
-    right: rem(-200);
-    bottom: $spacing-m;
-    transform: none;
-  }
-
   &--active{
     bottom: $spacing-s;
     background-color: $dark-green;
     color: #fff;
 
-    @media(min-width:$desktop){
-      bottom: $spacing-m;
-      right: $spacing-m;
-    }
   }
 }
 </style>

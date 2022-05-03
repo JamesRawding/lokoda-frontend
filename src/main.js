@@ -152,3 +152,5 @@ app.use(VueAxios, axios);
 router.isReady().then(function(){
   app.mount('#app')
 }); 
+
+export default store;

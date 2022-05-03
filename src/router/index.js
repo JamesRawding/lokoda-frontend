@@ -1,5 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Discover from '../views/Discover.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import Discover from '../views/Discover.vue';
+import store from "../main.js";
 
 const routes = [
   {
@@ -49,6 +50,7 @@ const routes = [
     component: () => import('../views/Messages.vue'),
     meta: {
       title: 'Messages',
+      requiresAuth: true
     }
   },
   {
@@ -57,6 +59,7 @@ const routes = [
     component: () => import('../views/AccountSettings.vue'),
     meta: {
       title: 'Account Settings',
+      requiresAuth: true
     }
   },
   {
@@ -111,5 +114,19 @@ router.afterEach((to) => {
     document.title = to.meta.title + ' | Lokoda';
   }
 });
+
+router.beforeEach((to, __, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // this route requires auth, check if logged in
+    // if not, redirect to login page.
+    if (!store.state.loggedIn) {
+      next({ name: 'Login' })
+    } else {
+      next() // go to wherever I'm going
+    }
+  } else {
+    next() // does not require auth, make sure to always call next()!
+  }
+})
 
 export default router
