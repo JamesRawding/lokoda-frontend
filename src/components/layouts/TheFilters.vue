@@ -12,7 +12,7 @@
       <template #label>Genre</template>
       <template #options>
         <option>Any</option>
-        <option v-for="genre in genres" :key="genre" :value="genre.id">{{genre.genre}}</option>
+        <option v-for="genre in genres" :key="genre.id" :value="genre.genre_id">{{genre.genre}}</option>
       </template>
     </base-dropdown>
     <!-- <base-dropdown v-if="!locationEntered" @changed="distanceValue" dropdownId="distanceDropdown" v-model="distanceDropdown" :isRequired="false" isDisabled>
@@ -59,9 +59,9 @@ export default {
   },
   methods:{
     genreValue(value){
-      console.log(value)
+      //console.log(value)
       const genreValue = value;
-      this.$emit('changedGenre', genreValue);
+      this.$emit('changedGenre', genreValue.toLowerCase());
     },
     distanceValue(value){
       const distanceValue = value;

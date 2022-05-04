@@ -301,7 +301,7 @@ export default {
     },
     selectedGenre(value){
       this.genreDropdownValue = value
-      console.log(value)
+      //console.log(value)
     },
     selectedDistance(value){
       console.log(value)
@@ -316,7 +316,13 @@ export default {
       if(value === ''){
         this.currentLocationFilter = this.defaultLocation
       }
-    }
+    },
+    filterByGenre(item) {
+      if (item.genres.find(e => e.id == this.genreDropdownValue)) {
+        return true
+      }
+      return false;
+    }   
   },
 
   computed:{
@@ -335,11 +341,8 @@ export default {
         bandResults = bandResults.filter(m => m.location.toLowerCase().indexOf(this.searchLocationValue) > -1 );
       }
 
-      if(this.genreDropdownValue && this.genreDropdownValue !== 'Any'){
-       
-        bandResults = bandResults.filter((m) =>{
-          return (m.genres.indexOf(this.genreDropdownValue) > -1)
-        })
+      if(this.genreDropdownValue && this.genreDropdownValue !== 'any'){
+        bandResults = bandResults.filter(this.filterByGenre)    
       }
 
       return bandResults
@@ -450,7 +453,8 @@ export default {
       }
 
       @media(min-width:$desktop){
-        min-width: rem(182);
+        min-width: rem(161);
+        font-size:$copy-desktop-s;
       }
     }
   }
