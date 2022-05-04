@@ -50,7 +50,7 @@ const routes = [
     component: () => import('../views/Messages.vue'),
     meta: {
       title: 'Messages',
-      requiresAuth: true
+      //requiresAuth: true
     }
   },
   {

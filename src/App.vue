@@ -114,6 +114,7 @@ body{
   -moz-osx-font-smoothing: grayscale;
   font-size:$copy-mobile;
   color: $copy;
+  background-color: #fefefe;
 
   @media(min-width:$desktop){
     font-size:$copy-desktop;
@@ -253,11 +254,10 @@ a{
     max-width: rem(1200);
     margin: 0 auto;
     width:100%;
-    padding: $spacing-s $spacing-s rem(90) $spacing-s;
-
+    padding: $spacing-l $spacing-s rem(90) $spacing-s;
 
     @media(min-width:$desktop){
-      padding: $spacing-m;
+      padding: $spacing-l $spacing-m $spacing-m $spacing-m;
     }
   }
 

@@ -1,6 +1,8 @@
 <template>
+  <div>
+  <the-header></the-header>
   <main class="page-container">
-    <the-header></the-header>
+    
     <section class="discover-intro">
       <h1>Discover</h1>
       <p>Find artists/promoters in your area. Search by <strong>city</strong> or by <strong>name</strong>.</p>
@@ -94,6 +96,7 @@
     </div>
     </transition>
   </main>
+  </div>
 </template>
 
 
@@ -404,11 +407,6 @@ export default {
 <style lang="scss" scoped>
   .discover-intro{
     text-align: center;
-    margin-top:$spacing-l;
-
-    // @media(min-width:$desktop){
-    //   margin-top:$spacing-l;
-    // }
 
     p{
       margin-top:$spacing-s;

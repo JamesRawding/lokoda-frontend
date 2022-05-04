@@ -1,12 +1,10 @@
 <template>
-  <main
-    class="page-loading-message"
-    v-if="profileDataLoading || profileShowsLoading"
-  >
-    <div><span class="spinner"></span>Profile loading</div>
-  </main>
-  <main v-else class="page-container">
-    <the-header></the-header>
+<div class="page-loading-message" v-if="profileDataLoading || profileShowsLoading">
+  <div><span class="spinner"></span>Profile loading</div>
+</div>
+<div v-else>
+  <the-header></the-header>
+  <main class="page-container">
     <section class="hero-section">
       <div class="hero-section__image-block" :class="{'hero-section__image-block--no-image': !profileImageURL}">
         <div class="hero-section__image-container" v-if="profileImageURL">
@@ -545,7 +543,7 @@
     <span class="toast-notification" :class="{'toast-notification--active' :showCancelledToast}" >Show cancelled</span>
 
   </main>
-  
+  </div>
 </template>
 
 <script>
@@ -998,13 +996,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.page-container{
+  padding-top: 0;
+
+  @media (min-width: $desktop){
+    padding-top: $spacing-m;
+  }
+}
 .hero-section {
   background-color: $dark-green;
   width: calc(100% + $spacing-m);
-  margin: $spacing-s rem(-16) 0 rem(-16);
+  margin: 0 rem(-16) 0 rem(-16);
 
   @media (min-width: $desktop) {
-    margin: $spacing-m 0 0 0;
+    margin:0;
     width: 100%;
     display: grid;
     grid-template-columns: 5fr 7fr;

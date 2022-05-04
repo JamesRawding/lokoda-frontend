@@ -1,8 +1,9 @@
 <template>
   <header>
+    <div class="header-inner">
     <div class="header-left">
-      <router-link v-if="$store.state.loggedIn" :to="'/profile/'+this.$store.state.userID"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
-      <router-link v-else to="/"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">Discover</span></router-link>
+      <router-link class="logo-link" v-if="$store.state.loggedIn" :to="'/profile/'+this.$store.state.userID"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
+      <router-link class="logo-link" v-else to="/"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">Discover</span></router-link>
       <router-link class="cta cta--primary" v-if="!$store.state.loggedIn" to="/registration">Register</router-link>
     </div>
     <div class="header-nav-items">
@@ -27,7 +28,8 @@
         <!-- <base-text-icon-button mode="text-icon-button text-icon-button--qr">Print QR Code</base-text-icon-button> -->
         <base-text-icon-button @click="logout" mode="text-icon-button text-icon-button--logout">Log Out</base-text-icon-button>
       </base-dialog>
-    </transition>    
+    </transition>  
+    </div>  
   </header>
 </template>
 
@@ -73,10 +75,22 @@ export default {
 
 <style lang="scss" scoped>
   header{
+    box-shadow: $box-shadow;
+    background-color: #fff;
+  }
+
+  .header-inner{
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: relative;
+    max-width: rem(1200);
+    margin: 0 auto;
+    padding: $spacing-s;
+
+    @media(min-width:$desktop){
+      padding:$spacing-s $spacing-m;
+    }
   }
 
   .header-left{
@@ -97,6 +111,10 @@ export default {
 
   a{
     display: contents;
+  }
+
+  .logo-link{
+    display: block;
   }
 
   img{

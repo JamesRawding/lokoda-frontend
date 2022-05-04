@@ -1,6 +1,7 @@
 <template>
+<div class="messages-page">
+  <the-header></the-header>
   <main class="page-container">
-    <the-header></the-header>
     <div class="page-grid">
       <section v-if="messagesListVisible">
         <div class="messages-header">
@@ -307,6 +308,7 @@
     </div>
     
   </main>
+  </div>
 </template>
 
 <script>
@@ -1001,13 +1003,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .page-container{
+  .messages-page{
     background-color: $copy;
-    padding-bottom: $spacing-s;
     overflow: auto;
 
     @media(min-width: $desktop){
-      background-color: #fff;
+      background-color: transparent;
+      //padding-bottom: $spacing-m;
+    }
+  }
+
+  .page-container{
+    padding-top: $spacing-s;
+    
+    @media(min-width: $desktop){
+      padding-top: $spacing-m;
       padding-bottom: $spacing-m;
     }
   }
@@ -1015,13 +1025,12 @@ export default {
     display: none;
 
     @media(min-width: $desktop){
-      display: flex;
+      display: block;
     }
   }
 
   .page-grid{
     @media(min-width: $desktop){
-      margin-top:$spacing-m;
       display: grid;
       grid-template-columns: 370px 1fr;
       grid-column-gap: $spacing-m;

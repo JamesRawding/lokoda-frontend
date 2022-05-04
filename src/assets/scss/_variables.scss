@@ -188,8 +188,8 @@ $spacing-xl: rem(128);
   @media(min-width:$desktop){
     &:hover,
     &:focus{
-      border-color: $dark-green;
-      background-color: $dark-green;
+      border-color: $mid-grey;
+      background-color: $mid-grey;
       color:#fff;
     }
   }

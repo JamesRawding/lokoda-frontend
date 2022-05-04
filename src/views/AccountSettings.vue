@@ -1,12 +1,10 @@
 <template>
-<main
-    class="page-loading-message"
-    v-if="profileDataLoading"
-  >
-    <div><span class="spinner"></span>Settings loading</div>
-  </main>
-  <main v-else class="page-container">
-    <the-header></the-header>
+<div class="page-loading-message" v-if="profileDataLoading">
+   <div><span class="spinner"></span>Settings loading</div>
+</div>
+<div v-else>
+  <the-header></the-header>
+  <main class="page-container">
     <section class="settings-intro">
       <h1>Account</h1>
       <p>Change details on your account</p>
@@ -120,6 +118,7 @@
 
 
   </main>
+  </div>
 </template>
 
 <script>
@@ -374,12 +373,6 @@ export default {
 <style lang="scss" scoped>
 .settings-intro{
     text-align: center;
-    margin-top:$spacing-m;
-
-    @media(min-width:$desktop){
-      margin-top:$spacing-l;
-      
-    }
 
     p{
       margin-top:$spacing-s;
