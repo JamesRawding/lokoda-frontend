@@ -1009,7 +1009,6 @@ export default {
 
     @media(min-width: $desktop){
       background-color: transparent;
-      //padding-bottom: $spacing-m;
     }
   }
 

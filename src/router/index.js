@@ -50,7 +50,7 @@ const routes = [
     component: () => import('../views/Messages.vue'),
     meta: {
       title: 'Messages',
-      //requiresAuth: true
+      requiresAuth: true
     }
   },
   {
@@ -116,6 +116,7 @@ router.afterEach((to) => {
 });
 
 router.beforeEach((to, __, next) => {
+  store.commit('loggedIn')
   if (to.matched.some(record => record.meta.requiresAuth)) {
     // this route requires auth, check if logged in
     // if not, redirect to login page.

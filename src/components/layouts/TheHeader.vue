@@ -64,7 +64,8 @@ export default {
     },
     logout(){
       this.$store.commit('logout');
-      this.isProfileDialogDisplayed = false
+      this.isProfileDialogDisplayed = false;
+      this.$router.push('/');
     }
   },
   directives: {

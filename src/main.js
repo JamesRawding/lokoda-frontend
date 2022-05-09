@@ -48,7 +48,6 @@ const store = createStore({
       state.token = payload.token;
     },
     loggedIn(state){
-
       function getCookie(cname) {
         let name = cname + "=";
         let ca = document.cookie.split(';');
