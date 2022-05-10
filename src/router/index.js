@@ -87,6 +87,22 @@ const routes = [
     }
   },
   {
+    path: '/terms-and-conditions',
+    name: 'TermsAndConditions',
+    component: () => import('../views/TermsAndConditions.vue'),
+    meta: {
+      title: 'Terms & Conditions',
+    }
+  },
+  {
+    path: '/privacy-policy',
+    name: 'PrivacyPolicy',
+    component: () => import('../views/PrivacyPolicy.vue'),
+    meta: {
+      title: 'Privacy Policy',
+    }
+  },
+  {
     path: '/:notFound(.*)',
     redirect: '/404',
   },

@@ -96,13 +96,16 @@
     </div>
     </transition>
   </main>
+   <the-footer></the-footer>
   </div>
+ 
 </template>
 
 
 <script>
 import axios from "axios";
 import TheHeader from '../components/layouts/TheHeader.vue';
+import TheFooter from '../components/layouts/TheFooter.vue';
 import TheFilters from '../components/layouts/TheFilters.vue';
 import BaseButton from '../components/UI/BaseButton.vue';
 import BaseCard from '../components/UI/BaseCard.vue';
@@ -111,6 +114,7 @@ import BasePill from '../components/UI/BasePill.vue';
 export default {
   components:{
     TheHeader,
+    TheFooter,
     TheFilters,
     BaseButton,
     BaseCard,
@@ -395,6 +399,12 @@ export default {
     }
   },
   mounted() {
+    const loggedInLocation = this.$store.state.profile.profileLocation.toLowerCase();
+    if(loggedInLocation !== ''){
+      this.searchLocationValue = loggedInLocation;
+      this.currentLocationFilter = loggedInLocation;
+      //this.defaultLocation = loggedInLocation
+    }
     axios.post("api/search",["account_type", "location", "name", "genre"]).then((res) => {
       console.log(res)
     });
@@ -514,6 +524,7 @@ export default {
 
   h2{
     margin-top:$spacing-m;
+    text-transform: capitalize;
 
     @media(min-width: $desktop){
         margin-top:$spacing-l;

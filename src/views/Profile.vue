@@ -985,6 +985,7 @@ export default {
       this.profileImageURL = res.data.image_url;
       this.profilePlayerEmbed = res.data.embed_url;
       this.profileLocation = res.data.location;
+      this.$store.commit('setNewProfileLocation',res.data.location);
       this.profileDataLoading = false;
     });
 

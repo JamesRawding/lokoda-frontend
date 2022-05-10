@@ -125,17 +125,20 @@ body{
 #app{
   display: grid;
   height: 100%;
-  grid-template-columns: auto;
-  grid-template-rows: auto;
+  grid-template-columns: 100%;
+  grid-template-rows: auto 1fr;
+  min-width: 0;
 }
 
 p{
   line-height: $copy-line-height;
+  overflow-wrap: break-word;
 }
 
 h1,
 h2,
-h3{
+h3,
+h4{
   color: inherit;
   font-weight: bold;
   line-height: $heading-line-height;
