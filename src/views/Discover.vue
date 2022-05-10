@@ -12,41 +12,7 @@
       <base-button :class="{'segmented-control--active': artistsVisible}" mode="cta cta--secondary" buttonType="button" @click="showResultType('artist')">Artists</base-button>
       <base-button :class="{'segmented-control--active': promotersVisible}" mode="cta cta--secondary" buttonType="button" @click="showResultType('promoter')">Promoters</base-button>
     </div>
-    
-    
-    <!-- <div>
-      <h2>
-        <span v-if="artistsVisible">Artists from </span>
-        <span v-else>Promoters from </span>
-        {{currentLocationFilter}}
-      </h2>
-      <div v-if="artistsVisible" class="grid-parent">
-        <base-card v-for="band in alphabetisedBandResults" :key="band">
-          <img :src=band.image :alt=band.alt>
-          <router-link :to="'/profile' + band.url"><h3>{{band.name}}</h3></router-link>
-          <span class="location">{{band.location}}</span>
-          <base-pill v-for="genre in band.genres" :key="genre + band.name">
-            {{genre}}
-          </base-pill>
-        </base-card>
-      </div>
-      <div v-else class="grid-parent">
-        <base-card v-for="promoter in alphabetisedPromoterResults" :key='promoter'>
-          <img :src=promoter.image :alt=promoter.alt>
-          <router-link :to="'/profile' + promoter.url"><h3>{{promoter.name}}</h3></router-link>
-          <span class="location">{{promoter.location}}</span>
-          <base-pill v-for="genre in promoter.genres" :key="genre + promoter.name">
-            {{genre}}
-          </base-pill>
-        </base-card> 
-      </div>
-       <div v-if="alphabetisedPromoterResults.length === 0 && artistsVisible">
-        <strong>No artists match that search.</strong>
-      </div>
-      <div v-if="alphabetisedPromoterResults.length === 0 && promotersVisible">
-        <strong>No promoters match that search.</strong>
-      </div>   
-    </div> -->
+
 
    <transition name="fade" mode="out-in">
     <div v-if="artistsVisible">
@@ -58,8 +24,8 @@
         </div>
       </div>
       <div class="grid-parent">
-        <base-card v-for="band in alphabetisedBandResults" :key="band">
-          <img v-if="band.image_url !== null " :src=band.image_url :alt=band.alt>
+        <base-card v-for="band in alphabetisedBandResults" :key="band.id">
+          <img v-if="band.image_url !== null " :src=band.image_url :alt="band.name + ' profile image'">
           <img v-else src="https://res.cloudinary.com/dgddraffq/image/upload/v1652190684/result-fallback-image_huueaz.jpg" alt="">
           <router-link :to="'/profile/' + band.id"><h3>{{band.name}}</h3></router-link>
           <span class="location">{{band.location}}</span>
@@ -82,8 +48,8 @@
         </div>
       </div>
       <div class="grid-parent">
-        <base-card v-for="promoter in alphabetisedPromoterResults" :key='promoter'>
-          <img v-if="promoter.image_url !== null " :src=promoter.image_url :alt=promoter.alt>
+        <base-card v-for="promoter in alphabetisedPromoterResults" :key='promoter.id'>
+          <img v-if="promoter.image_url !== null " :src=promoter.image_url :alt="promoter.name + ' profile image'">
           <img v-else src="https://res.cloudinary.com/dgddraffq/image/upload/v1652190684/result-fallback-image_huueaz.jpg" alt="">
           <router-link :to="'/profile/' + promoter.id"><h3>{{promoter.name}}</h3></router-link>
           <span class="location">{{promoter.location}}</span>
