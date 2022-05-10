@@ -196,13 +196,7 @@ export default {
 
       return bandResults
       .filter(bandResults => bandResults.name.toLowerCase())
-      .sort((a, b) => {
-          if (a.name < b.name)
-              return -1;
-          if (a.name > b.name)
-              return 1;
-          return 0;
-      });
+      .sort((a, b) => a.name.localeCompare(b.name));
     },
     alphabetisedPromoterResults(){
       let promoterResults = this.promoters
@@ -231,13 +225,7 @@ export default {
 
       return promoterResults
       .filter(promoterResults => promoterResults.name.toLowerCase())
-      .sort((a, b) => {
-          if (a.name < b.name)
-              return -1;
-          if (a.name > b.name)
-              return 1;
-          return 0;
-      });
+      .sort((a, b) => a.name.localeCompare(b.name));
     }
   },
   mounted() {
@@ -416,6 +404,10 @@ export default {
       @media(min-width: $desktop){
         margin-top:$spacing-s;
       }
+    }
+
+    h3{
+      text-transform: capitalize;
     }
 
     img{

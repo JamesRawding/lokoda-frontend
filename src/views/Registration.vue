@@ -109,6 +109,8 @@ export default {
       document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
     },
     submitForm() {
+      this.form.name = this.form.name.toLowerCase();
+      this.form.location = this.form.location.toLowerCase();
       if(this.form.password != this.form.confirmPassword && this.form.password != ""){
         this.passwordMismatch = true;
       }else{
