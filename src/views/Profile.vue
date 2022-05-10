@@ -2,7 +2,7 @@
 <div class="page-loading-message" v-if="profileDataLoading || profileShowsLoading">
   <div><span class="spinner"></span>Profile loading</div>
 </div>
-<div v-else>
+<div class="page-outer" v-else>
   <the-header></the-header>
   <main class="page-container">
     <section class="hero-section">
@@ -138,6 +138,7 @@
     <div class="profile-body">
       <section class="player-embed-block" v-if="profilePlayerEmbed">
         <iframe
+          title="music player"
           :src="profilePlayerEmbed"
           width="100%"
           height="380"
@@ -543,6 +544,7 @@
     <span class="toast-notification" :class="{'toast-notification--active' :showCancelledToast}" >Show cancelled</span>
 
   </main>
+  <the-footer></the-footer>
   </div>
 </template>
 
@@ -550,6 +552,7 @@
 import axios from "axios";
 import vClickOutside from "click-outside-vue3";
 import TheHeader from "../components/layouts/TheHeader.vue";
+import TheFooter from '../components/layouts/TheFooter.vue';
 import BaseTextIconButton from "../components/UI/BaseTextIconButton.vue";
 import BaseDialog from "../components/UI/BaseDialog.vue";
 import ChooseFileButton from "../components/UI/ChooseFileButton.vue";
@@ -563,6 +566,7 @@ import ShowCard from "../components/UI/ShowCard.vue";
 export default {
   components: {
     TheHeader,
+    TheFooter,
     BaseTextIconButton,
     BaseDialog,
     ChooseFileButton,
@@ -985,8 +989,11 @@ export default {
       this.profileImageURL = res.data.image_url;
       this.profilePlayerEmbed = res.data.embed_url;
       this.profileLocation = res.data.location;
-      this.$store.commit('setNewProfileLocation',res.data.location);
       this.profileDataLoading = false;
+
+      if(this.$store.state.loggedIn && this.profileID == this.$store.state.userID){
+        this.$store.commit('setNewProfileLocation',res.data.location);
+      }
     });
 
     axios.get("/api/get_genres").then((res) => {
@@ -1420,6 +1427,9 @@ dialog .cta--primary {
   margin: 0 auto;
   padding-top: $spacing-l;
 
+  img{
+    max-width: rem(150);
+  }
 
   h3{
     margin-top: $spacing-m;

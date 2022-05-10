@@ -126,8 +126,15 @@ body{
   display: grid;
   height: 100%;
   grid-template-columns: 100%;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto ;
   min-width: 0;
+  width: 100%;
+}
+
+.page-outer{
+  height: 100%;
+  display: grid;
+  grid-template-columns: 100%;
 }
 
 p{
@@ -260,7 +267,7 @@ a{
     padding: $spacing-l $spacing-s rem(90) $spacing-s;
 
     @media(min-width:$desktop){
-      padding: $spacing-l $spacing-m $spacing-m $spacing-m;
+      padding: $spacing-l $spacing-m;
     }
   }
 

@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="page-outer">
   <the-header></the-header>
   <main class="page-container">
     <h1><strong>Terms and Conditions</strong></h1>

@@ -29,14 +29,20 @@ export default ({
 footer{
   background-color: $copy;
   color: #fff;
-  
+  margin-top: auto;
+
+  font-size: $copy-mobile-s;
+  @media(min-width: $desktop){
+    font-size: $copy-desktop-s;
+  }
 
   a{
     color: #fff;
-    padding: rem(13) 0;
+    padding: rem(15) 0;
     display: block;
 
     @media(min-width: $desktop){
+      padding: rem(14) 0;
       margin-right: $spacing-m;
     }
   }

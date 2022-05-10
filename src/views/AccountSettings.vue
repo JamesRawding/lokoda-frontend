@@ -2,7 +2,7 @@
 <div class="page-loading-message" v-if="profileDataLoading">
    <div><span class="spinner"></span>Settings loading</div>
 </div>
-<div v-else>
+<div class="page-outer" v-else>
   <the-header></the-header>
   <main class="page-container">
     <section class="settings-intro">
@@ -118,6 +118,7 @@
 
 
   </main>
+  <the-footer></the-footer>
   </div>
 </template>
 
@@ -125,6 +126,7 @@
 import axios from 'axios';
 import vClickOutside from 'click-outside-vue3'
 import TheHeader from '../components/layouts/TheHeader.vue';
+import TheFooter from '../components/layouts/TheFooter.vue';
 import BaseDialog from '../components/UI/BaseDialog.vue';
 import BaseTextIconButton from '../components/UI/BaseTextIconButton.vue';
 import BaseButton from '../components/UI/BaseButton.vue';
@@ -134,6 +136,7 @@ import ChooseFileButton from '../components/UI/ChooseFileButton.vue';
 export default {
   components:{
     TheHeader,
+    TheFooter,
     BaseTextIconButton,
     BaseDialog,
     BaseButton,

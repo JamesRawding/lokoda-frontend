@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div class="page-outer">
     <the-header></the-header>
     <main class="page-container">
       <h1>Privacy Policy</h1>
-      <strong>Last updated May 09, 2022</strong>
+      <strong class="last-updated">Last updated May 09, 2022</strong>
       <p>
         This privacy notice for Lokoda (<strong>Company</strong> ',
         '<strong>we</strong>', '<strong>us</strong>', or
@@ -532,6 +532,7 @@
         the past twelve (12) months:
       </p>
 
+    
       <table tabindex="0">
         <tbody>
           <thead>
@@ -826,6 +827,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.last-updated{
+  margin-top: $spacing-m;
+  display: block;
+}
 
 p {
   margin-top: $spacing-m;

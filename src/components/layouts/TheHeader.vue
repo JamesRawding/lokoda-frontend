@@ -119,8 +119,13 @@ export default {
   }
 
   img{
-    max-width:rem(180);
+    display: block;
+    max-width:rem(150);
     width:100%;
+
+    @media(min-width:$desktop){
+      max-width:rem(180);
+    }
   }
 
   .header-nav-items{

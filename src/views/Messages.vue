@@ -1,5 +1,5 @@
 <template>
-<div class="messages-page">
+<div class="page-outer messages-page">
   <the-header></the-header>
   <main class="page-container">
     <div class="page-grid">

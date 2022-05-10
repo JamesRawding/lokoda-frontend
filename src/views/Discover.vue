@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="page-outer">
   <the-header></the-header>
   <main class="page-container">
     
@@ -59,8 +59,9 @@
       </div>
       <div class="grid-parent">
         <base-card v-for="band in alphabetisedBandResults" :key="band">
-          <img :src=band.image :alt=band.alt>
-          <router-link :to="'/profile' + band.url"><h3>{{band.name}}</h3></router-link>
+          <img v-if="band.image_url !== null " :src=band.image_url :alt=band.alt>
+          <img v-else src="https://res.cloudinary.com/dgddraffq/image/upload/v1652190684/result-fallback-image_huueaz.jpg" alt="">
+          <router-link :to="'/profile/' + band.id"><h3>{{band.name}}</h3></router-link>
           <span class="location">{{band.location}}</span>
           <base-pill v-for="genre in band.genres" :key="genre + band.name">
             {{genre.genre}}
@@ -82,8 +83,9 @@
       </div>
       <div class="grid-parent">
         <base-card v-for="promoter in alphabetisedPromoterResults" :key='promoter'>
-          <img :src=promoter.image :alt=promoter.alt>
-          <router-link :to="'/profile' + promoter.url"><h3>{{promoter.name}}</h3></router-link>
+          <img v-if="promoter.image_url !== null " :src=promoter.image_url :alt=promoter.alt>
+          <img v-else src="https://res.cloudinary.com/dgddraffq/image/upload/v1652190684/result-fallback-image_huueaz.jpg" alt="">
+          <router-link :to="'/profile/' + promoter.id"><h3>{{promoter.name}}</h3></router-link>
           <span class="location">{{promoter.location}}</span>
           <base-pill v-for="genre in promoter.genres" :key="genre + promoter.name">
             {{genre.genre}}
@@ -131,168 +133,8 @@ export default {
       defaultLocation: 'All Locations',
       genreDropdownValue: '',
       distanceDropdownValue: '',
-      bands:[
-        {
-          image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Paragon_%28band%29_-_B%C3%B6rsencrash_Festival_Wuppertal_2016-AL1745.jpg/660px-Paragon_%28band%29_-_B%C3%B6rsencrash_Festival_Wuppertal_2016-AL1745.jpg',
-          alt:'Image of Down to folk',
-          name: 'Down To Folk',
-          url: '/down-to-folk',
-          location: 'sheffield',
-          genres: [
-            {
-              id: 6,
-              genre: 'Folk'
-            },
-            {
-              id: 10,
-              genre: 'Hip Hop'
-            },
-            {
-              id: 12,
-              genre: 'Pop'
-            },
-            
-          ]
-
-        },
-        {
-          image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Paragon_%28band%29_-_B%C3%B6rsencrash_Festival_Wuppertal_2016-AL1745.jpg/660px-Paragon_%28band%29_-_B%C3%B6rsencrash_Festival_Wuppertal_2016-AL1745.jpg',
-          alt:'Image of Down to folk',
-          name: 'Goldie Lookin Chain',
-          url: '/goldie-lookin-chain',
-          location: 'hull',
-          genres: [
-            {
-              id: 11,
-              genre: 'Metal'
-            },
-            {
-              id: 9,
-              genre: 'Hardcore'
-            }
-          ]
-
-        },
-        {
-          image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Paragon_%28band%29_-_B%C3%B6rsencrash_Festival_Wuppertal_2016-AL1745.jpg/660px-Paragon_%28band%29_-_B%C3%B6rsencrash_Festival_Wuppertal_2016-AL1745.jpg',
-          alt:'Image of Down to folk',
-          name: 'Shawoddywoddy',
-          url: '',
-          location: 'glasgow',
-          genres: [
-            {
-              id: 1,
-              genre: 'Alternative'
-            },
-            {
-              id: 7,
-              genre: 'Grime'
-            },
-            {
-              id: 5,
-              genre: 'Emo'
-            },
-          ]
-
-        },
-        {
-          image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Paragon_%28band%29_-_B%C3%B6rsencrash_Festival_Wuppertal_2016-AL1745.jpg/660px-Paragon_%28band%29_-_B%C3%B6rsencrash_Festival_Wuppertal_2016-AL1745.jpg',
-          alt:'Image of Down to folk',
-          name: 'Down To Folk',
-          url: '',
-          location: 'sheffield',
-          genres: [
-            {
-              id: 1,
-              genre: 'Alternative'
-            },
-          ]
-
-        }
-      ],
-      promoters:[
-        {
-          image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Paragon_%28band%29_-_B%C3%B6rsencrash_Festival_Wuppertal_2016-AL1745.jpg/660px-Paragon_%28band%29_-_B%C3%B6rsencrash_Festival_Wuppertal_2016-AL1745.jpg',
-          alt:'Image of Down to folk',
-          name: 'Sheer Music',
-          url: '',
-          location: 'sheffield',
-          genres: [
-            {
-              id: 1,
-              genre: 'Alternative'
-            },
-            {
-              id: 7,
-              genre: 'Grime'
-            },
-            {
-              id: 5,
-              genre: 'Emo'
-            },
-          ]
-
-        },
-        {
-          image: '',
-          alt:'Image of Down to folk',
-          name: 'Johnny Promoter',
-          url: '',
-          location: 'swansea',
-          genres: [
-            {
-              id: 1,
-              genre: 'Alternative'
-            },
-            {
-              id: 7,
-              genre: 'Grime'
-            },
-            {
-              id: 5,
-              genre: 'Emo'
-            },
-          ]
-
-        },
-        {
-          image: '',
-          alt:'Image of Down to folk',
-          name: 'Promotion ltd',
-          url: '',
-          location: 'hull',
-          genres: [
-            {
-              id: 1,
-              genre: 'Alternative'
-            },
-            {
-              id: 7,
-              genre: 'Grime'
-            },
-            {
-              id: 5,
-              genre: 'Emo'
-            },
-          ]
-
-        },
-        {
-          image: '',
-          alt:'Image of Down to folk',
-          name: 'Gigs r us',
-          url: '',
-          location: 'sheffield',
-          genres: [
-            {
-              id: 1,
-              genre: 'Alternative'
-            },
-            
-          ]
-
-        }
-      ]
+      bands:[],
+      promoters:[]
     }
   },
   methods:{
@@ -403,9 +245,19 @@ export default {
     if(loggedInLocation !== ''){
       this.searchLocationValue = loggedInLocation;
       this.currentLocationFilter = loggedInLocation;
-      //this.defaultLocation = loggedInLocation
     }
-    axios.post("api/search",["account_type", "location", "name", "genre"]).then((res) => {
+   
+    axios.post("api/search",{
+      account_type: 'artist',
+    }).then((res) => {
+      this.bands = res.data;
+      console.log(res)
+    });
+
+    axios.post("api/search",{
+      account_type: 'promoter',
+    }).then((res) => {
+      this.promoters = res.data;
       console.log(res)
     });
   }
@@ -572,12 +424,17 @@ export default {
       margin-left: rem(-16);
       border-top-left-radius: $border-radius-reg;
       border-top-right-radius: $border-radius-reg;
+      width: calc(100% + 32px);
       max-width: calc(100% + 32px);
+      height: rem(200);
+     
+      object-fit: cover;
 
       @media(min-width: $desktop){
         margin-top: rem(-32);
         margin-right: rem(-32);
         margin-left: rem(-32);
+        width: calc(100% + 64px);
         max-width: calc(100% + 64px);
       }
     }
