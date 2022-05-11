@@ -25,7 +25,7 @@
       </div>
       <div class="grid-parent">
         <base-card v-for="band in alphabetisedBandResults" :key="band.id">
-          <img v-if="band.image_url !== null " :src=band.image_url :alt="band.name + ' profile image'">
+          <img v-if="band.image_url !== null " :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_450,h_250,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+band.image_url" :alt="band.name + ' profile image'">
           <img v-else src="https://res.cloudinary.com/dgddraffq/image/upload/v1652190684/result-fallback-image_huueaz.jpg" alt="">
           <router-link :to="'/profile/' + band.id"><h3>{{band.name}}</h3></router-link>
           <span class="location">{{band.location}}</span>
@@ -49,7 +49,7 @@
       </div>
       <div class="grid-parent">
         <base-card v-for="promoter in alphabetisedPromoterResults" :key='promoter.id'>
-          <img v-if="promoter.image_url !== null " :src=promoter.image_url :alt="promoter.name + ' profile image'">
+          <img v-if="promoter.image_url !== null " :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_450,h_250,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+promoter.image_url" :alt="promoter.name + ' profile image'">
           <img v-else src="https://res.cloudinary.com/dgddraffq/image/upload/v1652190684/result-fallback-image_huueaz.jpg" alt="">
           <router-link :to="'/profile/' + promoter.id"><h3>{{promoter.name}}</h3></router-link>
           <span class="location">{{promoter.location}}</span>
@@ -192,27 +192,27 @@ export default {
       return promoterResults
       .filter(promoterResults => promoterResults.name.toLowerCase())
       .sort((a, b) => a.name.localeCompare(b.name));
-    }
+    },
   },
   mounted() {
-    const loggedInLocation = this.$store.state.profile.profileLocation.toLowerCase();
-    if(loggedInLocation !== ''){
-      this.searchLocationValue = loggedInLocation;
-      this.currentLocationFilter = loggedInLocation;
-    }
+    // const loggedInLocation = this.$store.state.profile.profileLocation.toLowerCase();
+    // if(loggedInLocation !== ''){
+    //   this.searchLocationValue = loggedInLocation;
+    //   this.currentLocationFilter = loggedInLocation;
+    // }
    
     axios.post("api/search",{
       account_type: 'artist',
     }).then((res) => {
       this.bands = res.data;
-      console.log(res)
+      //console.log(res)
     });
 
     axios.post("api/search",{
       account_type: 'promoter',
     }).then((res) => {
       this.promoters = res.data;
-      console.log(res)
+      //console.log(res)
     });
   }
 

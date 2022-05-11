@@ -28,7 +28,7 @@
                 <div class="avatar-image-thumb">
                   <div v-if="!avatarImageURL && !imageUploading">Add image below</div>
                   <div v-if="imageUploading" class="avatar-image-uploading"><span class="spinner"></span>Image Uploading</div>
-                  <img v-if="avatarImageURL" :src="avatarImageURL" :alt="profileName + ' profile image'">
+                  <img v-if="avatarImageURL" :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_200,h_200,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+avatarImageURL" :alt="profileName + ' profile image'">
                 </div>
               </div>
                 <choose-file-button @change="uploadImage" fileUploadID="uploadImage" fileUploadName="filename">
@@ -278,7 +278,11 @@ export default {
         .then((res) => {
           let publicID = res.data.public_id;
           this.imageUploading = false;
-          this.avatarImageURL = "https://res.cloudinary.com/dgddraffq/image/upload/f_auto,q_auto:best,c_fill,g_faces/v1648123420/"+publicID+".jpg";
+          //this.avatarImageURL = "https://res.cloudinary.com/dgddraffq/image/upload/f_auto,q_auto:best,c_fill,g_faces/v1648123420/"+publicID+".jpg";
+          this.avatarImageURL =
+            "v1648123420/" +
+            publicID +
+            ".jpg";
           this.$store.commit('setAvatarImage', this.avatarImageURL);
            axios
             .post("/api/add_avatar", {
@@ -438,6 +442,7 @@ export default {
 
   dialog{
     width: 100%;
+    position: relative;
 
     @media(min-width:$desktop){
       border-radius: $border-radius-reg;

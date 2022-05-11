@@ -8,7 +8,9 @@
     <section class="hero-section">
       <div class="hero-section__image-block" :class="{'hero-section__image-block--no-image': !profileImageURL}">
         <div class="hero-section__image-container" v-if="profileImageURL">
-          <img :src="profileImageURL" :alt="profileName + ' profile image'" />
+          <!-- <img :src="profileImageURL" :alt="profileName + ' profile image'" /> -->
+          <img :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_660,h_400,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+profileImageURL" :alt="profileName + ' profile image'" />
+          
           <base-icon-button
             v-if="$store.state.loggedIn && userID == profileID"
             @click="displaySettingsDialog('Hero Image')"
@@ -39,7 +41,7 @@
               </div>
               <img
                 v-if="profileImageURL"
-                :src="profileImageURL"
+                :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_450,h_250,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+profileImageURL"
                 :alt="profileName + ' profile image'"
               />
             </div>
@@ -70,7 +72,7 @@
 
       <div class="hero-section__details">
         <h1>{{ profileName }}</h1>
-        <p>{{ profileLocation }}</p>
+        <p class="hero-section__details-location">{{ profileLocation }}</p>
 
         <div class="hero-section__genres" v-if="profileGenres.length">
           <base-pill v-for="genre in profileGenres" :key="genre">
@@ -99,7 +101,9 @@
             v-if="genresDialogVisible"
             @closeDialog="hideSettingsDialog('Genres')"
           >
-            <strong class="display-block">Select Genres</strong>
+            <strong class="display-block">Select Genres (Max of 5)</strong>
+            <p class="error-message max-genres" v-if="genresMaxAmount">Maximum amount selected</p>
+
             <base-pill-button
               buttonType="button"
               @click="selectGenres(genre)"
@@ -620,6 +624,7 @@ export default {
       showAddedToast: false,
       showUpdatedToast: false,
       showCancelledToast: false,
+      genresMaxAmount: false,
     };
   },
   methods: {
@@ -696,21 +701,30 @@ export default {
               user_id: this.userID,
               genre_id: genre.genre_id,
             })
-            .then((res) => {
-              console.log(res);
-            });
+            // .then((res) => {
+            //   console.log(res);
+            // });
             selectedGenres.splice(index, 1);
+            if(this.profileGenres.length <= 5){
+              this.genresMaxAmount = false;
+            }
         }
       } else {
-        selectedGenres.push(genre);
-        axios
-          .post("/api/add_genre", {
-            user_id: this.userID,
-            genre_id: genre.genre_id,
-          })
-          .then((res) => {
-            console.log(res);
-          });
+        
+        if(this.profileGenres.length <= 4){
+          selectedGenres.push(genre);
+          axios
+            .post("/api/add_genre", {
+              user_id: this.userID,
+              genre_id: genre.genre_id,
+            })
+        }else{
+          this.genresMaxAmount = true;
+        }
+          
+          // .then((res) => {
+          //   console.log(res);
+          // });
       }
     },
     submitShowForm() {
@@ -839,8 +853,12 @@ export default {
         .then((res) => {
           let publicID = res.data.public_id;
           this.imageUploading = false;
+          // this.profileImageURL =
+          //   "https://res.cloudinary.com/dgddraffq/image/upload/f_auto,q_auto:best,c_fill,g_faces/v1648123420/" +
+          //   publicID +
+          //   ".jpg";
           this.profileImageURL =
-            "https://res.cloudinary.com/dgddraffq/image/upload/f_auto,q_auto:best,c_fill,g_faces/v1648123420/" +
+            "v1648123420/" +
             publicID +
             ".jpg";
           this.$store.commit("setHeroImage", this.profileImageURL);
@@ -1034,22 +1052,22 @@ export default {
       flex-direction: column;
       justify-content: center;
     }
+
+    &-location{
+      margin-top: $spacing-xs;
+      &:before {
+        content: "\f3c5";
+        font-family: "Font Awesome 5 Pro";
+        margin-right: $spacing-xs;
+        font-weight: 300;
+      }
+    }
   }
 
   h1,
   p {
     color: #fff;
     text-transform: capitalize;
-  }
-
-  p {
-    margin-top: $spacing-xs;
-    &:before {
-      content: "\f3c5";
-      font-family: "Font Awesome 5 Pro";
-      margin-right: $spacing-xs;
-      font-weight: 300;
-    }
   }
 
   &__image-block {
@@ -1111,6 +1129,11 @@ export default {
     .text-icon-button {
       color: #fff;
     }
+  }
+
+  .max-genres{
+    margin-top:$spacing-s;
+    margin-bottom:$spacing-s;
   }
 
   .cta-secondary-reverse {

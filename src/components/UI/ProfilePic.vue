@@ -1,6 +1,6 @@
 <template>
   <div v-if="avatarURL" class="profile-image">
-    <img :src="avatarURL" :alt="this.$store.state.profile.profileName + 'profile image'">
+    <img :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+avatarURL" :alt="this.$store.state.profile.profileName + 'profile image'">
   </div>
   <div v-else class="profile-image profile-image--fallback"></div>
 </template>
