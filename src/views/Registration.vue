@@ -39,7 +39,9 @@
             <template #label>Location</template>
             <template #helpertext>Enter your city to help your fans find you.</template>
           </base-input>
+           <transition name="error">
           <p class="error-message" v-if="userExists">There is already an account with that email.</p>
+           </transition>
           <base-input class="dark" inputId="email" inputType="email" v-model="form.email" :isRequired="true" >
             <template #label>Email</template>
           </base-input>
@@ -47,7 +49,9 @@
             <template #label>Create Password</template>
             <template #helpertext>Must be at least 8 characters long.</template>
           </password-input>
+           <transition name="error">
           <p class="error-message password-mismatch" v-if="passwordMismatch">Those passwords don't match</p>
+           </transition>
           <password-input class="dark" inputId="confirmPassword" v-model="form.confirmPassword" :isRequired="true" >
             <template #label>Confirm Password</template>
           </password-input>

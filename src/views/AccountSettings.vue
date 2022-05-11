@@ -24,6 +24,7 @@
             <base-dialog v-if="photoDialogVisible"  @closeDialog="hideSettingsDialog('Profile Picture')">
               
               <strong>Edit Photo</strong>
+              <span class="modal-dialog__subheading">(Maximum file size 10Mb)</span>
               <div class="avatar-image-thumb-container">
                 <div class="avatar-image-thumb">
                   <div v-if="!avatarImageURL && !imageUploading">Add image below</div>
@@ -42,14 +43,18 @@
             <base-dialog v-if="passwordDialogVisible"  @closeDialog="hideSettingsDialog('Manage Password')">
               <strong>Manage Password</strong>
               <form @submit.prevent="submitForm">
+                <transition name="error">
                 <p class="error-message incorrect-password" v-if="incorrectPassword">The current password doesn't look right</p>
+                </transition>
                 <password-input inputId="currentPassword" v-model="currentPassword" :isRequired="false" >
                   <template #label>Current Password</template>
                 </password-input>
                 <password-input inputId="newPassword" v-model="newPassword" :isRequired="false" >
                   <template #label>New Password</template>
                 </password-input>
-                <p class="error-message password-mismatch" v-if="passwordMismatch">Those passwords don't match</p>
+                 <transition name="error">
+                  <p class="error-message password-mismatch" v-if="passwordMismatch">Those passwords don't match</p>
+                 </transition>
                 <password-input inputId="confirmPassword" v-model="confirmPassword" :isRequired="false" >
                   <template #label>Confirm Password</template>
                 </password-input>

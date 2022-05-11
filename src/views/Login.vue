@@ -7,7 +7,9 @@
 
 
     <form @submit.prevent="submitForm">
+      <transition name="error">
       <p class="error-message" v-if="incorrectLogin">Something doesn't seem right, is your email/password correct?</p>
+      </transition>
       <base-input class="dark" inputId="email" inputType="email" v-model="form.email" :isRequired="false" >
         <template #label>Email</template>
       </base-input>

@@ -222,6 +222,15 @@ a{
   }
   .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
     opacity: 0;
+    
+  }
+
+  .error-enter-active, .error-leave-active {
+    opacity: 1;
+    transition: opacity .5s ease-in-out;
+  }
+  .error-enter, .error-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
   }
 
   .v-enter-active,
@@ -300,6 +309,7 @@ a{
   box-shadow: $box-shadow;
 }
 
+
 .page-loading-message{
   display: flex;
   align-items: center;
@@ -324,6 +334,16 @@ a{
     background-color: $dark-green;
     color: #fff;
 
+  }
+}
+
+.modal-dialog__subheading{
+  display: block;
+  color:$mid-grey;
+  font-size: $copy-mobile-xs;
+
+  @media(min-width:$desktop){
+    font-size: $copy-desktop-xs;
   }
 }
 </style>

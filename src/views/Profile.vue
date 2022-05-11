@@ -32,6 +32,7 @@
             @closeDialog="hideSettingsDialog('Hero Image')"
           >
             <strong>Select Image</strong>
+            <span class="modal-dialog__subheading">(Maximum file size 10Mb)</span>
             <div class="hero-image-thumb">
               <div v-if="!profileImageURL && !imageUploading">
                 Add image below
@@ -101,9 +102,11 @@
             v-if="genresDialogVisible"
             @closeDialog="hideSettingsDialog('Genres')"
           >
-            <strong class="display-block">Select Genres (Max of 5)</strong>
+            <strong class="display-block">Select Genres</strong>
+            <span class="modal-dialog__subheading">(Maximum of 5 genres)</span>
+            <transition name="error">
             <p class="error-message max-genres" v-if="genresMaxAmount">Maximum amount selected</p>
-
+            </transition>
             <base-pill-button
               buttonType="button"
               @click="selectGenres(genre)"
@@ -720,6 +723,10 @@ export default {
             })
         }else{
           this.genresMaxAmount = true;
+          setTimeout(() => {
+            this.genresMaxAmount = false;
+          }, 5000);
+
         }
           
           // .then((res) => {
