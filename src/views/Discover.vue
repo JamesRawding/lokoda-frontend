@@ -25,8 +25,8 @@
       </div>
       <div class="grid-parent">
         <base-card v-for="band in alphabetisedBandResults" :key="band.id">
-          <img v-if="band.image_url !== null " :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_450,h_250,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+band.image_url" :alt="band.name + ' profile image'">
-          <img v-else src="https://res.cloudinary.com/dgddraffq/image/upload/v1652190684/result-fallback-image_huueaz.jpg" alt="">
+          <img v-if="band.image_url !== null " class="lazyload"  :data-src="'https://res.cloudinary.com/dgddraffq/image/upload/w_450,h_250,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+band.image_url" :alt="band.name + ' profile image'">
+          <img v-else class="lazyload" data-src="https://res.cloudinary.com/dgddraffq/image/upload/v1652190684/result-fallback-image_huueaz.jpg" alt="">
           <router-link :to="'/profile/' + band.id"><h3>{{band.name}}</h3></router-link>
           <span class="location">{{band.location}}</span>
           <base-pill v-for="genre in band.genres" :key="genre + band.name">
@@ -49,8 +49,8 @@
       </div>
       <div class="grid-parent">
         <base-card v-for="promoter in alphabetisedPromoterResults" :key='promoter.id'>
-          <img v-if="promoter.image_url !== null " :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_450,h_250,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+promoter.image_url" :alt="promoter.name + ' profile image'">
-          <img v-else src="https://res.cloudinary.com/dgddraffq/image/upload/v1652190684/result-fallback-image_huueaz.jpg" alt="">
+          <img v-if="promoter.image_url !== null " class="lazyload" :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_450,h_250,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+promoter.image_url" :alt="promoter.name + ' profile image'">
+          <img v-else class="lazyload" src="https://res.cloudinary.com/dgddraffq/image/upload/v1652190684/result-fallback-image_huueaz.jpg" alt="">
           <router-link :to="'/profile/' + promoter.id"><h3>{{promoter.name}}</h3></router-link>
           <span class="location">{{promoter.location}}</span>
           <base-pill v-for="genre in promoter.genres" :key="genre + promoter.name">
@@ -159,6 +159,7 @@ export default {
       if(this.genreDropdownValue && this.genreDropdownValue !== 'any'){
         bandResults = bandResults.filter(this.filterByGenre)    
       }
+      
 
       return bandResults
       .filter(bandResults => bandResults.name.toLowerCase())
@@ -205,7 +206,7 @@ export default {
       account_type: 'artist',
     }).then((res) => {
       this.bands = res.data;
-      //console.log(res)
+      console.log(res)
     });
 
     axios.post("api/search",{

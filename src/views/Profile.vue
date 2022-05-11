@@ -1082,7 +1082,7 @@ export default {
     @media (min-width: $desktop) {
       order: 2;
       height: auto;
-      max-height: rem(400);
+      //max-height: rem(400);
     }
 
     &--no-image{
