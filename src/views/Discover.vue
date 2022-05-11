@@ -1,5 +1,8 @@
 <template>
-  <div class="page-outer">
+  <div class="page-loading-message" v-if="resultsLoading">
+    <div><span class="spinner"></span>Results loading</div>
+  </div>
+  <div v-else class="page-outer">
   <the-header></the-header>
   <main class="page-container">
     
@@ -100,7 +103,8 @@ export default {
       genreDropdownValue: '',
       distanceDropdownValue: '',
       bands:[],
-      promoters:[]
+      promoters:[],
+      resultsLoading: false,
     }
   },
   methods:{
@@ -201,12 +205,13 @@ export default {
     //   this.searchLocationValue = loggedInLocation;
     //   this.currentLocationFilter = loggedInLocation;
     // }
-   
+    this.resultsLoading = true;
     axios.post("api/search",{
       account_type: 'artist',
     }).then((res) => {
       this.bands = res.data;
       console.log(res)
+      this.resultsLoading = false;
     });
 
     axios.post("api/search",{
