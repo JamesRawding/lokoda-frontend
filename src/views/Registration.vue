@@ -56,7 +56,7 @@
             <template #label>Confirm Password</template>
           </password-input>
           <base-button buttonType="submit" mode="cta cta--primary">Register</base-button>
-          <p class="disclaimer">We don't share any of your information with third parties.</p>
+          <p class="disclaimer">We don't share any of your information with third parties. You must be 18 or over to register</p>
         </form>
       </div>
       <div class="branding-column">

@@ -136,17 +136,17 @@
         <a
           v-if="!$store.state.loggedIn"
           class="fallback-mailto"
-          :href="'mailto:' + profileEmail"
+          :href="'mailto:' + profileEmail+'subject=Lokoda Message'"
           >Get In Touch</a
         >
       </div>
     </section>
 
     <div class="profile-body">
-      <section class="player-embed-block" v-if="profilePlayerEmbed">
+      <section class="player-embed-block" v-if="profilePlayerURL">
         <iframe
           title="music player"
-          :src="profilePlayerEmbed"
+          :src="profilePlayerURL"
           width="100%"
           height="380"
           frameBorder="0"
@@ -177,6 +177,9 @@
           v-if="embedDialogVisible"
           @closeDialog="hideSettingsDialog('Embed Player')"
         >
+        <transition name="error">
+        <p v-if="playerEmbedError" class="error-message">Must be an embed from Soundcloud, Bandcamp or Spotify</p>
+        </transition>
           <base-input
             inputId="playerEmbed"
             inputType="text"
@@ -185,7 +188,7 @@
           >
             <template #label>Embed Music Player</template>
             <template #helpertext
-              >Enter embed code From Soundcloud, Bandcamp, Spotify etc</template
+              >Enter embed code From Soundcloud, Bandcamp or Spotify</template
             >
           </base-input>
           <base-text-icon-button
@@ -546,6 +549,8 @@
       </base-button>
     </section>
 
+    <p v-if="$store.state.loggedIn && userID == profileID" class="disclaimer">Lokoda reserve the right to delete your account if you upload any material that is deemed to be obscene or offensive.</p>
+
     <span class="toast-notification" :class="{'toast-notification--active' :showAddedToast}" >Show added</span>
     <span class="toast-notification" :class="{'toast-notification--active' :showUpdatedToast}" >Show updated</span>
     <span class="toast-notification" :class="{'toast-notification--active' :showCancelledToast}" >Show cancelled</span>
@@ -602,6 +607,7 @@ export default {
       profileGenres: [],
       profileShows: [],
       profilePlayerEmbed: "",
+      profilePlayerURL: "",
       allGenres: [],
       heroDialogVisible: false,
       genresDialogVisible: false,
@@ -628,6 +634,7 @@ export default {
       showUpdatedToast: false,
       showCancelledToast: false,
       genresMaxAmount: false,
+      playerEmbedError: false,
     };
   },
   methods: {
@@ -665,16 +672,23 @@ export default {
         this.genresDialogVisible = false;
       }
       if (evt == "Embed Player") {
-        this.profilePlayerEmbed =
-          this.profilePlayerEmbed.match(/\bhttps?:\/\/\S+/gi)[0];
-        axios
+        if(this.profilePlayerEmbed == ''){
+          this.playerEmbedError = false
+          this.embedDialogVisible = false;
+        }else if( this.profilePlayerEmbed.includes('soundcloud') || this.profilePlayerEmbed.includes('bandcamp') || this.profilePlayerEmbed.includes('spotify')){
+          this.profilePlayerEmbed = this.profilePlayerEmbed.match(/\bhttps?:\/\/\S+/gi)[0];
+          axios
           .post("/api/embed_url",{
             url: this.profilePlayerEmbed
           })
-          .then((res) => {
-            console.log(res);
+          .then(() => {
+            this.profilePlayerURL = this.profilePlayerEmbed;
           });
-        this.embedDialogVisible = false;
+          this.playerEmbedError = false
+          this.embedDialogVisible = false;
+        }else{
+          this.playerEmbedError = true
+        }
       }
       if (evt == "Manage Shows") {
         this.showsDialogVisible = false;
@@ -747,7 +761,7 @@ export default {
           year: parseInt(this.year, 10),
         })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           axios.get("/api/get_shows_for_profile/"+this.$route.params.profileURL).then((res) => {
             this.profileShows = res.data;
           });
@@ -800,7 +814,7 @@ export default {
           year: parseInt(this.selectedShow.year, 10),
         })
         .then((res) => {
-          console.log(res);
+          //console.log(res);
           axios.get("/api/get_shows_for_profile/"+this.$route.params.profileURL).then((res) => {
             this.profileShows = res.data;
           });
@@ -830,7 +844,7 @@ export default {
           id: this.selectedShow.id
         })
         .then((res) => {
-          console.log(res);
+          //console.log(res);
           axios.get("/api/get_shows_for_profile/"+this.$route.params.profileURL).then((res) => {
             this.profileShows = res.data;
           });
@@ -873,10 +887,10 @@ export default {
             .post("/api/add_image", {
               url: this.profileImageURL,
             })
-            .then((res) => {
-              console.log(res);
-              //console.log(this.profileImageURL)
-            });
+            // .then((res) => {
+            //   console.log(res);
+            //   //console.log(this.profileImageURL)
+            // });
         });
     },
 
@@ -884,9 +898,9 @@ export default {
       this.profileImageURL = "";
       axios
         .get("/api/delete_image")
-        .then((res) => {
-          console.log(res);
-        });
+        // .then((res) => {
+        //   console.log(res);
+        // });
     },
     deleteEmbed(){
       this.profilePlayerEmbed = "";
@@ -894,9 +908,9 @@ export default {
         .post("/api/unembed_url", {
           url: '',
         })
-        .then((res) => {
-          console.log(res);
-        });
+        // .then((res) => {
+        //   console.log(res);
+        // });
     },
     selectedProfileGenres(genre) {
       for (let i = 0; i < this.profileGenres.length; i++) {
@@ -1012,7 +1026,7 @@ export default {
       this.profileName = res.data.name;
       this.profileEmail = res.data.email;
       this.profileImageURL = res.data.image_url;
-      this.profilePlayerEmbed = res.data.embed_url;
+      this.profilePlayerURL = res.data.embed_url;
       this.profileLocation = res.data.location;
       this.profileDataLoading = false;
 
@@ -1230,7 +1244,7 @@ export default {
 .player-embed-block {
   position: relative;
   padding: $spacing-m 0;
-  z-index: -1;
+  //z-index: -1;
   @media (min-width: $desktop) {
     order: 2;
   }
@@ -1478,7 +1492,8 @@ dialog .cta--primary {
   header,
   main,
   .qr-section h3,
-  .qr-section p{
+  .qr-section p,
+  .disclaimer{
     display: none;
   }
 
@@ -1503,13 +1518,19 @@ dialog .cta--primary {
   }
 }
 
+.disclaimer{
+  text-align: center;
+  margin-top: $spacing-l;
+}
+
 @media print{
   .print-qr-page{
     header,
     main,
     .qr-section h3,
     .qr-section p,
-    .qr-section .cta{
+    .qr-section .cta,
+    .disclaimer{
       display: none;
     }
 
