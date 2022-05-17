@@ -169,7 +169,7 @@
           mode="text-icon-button text-icon-button--plus"
           >Embed Music Player</base-text-icon-button
         >
-        <span>e.g. Spotify, Soundcloud, Bandcamp etc</span>
+        <span>e.g. Soundcloud, Bandcamp or Spotify</span>
       </div>
       <transition>
         <base-dialog
@@ -527,7 +527,7 @@
     <section class="qr-section" v-if="$store.state.loggedIn && userID == profileID">
       <img :src="qrImage" :alt="profileName +'qr code'">
       <h3>Need to share your profile?</h3>
-      <p>This QR code can be printed so you can display at your next show making it easier for your fans to find you.</p>
+      <p>This QR code can be printed so you can display at your next show, making it easier for your fans to find you.</p>
       <div v-if="printQRPage" class="qr-section__print-info">
         <h1>{{profileName}}</h1>
         <p>Discover on</p>
@@ -537,7 +537,7 @@
       v-if="!printQRPage"
       @click="printQRImage"
       buttonType="button"
-      mode="cta cta--secondary"
+      mode="cta cta--secondary-reverse"
       >Print QR Code
       </base-button>
       <base-button
@@ -1468,8 +1468,15 @@ dialog .cta--primary {
 .qr-section{
   text-align: center;
   max-width: rem(500);
-  margin: 0 auto;
-  padding-top: $spacing-l;
+  margin: $spacing-l auto 0 auto;
+  padding: $spacing-m;
+  border-radius:$border-radius-reg;
+  color: #fff;
+  background-color: $mid-grey;
+
+  @media (min-width: $desktop) {
+    margin: $spacing-xl auto 0 auto;
+  }
 
   img{
     max-width: rem(150);
@@ -1484,27 +1491,36 @@ dialog .cta--primary {
   }
 
   .cta{
-     margin-top: $spacing-s;
+     margin-top: $spacing-m;
   }
 }
 
 .print-qr-page{
   header,
-  main,
+  footer,
+  section,
+  .profile-body,
   .qr-section h3,
   .qr-section p,
   .disclaimer{
     display: none;
   }
 
+  .qr-section{
+    display: block;
+    color: $copy;
+    background-color: #fff;
+  }
+
   .qr-section .cta{
     display: block;
-    margin: $spacing-l   auto 0 auto;
+    margin: $spacing-l  auto 0 auto;
   }
 
   .qr-section__print-info{
     h1{
       margin-top:$spacing-m;
+      text-transform: capitalize;
     }
     p{
       display: block;
@@ -1520,18 +1536,25 @@ dialog .cta--primary {
 
 .disclaimer{
   text-align: center;
-  margin-top: $spacing-l;
+  margin: $spacing-l auto 0 auto;
+  max-width: rem(800);
 }
 
 @media print{
   .print-qr-page{
     header,
-    main,
+    footer,
+    section,
+    .profile-body,
     .qr-section h3,
     .qr-section p,
     .qr-section .cta,
     .disclaimer{
       display: none;
+    }
+
+    .qr-section{
+      display: block;
     }
 
     .qr-section__print-info p{

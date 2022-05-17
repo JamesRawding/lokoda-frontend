@@ -210,7 +210,21 @@ export default {
       account_type: 'artist',
     }).then((res) => {
       this.bands = res.data;
-      console.log(res)
+      console.log(res.data);
+      for (let i = 0; i < this.bands.length; i++) {
+        let genres = JSON.parse(this.bands[i].genres)
+        //genres.replace(/\\/g, '').slice(2,-2)
+        console.log(JSON.parse(genres))
+        //let genresArray = [genres]
+
+         //console.log(genresArray[0])
+
+        // for (let i = 0; i < genres.length; i++) {
+        //   let parsed = JSON.parse(genres)
+        //   console.log(parsed);
+        // }
+        
+      }
       this.resultsLoading = false;
     });
 
