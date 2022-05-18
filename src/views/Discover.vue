@@ -137,10 +137,13 @@ export default {
       }
     },
     filterByGenre(item) {
-      if (item.genres.find(e => e.id == this.genreDropdownValue)) {
+      if(item.genres){
+        if (item.genres.find(e => e.id == this.genreDropdownValue)) {
         return true
-      }
-      return false;
+        }
+        return false;
+        }
+      
     }   
   },
 
@@ -188,10 +191,8 @@ export default {
         promoterResults = promoterResults.filter(m => m.location.toLowerCase().indexOf(this.searchLocationValue) > -1)
       }
 
-      if(this.genreDropdownValue && this.genreDropdownValue !== 'Any'){
-        promoterResults = promoterResults.filter((m) =>{
-          return (m.genres.indexOf(this.genreDropdownValue) > -1)
-        })
+      if(this.genreDropdownValue && this.genreDropdownValue !== 'any'){
+        promoterResults = promoterResults.filter(this.filterByGenre)    
       }
 
       return promoterResults
@@ -200,31 +201,12 @@ export default {
     },
   },
   mounted() {
-    // const loggedInLocation = this.$store.state.profile.profileLocation.toLowerCase();
-    // if(loggedInLocation !== ''){
-    //   this.searchLocationValue = loggedInLocation;
-    //   this.currentLocationFilter = loggedInLocation;
-    // }
+    
     this.resultsLoading = true;
     axios.post("api/search",{
       account_type: 'artist',
     }).then((res) => {
       this.bands = res.data;
-      console.log(res.data);
-      for (let i = 0; i < this.bands.length; i++) {
-        let genres = JSON.parse(this.bands[i].genres)
-        //genres.replace(/\\/g, '').slice(2,-2)
-        console.log(JSON.parse(genres))
-        //let genresArray = [genres]
-
-         //console.log(genresArray[0])
-
-        // for (let i = 0; i < genres.length; i++) {
-        //   let parsed = JSON.parse(genres)
-        //   console.log(parsed);
-        // }
-        
-      }
       this.resultsLoading = false;
     });
 
