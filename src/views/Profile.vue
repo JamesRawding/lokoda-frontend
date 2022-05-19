@@ -9,7 +9,7 @@
       <div class="hero-section__image-block" :class="{'hero-section__image-block--no-image': !profileImageURL}">
         <div class="hero-section__image-container" v-if="profileImageURL">
           <!-- <img :src="profileImageURL" :alt="profileName + ' profile image'" /> -->
-          <img :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_660,h_400,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+profileImageURL" :alt="profileName + ' profile image'" />
+          <img :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_660,h_400,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+profileImageURL" :alt="profileName + ' profile image'" rel="preload" />
           
           <base-icon-button
             v-if="$store.state.loggedIn && userID == profileID"
@@ -1008,18 +1008,6 @@ export default {
   },
   mounted() {
     const url = this.$route.params.profileURL;
-      axios.get("/api/get_genres_for_profile/"+url).then((res) => {
-        this.profileGenres = res.data;
-      });
-      this.profileShowsLoading = true;
-      axios.get("/api/get_shows_for_profile/"+url).then((res) => {
-
-        this.profileShows = res.data;
-        this.profileShowsLoading = false;
-      });
-      axios.get("http://api.qrserver.com/v1/create-qr-code/?data="+location.href+"&size=200x200").then(() => {
-       this.qrImage = "http://api.qrserver.com/v1/create-qr-code/?data="+location.href+"&size=200x200"
-      });
     this.profileDataLoading = true;
     axios.get("/api/profile/" + url).then((res) => {
       this.profileID = res.data.id;
@@ -1034,6 +1022,18 @@ export default {
         this.$store.commit('setNewProfileLocation',res.data.location);
       }
     });
+      axios.get("/api/get_genres_for_profile/"+url).then((res) => {
+        this.profileGenres = res.data;
+      });
+      this.profileShowsLoading = true;
+      axios.get("/api/get_shows_for_profile/"+url).then((res) => {
+
+        this.profileShows = res.data;
+        this.profileShowsLoading = false;
+      });
+      axios.get("http://api.qrserver.com/v1/create-qr-code/?data="+location.href+"&size=200x200").then(() => {
+       this.qrImage = "http://api.qrserver.com/v1/create-qr-code/?data="+location.href+"&size=200x200"
+      });
 
     axios.get("/api/get_genres").then((res) => {
       this.allGenres = res.data;
