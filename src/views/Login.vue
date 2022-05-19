@@ -38,13 +38,13 @@ export default {
     BaseInput,
     BaseButton,
   },
-  mounted() {
-       axios.get('/api/health_check')
-           .then (response => {
-               console.log("Back end health check okay");
-               console.log(response);
-           });
-  },
+  // mounted() {
+  //      axios.get('/api/health_check')
+  //          .then (response => {
+  //              console.log("Back end health check okay");
+  //              console.log(response);
+  //          });
+  // },
   data(){
     return{
         form: { 
@@ -58,17 +58,18 @@ export default {
     submitForm() {
        axios.post('/api/login', this.form)
             .then((res) => {
-                
+
+              if(res.data == "Unable to locate user with those credentials."){
+                this.incorrectLogin = true;
+              }else{
+                this.incorrectLogin = false;
                 this.$store.commit({
                     type: 'login',
                     userID: res.data.id,
                     token: res.data.token,
                     cookieID: res.data.id
                 });
-                
-                
 
-            
                 function setCookie(cname, cvalue, exdays) {
                   const d = new Date();
                   d.setTime(d.getTime() + (exdays += 3600 * 1000));
@@ -79,7 +80,8 @@ export default {
 
                 setCookie('loggedIn',res.data.id, 2 );
                 this.$router.push('/profile/' + res.data.id);
-
+              }
+           
             });
             
     }
