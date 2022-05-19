@@ -240,11 +240,11 @@
         <section class="full-show-details">
           <h2>Full Show Details</h2>
           <span class="full-show-details__cancelled" v-if="selectedFullShowListing.status === 'CANCELLED'">Show Cancelled</span>
-          <span class="full-show-details__info"><strong>City: </strong>{{selectedFullShowListing.city}}</span>
-          <span class="full-show-details__info"><strong>Venue: </strong>{{selectedFullShowListing.venue}}</span>
-          <span class="full-show-details__info"><strong>Date: </strong>{{ convertedDay(selectedFullShowListing) }} {{ convertedMonth(selectedFullShowListing) }} {{ convertedYear(selectedFullShowListing) }}</span>
-          <span class="full-show-details__info"><strong>Time: </strong>{{selectedFullShowListing.time}}</span>
-          <span class="full-show-details__info"><strong>Comments: </strong>{{selectedFullShowListing.comments}}</span>
+          <span class="full-show-details__info"><strong>City: </strong><span>{{selectedFullShowListing.city}}</span></span>
+          <span class="full-show-details__info"><strong>Venue: </strong><span>{{selectedFullShowListing.venue}}</span></span>
+          <span class="full-show-details__info"><strong>Date: </strong><span>{{ convertedDay(selectedFullShowListing) }} {{ convertedMonth(selectedFullShowListing) }} {{ convertedYear(selectedFullShowListing) }}</span></span>
+          <span class="full-show-details__info"><strong>Time: </strong><span>{{selectedFullShowListing.time}}</span></span>
+          <span class="full-show-details__info"><strong>Comments: </strong><p>{{selectedFullShowListing.comments}}</p></span>
         </section>
 
           

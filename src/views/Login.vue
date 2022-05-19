@@ -58,29 +58,26 @@ export default {
     submitForm() {
        axios.post('/api/login', this.form)
             .then((res) => {
-
-              if(res.data == "Unable to locate user with those credentials."){
-                this.incorrectLogin = true;
-              }else{
-                this.incorrectLogin = false;
-                this.$store.commit({
-                    type: 'login',
-                    userID: res.data.id,
-                    token: res.data.token,
-                    cookieID: res.data.id
-                });
-
-                function setCookie(cname, cvalue, exdays) {
+              function setCookie(cname, cvalue, exdays) {
                   const d = new Date();
                   d.setTime(d.getTime() + (exdays += 3600 * 1000));
                   let expires = "expires="+d.toUTCString();
                   document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
                 }
-                
 
-                setCookie('loggedIn',res.data.id, 2 );
-                this.$router.push('/profile/' + res.data.id);
-              }
+                if(res.data == "Unable to locate user with those credentials."){
+                  this.incorrectLogin = true;
+                }else{
+                  this.incorrectLogin = false;
+                  this.$store.commit({
+                      type: 'login',
+                      userID: res.data.id,
+                      token: res.data.token,
+                      cookieID: res.data.id
+                  });
+                  setCookie('loggedIn',res.data.id, 2 );
+                  this.$router.push('/profile/' + res.data.id);
+                }
            
             });
             
