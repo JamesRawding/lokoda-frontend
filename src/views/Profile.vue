@@ -1162,6 +1162,7 @@ export default {
     margin-top: $spacing-m;
     @include cta;
     @include cta--secondary-reverse;
+    display: inline-block;
 
     @media (min-width: $desktop) {
       align-self: flex-start;

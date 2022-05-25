@@ -35,8 +35,8 @@ export default {
     border-radius: 100%;
     overflow: hidden;
     text-indent: 0;
-    width:100%;
-    height: 100%;
+    width:rem(44);
+    height:rem(44);
     display: flex;
     align-items: center;
     justify-content: center;

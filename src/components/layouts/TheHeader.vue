@@ -150,6 +150,7 @@ export default {
     background-color: transparent;
     padding:0;
     display:flex;
+    flex: 0 0 auto;
     margin-left:$spacing-l;
     font-size: rem(22); 
     position: relative;
