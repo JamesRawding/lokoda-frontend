@@ -1,124 +1,230 @@
 <template>
-<div class="page-loading-message" v-if="profileDataLoading || profileShowsLoading">
-  <div><span class="spinner"></span>Profile loading</div>
-</div>
-<div class="page-outer" v-else>
-  <the-header></the-header>
-  <main class="page-container">
-    <section class="hero-section">
-      <div class="hero-section__image-block" :class="{'hero-section__image-block--no-image': !profileImageURL}">
-        <div class="hero-section__image-container" v-if="profileImageURL">
-          <!-- <img :src="profileImageURL" :alt="profileName + ' profile image'" /> -->
-          <img :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_660,h_400,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+profileImageURL" :alt="profileName + ' profile image'" rel="preload" />
-          
-          <base-icon-button
-            v-if="$store.state.loggedIn && userID == profileID"
-            @click="displaySettingsDialog('Hero Image')"
-            mode="icon-button icon-button--edit icon-button--round"
-            ariaLabel="edit image"
-          ></base-icon-button>
-        </div>
-        <div v-else-if="$store.state.loggedIn && userID == profileID">
-          <base-text-icon-button
-            @click="displaySettingsDialog('Hero Image')"
-            mode="text-icon-button text-icon-button--plus"
-            >Add Image</base-text-icon-button
-          >
-        </div>
-        <transition>
-          <base-dialog
-            mode="modal-dialog"
-            v-if="heroDialogVisible"
-            @closeDialog="hideSettingsDialog('Hero Image')"
-          >
-            <strong>Select Image</strong>
-            <span class="modal-dialog__subheading">(Maximum file size 10Mb)</span>
-            <div class="hero-image-thumb">
-              <div v-if="!profileImageURL && !imageUploading">
-                Add image below
-              </div>
-              <div v-if="imageUploading" class="hero-image-uploading">
-                <span class="spinner"></span>Image Uploading
-              </div>
-              <img
-                v-if="profileImageURL"
-                :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_450,h_250,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+profileImageURL"
-                :alt="profileName + ' profile image'"
-              />
-            </div>
-            <form @submit.prevent="submitForm">
-              <choose-file-button
-                @change="uploadImage"
-                fileUploadID="uploadImage"
-                fileUploadName="filename"
+  <div
+    class="page-loading-message"
+    v-if="profileDataLoading || profileShowsLoading"
+  >
+    <div><span class="spinner"></span>Profile loading</div>
+  </div>
+  <div class="page-outer" v-else>
+    <the-header></the-header>
+    <main class="page-container">
+      <section class="hero-section">
+        <div
+          class="hero-section__image-block"
+          :class="{ 'hero-section__image-block--no-image': !profileImageURL }"
+        >
+          <div class="hero-section__image-container" v-if="profileImageURL">
+            <!-- <img :src="profileImageURL" :alt="profileName + ' profile image'" /> -->
+            <img
+              :src="
+                'https://res.cloudinary.com/dgddraffq/image/upload/w_660,h_400,c_limit,f_auto,q_auto:best,c_fill,g_faces/' +
+                profileImageURL
+              "
+              :alt="profileName + ' profile image'"
+              rel="preload"
+            />
+
+            <base-icon-button
+              v-if="$store.state.loggedIn && userID == profileID"
+              @click="displaySettingsDialog('Hero Image')"
+              mode="icon-button icon-button--edit icon-button--round"
+              ariaLabel="edit image"
+            ></base-icon-button>
+          </div>
+          <div v-else-if="$store.state.loggedIn && userID == profileID">
+            <base-text-icon-button
+              @click="displaySettingsDialog('Hero Image')"
+              mode="text-icon-button text-icon-button--plus"
+              >Add Image</base-text-icon-button
+            >
+          </div>
+          <transition>
+            <base-dialog
+              mode="modal-dialog"
+              v-if="heroDialogVisible"
+              @closeDialog="hideSettingsDialog('Hero Image')"
+            >
+              <strong>Select Image</strong>
+              <span class="modal-dialog__subheading"
+                >(Maximum file size 10Mb)</span
               >
-                Choose New Image
-              </choose-file-button>
-              <base-text-icon-button
-                @click="deleteHero"
-                mode="text-icon-button text-icon-button--trash"
+              <div class="hero-image-thumb">
+                <div v-if="!profileImageURL && !imageUploading">
+                  Add image below
+                </div>
+                <div v-if="imageUploading" class="hero-image-uploading">
+                  <span class="spinner"></span>Image Uploading
+                </div>
+                <img
+                  v-if="profileImageURL"
+                  :src="
+                    'https://res.cloudinary.com/dgddraffq/image/upload/w_450,h_250,c_limit,f_auto,q_auto:best,c_fill,g_faces/' +
+                    profileImageURL
+                  "
+                  :alt="profileName + ' profile image'"
+                />
+              </div>
+              <form @submit.prevent="submitForm">
+                <choose-file-button
+                  @change="uploadImage"
+                  fileUploadID="uploadImage"
+                  fileUploadName="filename"
+                >
+                  Choose New Image
+                </choose-file-button>
+                <base-text-icon-button
+                  @click="deleteHero"
+                  mode="text-icon-button text-icon-button--trash"
+                  buttonType="button"
+                  >Delete Image</base-text-icon-button
+                >
+                <base-button
+                  @click="hideSettingsDialog('Hero Image')"
+                  buttonType="submit"
+                  mode="cta cta--primary"
+                  >Save</base-button
+                >
+              </form>
+            </base-dialog>
+          </transition>
+        </div>
+
+        <div class="hero-section__details">
+          <h1>{{ profileName }}</h1>
+          <p class="hero-section__details-location">{{ profileLocation }}</p>
+
+          <div class="hero-section__genres" v-if="profileGenres.length">
+            <base-pill v-for="genre in profileGenres" :key="genre">
+              {{ genre.genre }}
+            </base-pill>
+            <base-icon-button
+              v-if="$store.state.loggedIn && userID == profileID"
+              @click="displaySettingsDialog('Genres')"
+              mode="icon-button icon-button--edit icon-button--round"
+              ariaLabel="edit genres"
+            ></base-icon-button>
+          </div>
+          <div
+            class="hero-section__genres"
+            v-else-if="$store.state.loggedIn && userID == profileID"
+          >
+            <base-text-icon-button
+              @click="displaySettingsDialog('Genres')"
+              mode="text-icon-button text-icon-button--plus"
+              >Add Genres</base-text-icon-button
+            >
+          </div>
+          <transition>
+            <base-dialog
+              mode="modal-dialog"
+              v-if="genresDialogVisible"
+              @closeDialog="hideSettingsDialog('Genres')"
+            >
+              <strong class="display-block">Select Genres</strong>
+              <span class="modal-dialog__subheading"
+                >(Maximum of 5 genres)</span
+              >
+              <transition name="error">
+                <p class="error-message max-genres" v-if="genresMaxAmount">
+                  Maximum amount selected
+                </p>
+              </transition>
+              <base-pill-button
                 buttonType="button"
-                >Delete Image</base-text-icon-button
+                @click="selectGenres(genre)"
+                :class="{
+                  'pill-button--selected': selectedProfileGenres(genre),
+                }"
+                mode="pill-button pill-button--default"
+                v-for="genre in allGenres"
+                :key="genre.genre"
               >
+                {{ genre.genre }}
+              </base-pill-button>
               <base-button
-                @click="hideSettingsDialog('Hero Image')"
-                buttonType="submit"
+                @click="hideSettingsDialog('Genres')"
+                buttonType="button"
                 mode="cta cta--primary"
                 >Save</base-button
               >
-            </form>
-          </base-dialog>
-        </transition>
-      </div>
+            </base-dialog>
+          </transition>
 
-      <div class="hero-section__details">
-        <h1>{{ profileName }}</h1>
-        <p class="hero-section__details-location">{{ profileLocation }}</p>
+          <router-link
+            @click="createNewContact"
+            v-if="$store.state.loggedIn && userID != profileID"
+            class="cta-secondary-reverse"
+            :to="{ name: 'Messages', params: { profileID } }"
+            >Get In Touch</router-link
+          >
+          <a
+            v-if="!$store.state.loggedIn"
+            class="fallback-mailto"
+            :href="'mailto:' + profileEmail + 'subject=Lokoda Message'"
+            >Get In Touch</a
+          >
+        </div>
+      </section>
 
-        <div class="hero-section__genres" v-if="profileGenres.length">
-          <base-pill v-for="genre in profileGenres" :key="genre">
-            {{ genre.genre }}
-          </base-pill>
+      <div class="profile-body">
+        <section class="player-embed-block" v-if="profilePlayerURL">
+          <iframe
+            title="music player"
+            :src="profilePlayerURL"
+            width="100%"
+            height="380"
+            frameBorder="0"
+            allowfullscreen=""
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          ></iframe>
           <base-icon-button
             v-if="$store.state.loggedIn && userID == profileID"
-            @click="displaySettingsDialog('Genres')"
+            @click="displaySettingsDialog('Embed Player')"
             mode="icon-button icon-button--edit icon-button--round"
-            ariaLabel="edit genres"
+            ariaLabel="edit music player embed"
           ></base-icon-button>
-        </div>
+        </section>
         <div
-          class="hero-section__genres"
+          class="add-player-embed"
           v-else-if="$store.state.loggedIn && userID == profileID"
         >
           <base-text-icon-button
-            @click="displaySettingsDialog('Genres')"
+            @click="displaySettingsDialog('Embed Player')"
             mode="text-icon-button text-icon-button--plus"
-            >Add Genres</base-text-icon-button
+            >Embed Music Player</base-text-icon-button
           >
+          <span>e.g. Soundcloud, Bandcamp or Spotify</span>
         </div>
         <transition>
           <base-dialog
             mode="modal-dialog"
-            v-if="genresDialogVisible"
-            @closeDialog="hideSettingsDialog('Genres')"
+            v-if="embedDialogVisible"
+            @closeDialog="hideSettingsDialog('Embed Player')"
           >
-            <strong class="display-block">Select Genres</strong>
-            <span class="modal-dialog__subheading">(Maximum of 5 genres)</span>
             <transition name="error">
-            <p class="error-message max-genres" v-if="genresMaxAmount">Maximum amount selected</p>
+              <p v-if="playerEmbedError" class="error-message">
+                Must be an embed from Soundcloud, Bandcamp or Spotify
+              </p>
             </transition>
-            <base-pill-button
-              buttonType="button"
-              @click="selectGenres(genre)"
-              :class="{ 'pill-button--selected': selectedProfileGenres(genre) }"
-              mode="pill-button pill-button--default"
-              v-for="genre in allGenres"
-              :key="genre.genre"
+            <base-input
+              inputId="playerEmbed"
+              inputType="text"
+              v-model="profilePlayerEmbed"
+              :isRequired="false"
             >
-              {{ genre.genre }}
-            </base-pill-button>
+              <template #label>Embed Music Player</template>
+              <template #helpertext
+                >Enter embed code From Soundcloud, Bandcamp or Spotify</template
+              >
+            </base-input>
+            <base-text-icon-button
+              @click="deleteEmbed"
+              mode="text-icon-button text-icon-button--trash"
+              buttonType="button"
+              >Delete Embed</base-text-icon-button
+            >
             <base-button
-              @click="hideSettingsDialog('Genres')"
+              @click="hideSettingsDialog('Embed Player')"
               buttonType="button"
               mode="cta cta--primary"
               >Save</base-button
@@ -126,176 +232,68 @@
           </base-dialog>
         </transition>
 
-        <router-link
-          @click="createNewContact"
-          v-if="$store.state.loggedIn && userID != profileID"
-          class="cta-secondary-reverse"
-          :to="{ name: 'Messages', params: { profileID } }"
-          >Get In Touch</router-link
-        >
-        <a
-          v-if="!$store.state.loggedIn"
-          class="fallback-mailto"
-          :href="'mailto:' + profileEmail+'subject=Lokoda Message'"
-          >Get In Touch</a
-        >
-      </div>
-    </section>
-
-    <div class="profile-body">
-      <section class="player-embed-block" v-if="profilePlayerURL">
-        <iframe
-          title="music player"
-          :src="profilePlayerURL"
-          width="100%"
-          height="380"
-          frameBorder="0"
-          allowfullscreen=""
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        ></iframe>
-        <base-icon-button
-          v-if="$store.state.loggedIn && userID == profileID"
-          @click="displaySettingsDialog('Embed Player')"
-          mode="icon-button icon-button--edit icon-button--round"
-          ariaLabel="edit music player embed"
-        ></base-icon-button>
-      </section>
-      <div
-        class="add-player-embed"
-        v-else-if="$store.state.loggedIn && userID == profileID"
-      >
-        <base-text-icon-button
-          @click="displaySettingsDialog('Embed Player')"
-          mode="text-icon-button text-icon-button--plus"
-          >Embed Music Player</base-text-icon-button
-        >
-        <span>e.g. Soundcloud, Bandcamp or Spotify</span>
-      </div>
-      <transition>
-        <base-dialog
-          mode="modal-dialog"
-          v-if="embedDialogVisible"
-          @closeDialog="hideSettingsDialog('Embed Player')"
-        >
-        <transition name="error">
-        <p v-if="playerEmbedError" class="error-message">Must be an embed from Soundcloud, Bandcamp or Spotify</p>
-        </transition>
-          <base-input
-            inputId="playerEmbed"
-            inputType="text"
-            v-model="profilePlayerEmbed"
-            :isRequired="false"
+        <div>
+          <section class="bio" v-if="profileBio.length">
+            <h2>Bio</h2>
+            <base-icon-button
+              v-if="$store.state.loggedIn && userID == profileID"
+              @click="displaySettingsDialog('Add Bio')"
+              buttonType="button"
+              mode="icon-button icon-button--edit icon-button--round"
+              ariaLabel="edit bio"
+            ></base-icon-button>
+            <p>{{ profileBio }}</p>
+          </section>
+          <div
+            class="add-bio"
+            v-else-if="$store.state.loggedIn && userID == profileID"
           >
-            <template #label>Embed Music Player</template>
-            <template #helpertext
-              >Enter embed code From Soundcloud, Bandcamp or Spotify</template
+            <base-text-icon-button
+              @click="displaySettingsDialog('Add Bio')"
+              buttonType="button"
+              mode="text-icon-button text-icon-button--plus"
+              >Add bio</base-text-icon-button
             >
-          </base-input>
-          <base-text-icon-button
-            @click="deleteEmbed"
-            mode="text-icon-button text-icon-button--trash"
-            buttonType="button"
-            >Delete Embed</base-text-icon-button
-          >
-          <base-button
-            @click="hideSettingsDialog('Embed Player')"
-            buttonType="button"
-            mode="cta cta--primary"
-            >Save</base-button
-          >
-        </base-dialog>
-      </transition>
-      <section class="upcoming-shows" v-if="profileShows.length">
-        <h2>Upcoming Shows</h2>
-        <base-icon-button
-          v-if="$store.state.loggedIn && userID == profileID"
-          @click="displaySettingsDialog('Manage Shows')"
-          buttonType="button"
-          mode="icon-button icon-button--edit icon-button--round"
-          ariaLabel="edit shows"
-        ></base-icon-button>
-        <show-card
-          tabindex="0"
-          @click="fullShowDetails(show)"
-          @editThisShow="editShow(show)"
-          @deleteThisShow="cancelShow(show)"
-          v-for="show in profileShowsResults"
-          :key="show.venue+show.id"
-        >
-          <template #month>{{ convertedMonth(show) }}</template>
-          <template #day>{{ convertedDay(show) }}</template>
-          <template #year>{{ convertedYear(show) }}</template>
-          <template #city>{{ show.city }}</template>
-          <template #venue>{{ show.venue }}</template>
-          <template #time>{{ show.time }}</template>
-          <template v-if="show.status == 'CANCELLED'" #status><span class="show-card__cancelled">Show Cancelled</span></template>
-        </show-card>
+          </div>
+          <transition>
+            <base-dialog
+              mode="modal-dialog modal-dialog--add-bio"
+              v-if="bioDialogVisible"
+              @closeDialog="hideSettingsDialog('Add Bio')"
+            >
+              <strong>Enter Bio Details</strong>
+              <form @submit.prevent="submitBioForm">
+                <base-textarea
+                  inputId="profileBio"
+                  v-model="profileBio"
+                  :isRequired="false"
+                >
+                  <template #label>Bio</template>
+                  <template #helpertext>e.g. Details about you</template>
+                </base-textarea>
+                <base-button buttonType="submit" mode="cta cta--primary"
+                  >Save Bio</base-button
+                >
+              </form>
+            </base-dialog>
+          </transition>
 
-        <transition>
-        <base-dialog
-          mode="modal-dialog"
-          v-if="fullShowDetailsVisible"
-          @closeDialog="hideSettingsDialog('Full Show Details')"
-        >
-        <section class="full-show-details">
-          <h2>Full Show Details</h2>
-          <span class="full-show-details__cancelled" v-if="selectedFullShowListing.status === 'CANCELLED'">Show Cancelled</span>
-          <span class="full-show-details__info"><strong>City: </strong><span>{{selectedFullShowListing.city}}</span></span>
-          <span class="full-show-details__info"><strong>Venue: </strong><span>{{selectedFullShowListing.venue}}</span></span>
-          <span class="full-show-details__info"><strong>Date: </strong><span>{{ convertedDay(selectedFullShowListing) }} {{ convertedMonth(selectedFullShowListing) }} {{ convertedYear(selectedFullShowListing) }}</span></span>
-          <span class="full-show-details__info"><strong>Time: </strong><span>{{selectedFullShowListing.time}}</span></span>
-          <span class="full-show-details__info"><strong>Comments: </strong><p>{{selectedFullShowListing.comments}}</p></span>
-        </section>
-
-          
-        </base-dialog>
-      </transition>
-        
-        <base-text-icon-button
-          v-if="profileShows.length > 3"
-          @click="toggleShowListings"
-          mode="text-icon-button text-icon-button--list"
-          buttonType="button"
-        >
-          <span v-if="fullListingVisible">Hide Full Listing</span
-          ><span v-else>View Full Listing</span></base-text-icon-button
-        >
-      </section>
-      <div
-        class="add-upcoming-shows"
-        v-else-if="$store.state.loggedIn && userID == profileID"
-      >
-        <base-text-icon-button
-          @click="displaySettingsDialog('Manage Shows')"
-          buttonType="button"
-          mode="text-icon-button text-icon-button--plus"
-          >Add and edit shows</base-text-icon-button
-        >
-      </div>
-      <section class="upcoming-shows" v-else>
-        <h2>No Shows Booked</h2>
-        <p>There are no future shows as of yet.</p>
-      </section>
-
-      <transition>
-        <base-dialog
-          mode="modal-dialog"
-          v-if="showsDialogVisible"
-          @closeDialog="hideSettingsDialog('Manage Shows')"
-        >
-          <strong>Manage Shows</strong>
-          <base-text-icon-button
-            @click="displaySettingsDialog('Add Show')"
-            mode="text-icon-button text-icon-button--plus"
-            buttonType="button"
-            >Add Show</base-text-icon-button
-          >
-          <div class="show-container">
+          <section class="upcoming-shows" v-if="profileShows.length">
+            <h2>Upcoming Shows</h2>
+            <base-icon-button
+              v-if="$store.state.loggedIn && userID == profileID"
+              @click="displaySettingsDialog('Manage Shows')"
+              buttonType="button"
+              mode="icon-button icon-button--edit icon-button--round"
+              ariaLabel="edit shows"
+            ></base-icon-button>
             <show-card
+              tabindex="0"
+              @click="fullShowDetails(show)"
               @editThisShow="editShow(show)"
               @deleteThisShow="cancelShow(show)"
               v-for="show in profileShowsResults"
-              :key="show.venue+show.id+'edit'"
+              :key="show.venue + show.id"
             >
               <template #month>{{ convertedMonth(show) }}</template>
               <template #day>{{ convertedDay(show) }}</template>
@@ -303,260 +301,386 @@
               <template #city>{{ show.city }}</template>
               <template #venue>{{ show.venue }}</template>
               <template #time>{{ show.time }}</template>
-              <template v-if="show.status == 'CANCELLED'" #status><span class="show-card__cancelled">Show Cancelled</span></template>
+              <template v-if="show.status == 'CANCELLED'" #status
+                ><span class="show-card__cancelled"
+                  >Show Cancelled</span
+                ></template
+              >
             </show-card>
-          </div>
-          <base-text-icon-button
-            v-if="profileShows.length > 3"
-            @click="toggleShowListings"
-            mode="text-icon-button text-icon-button--list"
-            buttonType="button"
-          >
-            <span v-if="fullListingVisible">Hide Full Listing</span
-            ><span v-else>View Full Listing</span></base-text-icon-button
-          >
 
-          <base-button
-            @click="hideSettingsDialog('Manage Shows')"
-            buttonType="button"
-            mode="cta cta--primary"
-            >Save</base-button
-          >
-        </base-dialog>
-      </transition>
-      <transition>
-        <base-dialog
-          mode="modal-dialog modal-dialog--add-show"
-          v-if="addShowDialogVisible"
-          @closeDialog="hideSettingsDialog('Add Show')"
-        >
-          <strong>Enter Show Details</strong>
-          <form @submit.prevent="submitShowForm">
-            <base-input
-              inputId="showCity"
-              inputType="text"
-              v-model="city"
-              :isRequired="true"
-            >
-              <template #label>City</template>
-            </base-input>
-            <base-input
-              inputId="showVenue"
-              inputType="text"
-              v-model="venue"
-              :isRequired="true"
-            >
-              <template #label>Venue</template>
-            </base-input>
-            <base-input
-              inputId="showTime"
-              inputType="text"
-              v-model="time"
-              :isRequired="true"
-            >
-              <template #label>Time</template>
-              <template #helpertext>e.g. 7am/7pm.</template>
+            <transition>
+              <base-dialog
+                mode="modal-dialog"
+                v-if="fullShowDetailsVisible"
+                @closeDialog="hideSettingsDialog('Full Show Details')"
+              >
+                <section class="full-show-details">
+                  <h2>Full Show Details</h2>
+                  <span
+                    class="full-show-details__cancelled"
+                    v-if="selectedFullShowListing.status === 'CANCELLED'"
+                    >Show Cancelled</span
+                  >
+                  <span class="full-show-details__info"
+                    ><strong>City: </strong
+                    ><span>{{ selectedFullShowListing.city }}</span></span
+                  >
+                  <span class="full-show-details__info"
+                    ><strong>Venue: </strong
+                    ><span>{{ selectedFullShowListing.venue }}</span></span
+                  >
+                  <span class="full-show-details__info"
+                    ><strong>Date: </strong
+                    ><span
+                      >{{ convertedDay(selectedFullShowListing) }}
+                      {{ convertedMonth(selectedFullShowListing) }}
+                      {{ convertedYear(selectedFullShowListing) }}</span
+                    ></span
+                  >
+                  <span class="full-show-details__info"
+                    ><strong>Time: </strong
+                    ><span>{{ selectedFullShowListing.time }}</span></span
+                  >
+                  <span class="full-show-details__info"
+                    ><strong>Comments: </strong>
+                    <p>{{ selectedFullShowListing.comments }}</p></span
+                  >
+                </section>
+              </base-dialog>
+            </transition>
 
-            </base-input>
-            <fieldset class="add-show-date-fields">
-              <legend>Select Date<span>(required)</span></legend>
-              <span class="legend-helper">e.g. 02/08/2022</span>
-              <div class="add-show-date-fields__inner">
-                <base-input
-                  inputId="showDay"
-                  inputType="text"
-                  inputPattern="[0-9]*"
-                  inputMode="numeric"
-                  v-model="day"
-                  :isRequired="true"
-                >
-                  <template #label>Day</template>
-                </base-input>
-                <base-input
-                  inputId="showMonth"
-                  inputType="text"
-                  inputPattern="[0-9]*"
-                  inputMode="numeric"
-                  v-model="month"
-                  :isRequired="true"
-                >
-                  <template #label>Month</template>
-                </base-input>
-                <base-input
-                  inputId="showYear"
-                  inputType="text"
-                  inputPattern="[0-9]*"
-                  inputMode="numeric"
-                  v-model="year"
-                  :isRequired="true"
-                >
-                  <template #label>Year</template>
-                </base-input>
-              </div>
-            </fieldset>
-             <base-textarea
-              inputId="showComments"
-              v-model="comments"
-              :isRequired="false">
-              <template #label>Comments</template>
-              <template #helpertext>e.g. Support acts</template>
-            </base-textarea>
-            <base-button buttonType="submit" mode="cta cta--primary"
-              >Save Show</base-button
-            >
-          </form>
-        </base-dialog>
-      </transition>
-      <transition>
-        <base-dialog
-          mode="modal-dialog modal-dialog--add-show"
-          v-if="editShowDialogVisible"
-          @closeDialog="hideSettingsDialog('Edit Show')"
-        >
-          <strong>Edit Show Details</strong>
-          <form @submit.prevent="submitEditShowForm">
-            <base-input
-              inputId="editShowCity"
-              inputType="text"
-              v-model="selectedShow.city"
-              :isRequired="true"
-            >
-              <template #label>City</template>
-            </base-input>
-            <base-input
-              inputId="editShowVenue"
-              inputType="text"
-              v-model="selectedShow.venue"
-              :isRequired="true"
-            >
-              <template #label>Venue</template>
-            </base-input>
-            <base-input
-              inputId="showTime"
-              inputType="text"
-              v-model="selectedShow.time"
-              :isRequired="true"
-            >
-              <template #label>Time</template>
-              <template #helpertext>e.g. 7am/7pm.</template>
-
-            </base-input>
-            <fieldset class="add-show-date-fields">
-              <legend>Select Date <span>(required)</span></legend>
-              <span class="legend-helper">e.g. 02/08/2022</span>
-              <div class="add-show-date-fields__inner">
-                <base-input
-                  inputId="editShowDay"
-                  inputType="text"
-                  inputPattern="[0-9]*"
-                  inputMode="numeric"
-                  v-model="selectedShow.day"
-                  :isRequired="true"
-                >
-                  <template #label>Day</template>
-                </base-input>
-                <base-input
-                  inputId="editShowMonth"
-                  inputType="text"
-                  inputPattern="[0-9]*"
-                  inputMode="numeric"
-                  v-model="selectedShow.month"
-                  :isRequired="true"
-                >
-                  <template #label>Month</template>
-                </base-input>
-                <base-input
-                  inputId="editShowYear"
-                  inputType="text"
-                  inputPattern="[0-9]*"
-                  inputMode="numeric"
-                  v-model="selectedShow.year"
-                  :isRequired="true"
-                >
-                  <template #label>Year</template>
-                </base-input>
-              </div>
-            </fieldset>
-             <base-textarea
-              inputId="showComments"
-              v-model="selectedShow.comments"
-              :isRequired="false">
-              <template #label>Comments</template>
-              <template #helpertext>e.g. Support acts</template>
-            </base-textarea>
-            <base-button buttonType="submit" mode="cta cta--primary"
-              >Save Show</base-button
-            >
-          </form>
-        </base-dialog>
-      </transition>
-      <transition>
-        <base-dialog
-          mode="modal-dialog modal-dialog--warning modal-dialog--cancel-show"
-          v-if="cancelShowDialogVisible"
-          @closeDialog="hideSettingsDialog('Cancel Show')"
-        >
-          <strong>Are you sure you want to cancel this show?</strong>
-          <p>
-            <span class="display-block">{{ selectedShow.showVenue }}</span>
-            <span class="display-block"
-              >{{ convertedDay(selectedShow) }} {{ convertedMonth(selectedShow) }}
-              {{ convertedYear(selectedShow) }}</span
-            >
-          </p>
-          <div class="dialog-cta-container">
-            <base-button
-              @click="hideSettingsDialog('Cancel Show')"
+            <base-text-icon-button
+              v-if="profileShows.length > 3"
+              @click="toggleShowListings"
+              mode="text-icon-button text-icon-button--list"
               buttonType="button"
-              mode="cta cta--secondary"
-              >Keep Show</base-button
             >
-            <base-button
-              @click="confirmCancelShow"
+              <span v-if="fullListingVisible">Hide Full Listing</span
+              ><span v-else>View Full Listing</span></base-text-icon-button
+            >
+          </section>
+          <div
+            class="add-upcoming-shows"
+            v-else-if="$store.state.loggedIn && userID == profileID"
+          >
+            <base-text-icon-button
+              @click="displaySettingsDialog('Manage Shows')"
               buttonType="button"
-              mode="cta cta--warning"
-              >Cancel Show</base-button
+              mode="text-icon-button text-icon-button--plus"
+              >Add and edit shows</base-text-icon-button
             >
           </div>
-        </base-dialog>
-      </transition>
-      
+          <section class="upcoming-shows" v-else>
+            <h2>No Shows Booked</h2>
+            <p>There are no future shows as of yet.</p>
+          </section>
 
-      
-    </div>
-    <section class="qr-section" v-if="$store.state.loggedIn && userID == profileID">
-      <img :src="qrImage" :alt="profileName +'qr code'">
-      <h3>Need to share your profile?</h3>
-      <p>This QR code can be printed so you can display at your next show, making it easier for your fans to find you.</p>
-      <div v-if="printQRPage" class="qr-section__print-info">
-        <h1>{{profileName}}</h1>
-        <p>Discover on</p>
-        <img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo">
+          <transition>
+            <base-dialog
+              mode="modal-dialog"
+              v-if="showsDialogVisible"
+              @closeDialog="hideSettingsDialog('Manage Shows')"
+            >
+              <strong>Manage Shows</strong>
+              <base-text-icon-button
+                @click="displaySettingsDialog('Add Show')"
+                mode="text-icon-button text-icon-button--plus"
+                buttonType="button"
+                >Add Show</base-text-icon-button
+              >
+              <div class="show-container">
+                <show-card
+                  @editThisShow="editShow(show)"
+                  @deleteThisShow="cancelShow(show)"
+                  v-for="show in profileShowsResults"
+                  :key="show.venue + show.id + 'edit'"
+                >
+                  <template #month>{{ convertedMonth(show) }}</template>
+                  <template #day>{{ convertedDay(show) }}</template>
+                  <template #year>{{ convertedYear(show) }}</template>
+                  <template #city>{{ show.city }}</template>
+                  <template #venue>{{ show.venue }}</template>
+                  <template #time>{{ show.time }}</template>
+                  <template v-if="show.status == 'CANCELLED'" #status
+                    ><span class="show-card__cancelled"
+                      >Show Cancelled</span
+                    ></template
+                  >
+                </show-card>
+              </div>
+              <base-text-icon-button
+                v-if="profileShows.length > 3"
+                @click="toggleShowListings"
+                mode="text-icon-button text-icon-button--list"
+                buttonType="button"
+              >
+                <span v-if="fullListingVisible">Hide Full Listing</span
+                ><span v-else>View Full Listing</span></base-text-icon-button
+              >
+
+              <base-button
+                @click="hideSettingsDialog('Manage Shows')"
+                buttonType="button"
+                mode="cta cta--primary"
+                >Save</base-button
+              >
+            </base-dialog>
+          </transition>
+          <transition>
+            <base-dialog
+              mode="modal-dialog modal-dialog--add-show"
+              v-if="addShowDialogVisible"
+              @closeDialog="hideSettingsDialog('Add Show')"
+            >
+              <strong>Enter Show Details</strong>
+              <form @submit.prevent="submitShowForm">
+                <base-input
+                  inputId="showCity"
+                  inputType="text"
+                  v-model="city"
+                  :isRequired="true"
+                >
+                  <template #label>City</template>
+                </base-input>
+                <base-input
+                  inputId="showVenue"
+                  inputType="text"
+                  v-model="venue"
+                  :isRequired="true"
+                >
+                  <template #label>Venue</template>
+                </base-input>
+                <base-input
+                  inputId="showTime"
+                  inputType="text"
+                  v-model="time"
+                  :isRequired="true"
+                >
+                  <template #label>Time</template>
+                  <template #helpertext>e.g. 7am/7pm.</template>
+                </base-input>
+                <fieldset class="add-show-date-fields">
+                  <legend>Select Date<span>(required)</span></legend>
+                  <span class="legend-helper">e.g. 02/08/2022</span>
+                  <div class="add-show-date-fields__inner">
+                    <base-input
+                      inputId="showDay"
+                      inputType="text"
+                      inputPattern="[0-9]*"
+                      inputMode="numeric"
+                      v-model="day"
+                      :isRequired="true"
+                    >
+                      <template #label>Day</template>
+                    </base-input>
+                    <base-input
+                      inputId="showMonth"
+                      inputType="text"
+                      inputPattern="[0-9]*"
+                      inputMode="numeric"
+                      v-model="month"
+                      :isRequired="true"
+                    >
+                      <template #label>Month</template>
+                    </base-input>
+                    <base-input
+                      inputId="showYear"
+                      inputType="text"
+                      inputPattern="[0-9]*"
+                      inputMode="numeric"
+                      v-model="year"
+                      :isRequired="true"
+                    >
+                      <template #label>Year</template>
+                    </base-input>
+                  </div>
+                </fieldset>
+                <base-textarea
+                  inputId="showComments"
+                  v-model="comments"
+                  :isRequired="false"
+                >
+                  <template #label>Comments</template>
+                  <template #helpertext>e.g. Support acts</template>
+                </base-textarea>
+                <base-button buttonType="submit" mode="cta cta--primary"
+                  >Save Show</base-button
+                >
+              </form>
+            </base-dialog>
+          </transition>
+          <transition>
+            <base-dialog
+              mode="modal-dialog modal-dialog--add-show"
+              v-if="editShowDialogVisible"
+              @closeDialog="hideSettingsDialog('Edit Show')"
+            >
+              <strong>Edit Show Details</strong>
+              <form @submit.prevent="submitEditShowForm">
+                <base-input
+                  inputId="editShowCity"
+                  inputType="text"
+                  v-model="selectedShow.city"
+                  :isRequired="true"
+                >
+                  <template #label>City</template>
+                </base-input>
+                <base-input
+                  inputId="editShowVenue"
+                  inputType="text"
+                  v-model="selectedShow.venue"
+                  :isRequired="true"
+                >
+                  <template #label>Venue</template>
+                </base-input>
+                <base-input
+                  inputId="showTime"
+                  inputType="text"
+                  v-model="selectedShow.time"
+                  :isRequired="true"
+                >
+                  <template #label>Time</template>
+                  <template #helpertext>e.g. 7am/7pm.</template>
+                </base-input>
+                <fieldset class="add-show-date-fields">
+                  <legend>Select Date <span>(required)</span></legend>
+                  <span class="legend-helper">e.g. 02/08/2022</span>
+                  <div class="add-show-date-fields__inner">
+                    <base-input
+                      inputId="editShowDay"
+                      inputType="text"
+                      inputPattern="[0-9]*"
+                      inputMode="numeric"
+                      v-model="selectedShow.day"
+                      :isRequired="true"
+                    >
+                      <template #label>Day</template>
+                    </base-input>
+                    <base-input
+                      inputId="editShowMonth"
+                      inputType="text"
+                      inputPattern="[0-9]*"
+                      inputMode="numeric"
+                      v-model="selectedShow.month"
+                      :isRequired="true"
+                    >
+                      <template #label>Month</template>
+                    </base-input>
+                    <base-input
+                      inputId="editShowYear"
+                      inputType="text"
+                      inputPattern="[0-9]*"
+                      inputMode="numeric"
+                      v-model="selectedShow.year"
+                      :isRequired="true"
+                    >
+                      <template #label>Year</template>
+                    </base-input>
+                  </div>
+                </fieldset>
+                <base-textarea
+                  inputId="showComments"
+                  v-model="selectedShow.comments"
+                  :isRequired="false"
+                >
+                  <template #label>Comments</template>
+                  <template #helpertext>e.g. Support acts</template>
+                </base-textarea>
+                <base-button buttonType="submit" mode="cta cta--primary"
+                  >Save Show</base-button
+                >
+              </form>
+            </base-dialog>
+          </transition>
+          <transition>
+            <base-dialog
+              mode="modal-dialog modal-dialog--warning modal-dialog--cancel-show"
+              v-if="cancelShowDialogVisible"
+              @closeDialog="hideSettingsDialog('Cancel Show')"
+            >
+              <strong>Are you sure you want to cancel this show?</strong>
+              <p>
+                <span class="display-block">{{ selectedShow.showVenue }}</span>
+                <span class="display-block"
+                  >{{ convertedDay(selectedShow) }}
+                  {{ convertedMonth(selectedShow) }}
+                  {{ convertedYear(selectedShow) }}</span
+                >
+              </p>
+              <div class="dialog-cta-container">
+                <base-button
+                  @click="hideSettingsDialog('Cancel Show')"
+                  buttonType="button"
+                  mode="cta cta--secondary"
+                  >Keep Show</base-button
+                >
+                <base-button
+                  @click="confirmCancelShow"
+                  buttonType="button"
+                  mode="cta cta--warning"
+                  >Cancel Show</base-button
+                >
+              </div>
+            </base-dialog>
+          </transition>
+        </div>
       </div>
-      <base-button
-      v-if="!printQRPage"
-      @click="printQRImage"
-      buttonType="button"
-      mode="cta cta--secondary-reverse"
-      >Print QR Code
-      </base-button>
-      <base-button
-      v-else
-      @click="closePrintQRImage"
-      buttonType="button"
-      mode="cta cta--secondary"
-      >Back to Profile
-      </base-button>
-    </section>
+      <section
+        class="qr-section"
+        v-if="$store.state.loggedIn && userID == profileID"
+      >
+        <img :src="qrImage" :alt="profileName + 'qr code'" />
+        <h3>Need to share your profile?</h3>
+        <p>
+          This QR code can be printed so you can display at your next show,
+          making it easier for your fans to find you.
+        </p>
+        <div v-if="printQRPage" class="qr-section__print-info">
+          <h1>{{ profileName }}</h1>
+          <p>Discover on</p>
+          <img
+            src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg"
+            alt="lokoda logo"
+          />
+        </div>
+        <base-button
+          v-if="!printQRPage"
+          @click="printQRImage"
+          buttonType="button"
+          mode="cta cta--secondary-reverse"
+          >Print QR Code
+        </base-button>
+        <base-button
+          v-else
+          @click="closePrintQRImage"
+          buttonType="button"
+          mode="cta cta--secondary"
+          >Back to Profile
+        </base-button>
+      </section>
 
-    <p v-if="$store.state.loggedIn && userID == profileID" class="disclaimer">Lokoda reserve the right to delete your account if you upload any material that is deemed to be obscene or offensive.</p>
+      <p v-if="$store.state.loggedIn && userID == profileID" class="disclaimer">
+        Lokoda reserve the right to delete your account if you upload any
+        material that is deemed to be obscene or offensive.
+      </p>
 
-    <span class="toast-notification" :class="{'toast-notification--active' :showAddedToast}" >Show added</span>
-    <span class="toast-notification" :class="{'toast-notification--active' :showUpdatedToast}" >Show updated</span>
-    <span class="toast-notification" :class="{'toast-notification--active' :showCancelledToast}" >Show cancelled</span>
-
-  </main>
-  <the-footer></the-footer>
+      <span
+        class="toast-notification"
+        :class="{ 'toast-notification--active': showAddedToast }"
+        >Show added</span
+      >
+      <span
+        class="toast-notification"
+        :class="{ 'toast-notification--active': showUpdatedToast }"
+        >Show updated</span
+      >
+      <span
+        class="toast-notification"
+        :class="{ 'toast-notification--active': showCancelledToast }"
+        >Show cancelled</span
+      >
+    </main>
+    <the-footer></the-footer>
   </div>
 </template>
 
@@ -564,7 +688,7 @@
 import axios from "axios";
 import vClickOutside from "click-outside-vue3";
 import TheHeader from "../components/layouts/TheHeader.vue";
-import TheFooter from '../components/layouts/TheFooter.vue';
+import TheFooter from "../components/layouts/TheFooter.vue";
 import BaseTextIconButton from "../components/UI/BaseTextIconButton.vue";
 import BaseDialog from "../components/UI/BaseDialog.vue";
 import ChooseFileButton from "../components/UI/ChooseFileButton.vue";
@@ -608,6 +732,7 @@ export default {
       profileShows: [],
       profilePlayerEmbed: "",
       profilePlayerURL: "",
+      profileBio: "",
       allGenres: [],
       heroDialogVisible: false,
       genresDialogVisible: false,
@@ -615,11 +740,12 @@ export default {
       showsDialogVisible: false,
       cancelShowDialogVisible: false,
       addShowDialogVisible: false,
+      bioDialogVisible: false,
       editShowDialogVisible: false,
       fullListingVisible: false,
       fullShowDetailsVisible: false,
       selectedShow: [],
-      selectedFullShowListing:[],
+      selectedFullShowListing: [],
       selectedShowIndex: "",
       day: "",
       month: "",
@@ -659,6 +785,9 @@ export default {
       if (evt == "Manage Shows") {
         this.showsDialogVisible = true;
       }
+      if (evt == "Add Bio") {
+        this.bioDialogVisible = true;
+      }
       if (evt == "Add Show") {
         this.addShowDialogVisible = true;
         this.showsDialogVisible = false;
@@ -672,22 +801,27 @@ export default {
         this.genresDialogVisible = false;
       }
       if (evt == "Embed Player") {
-        if(this.profilePlayerEmbed == ''){
-          this.playerEmbedError = false
+        if (this.profilePlayerEmbed == "") {
+          this.playerEmbedError = false;
           this.embedDialogVisible = false;
-        }else if( this.profilePlayerEmbed.includes('soundcloud') || this.profilePlayerEmbed.includes('bandcamp') || this.profilePlayerEmbed.includes('spotify')){
-          this.profilePlayerEmbed = this.profilePlayerEmbed.match(/\bhttps?:\/\/\S+/gi)[0];
+        } else if (
+          this.profilePlayerEmbed.includes("soundcloud") ||
+          this.profilePlayerEmbed.includes("bandcamp") ||
+          this.profilePlayerEmbed.includes("spotify")
+        ) {
+          this.profilePlayerEmbed =
+            this.profilePlayerEmbed.match(/\bhttps?:\/\/\S+/gi)[0];
           axios
-          .post("/api/embed_url",{
-            url: this.profilePlayerEmbed
-          })
-          .then(() => {
-            this.profilePlayerURL = this.profilePlayerEmbed;
-          });
-          this.playerEmbedError = false
+            .post("/api/embed_url", {
+              url: this.profilePlayerEmbed,
+            })
+            .then(() => {
+              this.profilePlayerURL = this.profilePlayerEmbed;
+            });
+          this.playerEmbedError = false;
           this.embedDialogVisible = false;
-        }else{
-          this.playerEmbedError = true
+        } else {
+          this.playerEmbedError = true;
         }
       }
       if (evt == "Manage Shows") {
@@ -699,6 +833,9 @@ export default {
       if (evt == "Add Show") {
         this.addShowDialogVisible = false;
       }
+      if (evt == "Add Bio") {
+        this.bioDialogVisible = false;
+      }
       if (evt == "Edit Show") {
         this.editShowDialogVisible = false;
       }
@@ -709,47 +846,45 @@ export default {
     selectGenres(evt) {
       const genre = evt;
       const selectedGenres = this.profileGenres;
-      const index = selectedGenres.findIndex(x => x.genre_id === genre.genre_id);
-      if (selectedGenres.filter(e => e.genre_id === genre.genre_id).length > 0) {
+      const index = selectedGenres.findIndex(
+        (x) => x.genre_id === genre.genre_id
+      );
+      if (
+        selectedGenres.filter((e) => e.genre_id === genre.genre_id).length > 0
+      ) {
         if (index > -1) {
-          
-          axios
-            .post("/api/delete_genre", {
-              user_id: this.userID,
-              genre_id: genre.genre_id,
-            })
-            // .then((res) => {
-            //   console.log(res);
-            // });
-            selectedGenres.splice(index, 1);
-            if(this.profileGenres.length <= 5){
-              this.genresMaxAmount = false;
-            }
+          axios.post("/api/delete_genre", {
+            user_id: this.userID,
+            genre_id: genre.genre_id,
+          });
+          // .then((res) => {
+          //   console.log(res);
+          // });
+          selectedGenres.splice(index, 1);
+          if (this.profileGenres.length <= 5) {
+            this.genresMaxAmount = false;
+          }
         }
       } else {
-        
-        if(this.profileGenres.length <= 4){
+        if (this.profileGenres.length <= 4) {
           selectedGenres.push(genre);
-          axios
-            .post("/api/add_genre", {
-              user_id: this.userID,
-              genre_id: genre.genre_id,
-            })
-        }else{
+          axios.post("/api/add_genre", {
+            user_id: this.userID,
+            genre_id: genre.genre_id,
+          });
+        } else {
           this.genresMaxAmount = true;
           setTimeout(() => {
             this.genresMaxAmount = false;
           }, 5000);
-
         }
-          
-          // .then((res) => {
-          //   console.log(res);
-          // });
+
+        // .then((res) => {
+        //   console.log(res);
+        // });
       }
     },
     submitShowForm() {
-
       axios
         .post("/api/add_show", {
           city: this.city,
@@ -762,15 +897,17 @@ export default {
         })
         .then((res) => {
           // console.log(res);
-          axios.get("/api/get_shows_for_profile/"+this.$route.params.profileURL).then((res) => {
-            this.profileShows = res.data;
-          });
-          if(res.data == "Show added"){
-              this.showAddedToast = true;
-              setTimeout(() => {
-                this.showAddedToast = false;
-              }, 3000)
-            }
+          axios
+            .get("/api/get_shows_for_profile/" + this.$route.params.profileURL)
+            .then((res) => {
+              this.profileShows = res.data;
+            });
+          if (res.data == "Show added") {
+            this.showAddedToast = true;
+            setTimeout(() => {
+              this.showAddedToast = false;
+            }, 3000);
+          }
         });
       this.day = "";
       this.month = "";
@@ -785,7 +922,7 @@ export default {
       this.fullListingVisible = !this.fullListingVisible;
     },
 
-    fullShowDetails(show){
+    fullShowDetails(show) {
       this.selectedFullShowListing = show;
       this.fullShowDetailsVisible = true;
       //console.log(show)
@@ -801,7 +938,7 @@ export default {
       this.editShowDialogVisible = true;
       this.showsDialogVisible = false;
     },
-    submitEditShowForm() { 
+    submitEditShowForm() {
       axios
         .post("/api/update_show", {
           id: this.selectedShow.id,
@@ -815,15 +952,17 @@ export default {
         })
         .then((res) => {
           //console.log(res);
-          axios.get("/api/get_shows_for_profile/"+this.$route.params.profileURL).then((res) => {
-            this.profileShows = res.data;
-          });
-          if(res.data == "Show updated"){
-              this.showUpdatedToast = true;
-              setTimeout(() => {
-                this.showUpdatedToast = false;
-              }, 3000)
-            }
+          axios
+            .get("/api/get_shows_for_profile/" + this.$route.params.profileURL)
+            .then((res) => {
+              this.profileShows = res.data;
+            });
+          if (res.data == "Show updated") {
+            this.showUpdatedToast = true;
+            setTimeout(() => {
+              this.showUpdatedToast = false;
+            }, 3000);
+          }
         });
       this.editShowDialogVisible = false;
     },
@@ -838,26 +977,32 @@ export default {
       //console.log(this.selectedShow)
     },
     confirmCancelShow() {
-      
       axios
-        .get("/api/cancel_show/"+this.selectedShow.id, {
-          id: this.selectedShow.id
+        .get("/api/cancel_show/" + this.selectedShow.id, {
+          id: this.selectedShow.id,
         })
         .then((res) => {
           //console.log(res);
-          axios.get("/api/get_shows_for_profile/"+this.$route.params.profileURL).then((res) => {
-            this.profileShows = res.data;
-          });
-          if(res.data == "Show cancelled"){
-              this.showCancelledToast = true;
-              setTimeout(() => {
-                this.showCancelledToast = false;
-              }, 3000)
-            }
+          axios
+            .get("/api/get_shows_for_profile/" + this.$route.params.profileURL)
+            .then((res) => {
+              this.profileShows = res.data;
+            });
+          if (res.data == "Show cancelled") {
+            this.showCancelledToast = true;
+            setTimeout(() => {
+              this.showCancelledToast = false;
+            }, 3000);
+          }
         });
-        this.cancelShowDialogVisible = false;
-        this.selectedShow = "";
-        this.selectedShowIndex = "";
+      this.cancelShowDialogVisible = false;
+      this.selectedShow = "";
+      this.selectedShowIndex = "";
+    },
+
+    submitBioForm(){
+     // console.log(this.profileBio);
+      this.bioDialogVisible = false;
     },
 
     uploadImage(event) {
@@ -878,39 +1023,33 @@ export default {
           //   "https://res.cloudinary.com/dgddraffq/image/upload/f_auto,q_auto:best,c_fill,g_faces/v1648123420/" +
           //   publicID +
           //   ".jpg";
-          this.profileImageURL =
-            "v1648123420/" +
-            publicID +
-            ".jpg";
+          this.profileImageURL = "v1648123420/" + publicID + ".jpg";
           this.$store.commit("setHeroImage", this.profileImageURL);
-           axios
-            .post("/api/add_image", {
-              url: this.profileImageURL,
-            })
-            // .then((res) => {
-            //   console.log(res);
-            //   //console.log(this.profileImageURL)
-            // });
+          axios.post("/api/add_image", {
+            url: this.profileImageURL,
+          });
+          // .then((res) => {
+          //   console.log(res);
+          //   //console.log(this.profileImageURL)
+          // });
         });
     },
 
     deleteHero() {
       this.profileImageURL = "";
-      axios
-        .get("/api/delete_image")
-        // .then((res) => {
-        //   console.log(res);
-        // });
+      axios.get("/api/delete_image");
+      // .then((res) => {
+      //   console.log(res);
+      // });
     },
-    deleteEmbed(){
+    deleteEmbed() {
       this.profilePlayerEmbed = "";
-      axios
-        .post("/api/unembed_url", {
-          url: '',
-        })
-        // .then((res) => {
-        //   console.log(res);
-        // });
+      axios.post("/api/unembed_url", {
+        url: "",
+      });
+      // .then((res) => {
+      //   console.log(res);
+      // });
     },
     selectedProfileGenres(genre) {
       for (let i = 0; i < this.profileGenres.length; i++) {
@@ -981,18 +1120,17 @@ export default {
       }
       return this.convertedMonthValue;
     },
-    printQRImage(){
-      document.body.classList.add('print-qr-page');
+    printQRImage() {
+      document.body.classList.add("print-qr-page");
       this.printQRPage = true;
       setTimeout(() => {
         window.print();
       }, 500);
-      
     },
-    closePrintQRImage(){
-      document.body.classList.remove('print-qr-page');
+    closePrintQRImage() {
+      document.body.classList.remove("print-qr-page");
       this.printQRPage = false;
-    }
+    },
   },
   computed: {
     profileShowsResults() {
@@ -1018,21 +1156,32 @@ export default {
       this.profileLocation = res.data.location;
       this.profileDataLoading = false;
 
-      if(this.$store.state.loggedIn && this.profileID == this.$store.state.userID){
-        this.$store.commit('setNewProfileLocation',res.data.location);
+      if (
+        this.$store.state.loggedIn &&
+        this.profileID == this.$store.state.userID
+      ) {
+        this.$store.commit("setNewProfileLocation", res.data.location);
       }
     });
-      axios.get("/api/get_genres_for_profile/"+url).then((res) => {
-        this.profileGenres = res.data;
-      });
-      this.profileShowsLoading = true;
-      axios.get("/api/get_shows_for_profile/"+url).then((res) => {
-
-        this.profileShows = res.data;
-        this.profileShowsLoading = false;
-      });
-      axios.get("http://api.qrserver.com/v1/create-qr-code/?data="+location.href+"&size=200x200").then(() => {
-       this.qrImage = "http://api.qrserver.com/v1/create-qr-code/?data="+location.href+"&size=200x200"
+    axios.get("/api/get_genres_for_profile/" + url).then((res) => {
+      this.profileGenres = res.data;
+    });
+    this.profileShowsLoading = true;
+    axios.get("/api/get_shows_for_profile/" + url).then((res) => {
+      this.profileShows = res.data;
+      this.profileShowsLoading = false;
+    });
+    axios
+      .get(
+        "http://api.qrserver.com/v1/create-qr-code/?data=" +
+          location.href +
+          "&size=200x200"
+      )
+      .then(() => {
+        this.qrImage =
+          "http://api.qrserver.com/v1/create-qr-code/?data=" +
+          location.href +
+          "&size=200x200";
       });
 
     axios.get("/api/get_genres").then((res) => {
@@ -1043,10 +1192,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.page-container{
+.page-container {
   padding-top: 0;
 
-  @media (min-width: $desktop){
+  @media (min-width: $desktop) {
     padding-top: $spacing-m;
   }
 }
@@ -1056,7 +1205,7 @@ export default {
   margin: 0 rem(-16) 0 rem(-16);
 
   @media (min-width: $desktop) {
-    margin:0;
+    margin: 0;
     width: 100%;
     display: grid;
     grid-template-columns: 5fr 7fr;
@@ -1074,7 +1223,7 @@ export default {
       justify-content: center;
     }
 
-    &-location{
+    &-location {
       margin-top: $spacing-xs;
       &:before {
         content: "\f3c5";
@@ -1092,7 +1241,6 @@ export default {
   }
 
   &__image-block {
-    
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1106,7 +1254,7 @@ export default {
       //max-height: rem(400);
     }
 
-    &--no-image{
+    &--no-image {
       background-color: $lightgrey;
     }
 
@@ -1126,9 +1274,9 @@ export default {
       vertical-align: bottom;
       object-fit: cover;
       @media (min-width: $desktop) {
-       border-top-right-radius: $border-radius-reg;
-       border-bottom-right-radius: $border-radius-reg;
-     }
+        border-top-right-radius: $border-radius-reg;
+        border-bottom-right-radius: $border-radius-reg;
+      }
     }
   }
 
@@ -1152,9 +1300,9 @@ export default {
     }
   }
 
-  .max-genres{
-    margin-top:$spacing-s;
-    margin-bottom:$spacing-s;
+  .max-genres {
+    margin-top: $spacing-s;
+    margin-bottom: $spacing-s;
   }
 
   .cta-secondary-reverse {
@@ -1257,7 +1405,8 @@ export default {
   }
 }
 
-.add-upcoming-shows {
+.add-upcoming-shows,
+.add-bio {
   background-color: $lightgrey;
   display: flex;
   justify-content: center;
@@ -1331,10 +1480,19 @@ export default {
   }
 }
 
-.upcoming-shows {
+.upcoming-shows,
+.bio {
   position: relative;
   margin-top: $spacing-m;
+}
 
+.bio + .upcoming-shows,
+.modal-dialog--add-bio + .upcoming-shows{
+  margin-top: $spacing-l;
+}
+
+.upcoming-shows{
+  
   .icon-button {
     position: absolute;
     top: 0;
@@ -1345,6 +1503,26 @@ export default {
     margin-top: $spacing-m;
   }
 }
+
+.bio{
+  padding: $spacing-s;
+  box-shadow: $box-shadow;
+
+  @media (min-width: $desktop) {
+    padding: $spacing-m;
+  }
+
+  .icon-button {
+    position: absolute;
+    top: $spacing-s;
+    right: $spacing-s;
+  }
+
+  p{
+    margin-top: $spacing-s;
+  }
+}
+
 
 dialog .cta--primary {
   margin: 2rem auto 0 auto;
@@ -1371,35 +1549,34 @@ dialog .cta--primary {
   }
 }
 
-.full-show-details{
-  &__info{
+.full-show-details {
+  &__info {
     display: block;
-    width:100%;
-    margin-top:$spacing-s;
+    width: 100%;
+    margin-top: $spacing-s;
     text-transform: capitalize;
 
-    &:first-of-type{
-      margin-top:$spacing-m;
+    &:first-of-type {
+      margin-top: $spacing-m;
     }
   }
 
-  &__cancelled{
+  &__cancelled {
     background-color: $rag-red;
-    color:#fff;
+    color: #fff;
     font-weight: bold;
     padding: $spacing-xs $spacing-l;
     width: 100%;
     text-align: center;
     display: block;
-    margin-top:$spacing-s;
+    margin-top: $spacing-s;
     border-radius: $border-radius-reg;
   }
 }
 
-
-.show-card__cancelled{
+.show-card__cancelled {
   background-color: $rag-red;
-  color:#fff;
+  color: #fff;
   position: absolute;
   font-size: $copy-mobile-xs;
   padding: $spacing-xxs $spacing-l;
@@ -1463,15 +1640,12 @@ dialog .cta--primary {
   content: "\f068";
 }
 
-
-
-
-.qr-section{
+.qr-section {
   text-align: center;
   max-width: rem(500);
   margin: $spacing-l auto 0 auto;
   padding: $spacing-m;
-  border-radius:$border-radius-reg;
+  border-radius: $border-radius-reg;
   color: #fff;
   background-color: $mid-grey;
 
@@ -1479,70 +1653,70 @@ dialog .cta--primary {
     margin: $spacing-xl auto 0 auto;
   }
 
-  img{
+  img {
     max-width: rem(150);
   }
 
-  h3{
+  h3 {
     margin-top: $spacing-m;
   }
 
-  p{
+  p {
     margin-top: $spacing-s;
   }
 
-  .cta{
-     margin-top: $spacing-m;
+  .cta {
+    margin-top: $spacing-m;
   }
 }
 
-.print-qr-page{
+.print-qr-page {
   header,
   footer,
   section,
   .profile-body,
   .qr-section h3,
   .qr-section p,
-  .disclaimer{
+  .disclaimer {
     display: none;
   }
 
-  .qr-section{
+  .qr-section {
     display: block;
     color: $copy;
     background-color: #fff;
   }
 
-  .qr-section .cta{
+  .qr-section .cta {
     display: block;
-    margin: $spacing-l  auto 0 auto;
+    margin: $spacing-l auto 0 auto;
   }
 
-  .qr-section__print-info{
-    h1{
-      margin-top:$spacing-m;
+  .qr-section__print-info {
+    h1 {
+      margin-top: $spacing-m;
       text-transform: capitalize;
     }
-    p{
+    p {
       display: block;
-      margin-top:$spacing-m;
+      margin-top: $spacing-m;
     }
 
-    img{
-      margin-top:$spacing-s;
+    img {
+      margin-top: $spacing-s;
       max-width: rem(200);
     }
   }
 }
 
-.disclaimer{
+.disclaimer {
   text-align: center;
   margin: $spacing-l auto 0 auto;
   max-width: rem(800);
 }
 
-@media print{
-  .print-qr-page{
+@media print {
+  .print-qr-page {
     header,
     footer,
     section,
@@ -1550,17 +1724,17 @@ dialog .cta--primary {
     .qr-section h3,
     .qr-section p,
     .qr-section .cta,
-    .disclaimer{
+    .disclaimer {
       display: none;
     }
 
-    .qr-section{
+    .qr-section {
       display: block;
     }
 
-    .qr-section__print-info p{
+    .qr-section__print-info p {
       display: block;
-      margin-top:$spacing-l;
+      margin-top: $spacing-l;
     }
   }
 }
