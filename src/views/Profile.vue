@@ -145,6 +145,7 @@
                 @click="hideSettingsDialog('Genres')"
                 buttonType="button"
                 mode="cta cta--primary"
+                :disabled="genresMaxAmount"
                 >Save</base-button
               >
             </base-dialog>
@@ -233,7 +234,7 @@
         </transition>
 
         <div>
-          <section class="bio" v-if="profileBio.length">
+          <section class="bio" v-if="confirmedBio.length">
             <h2>Bio</h2>
             <base-icon-button
               v-if="$store.state.loggedIn && userID == profileID"
@@ -242,7 +243,7 @@
               mode="icon-button icon-button--edit icon-button--round"
               ariaLabel="edit bio"
             ></base-icon-button>
-            <p>{{ profileBio }}</p>
+            <p>{{ confirmedBio }}</p>
           </section>
           <div
             class="add-bio"
@@ -262,6 +263,11 @@
               @closeDialog="hideSettingsDialog('Add Bio')"
             >
               <strong>Enter Bio Details</strong>
+              <transition name="error">
+                <p class="error-message max-characters" v-if="bioCharactersRemaining < 0">
+                  Maximum characters reached
+                </p>
+              </transition>
               <form @submit.prevent="submitBioForm">
                 <base-textarea
                   inputId="profileBio"
@@ -269,9 +275,9 @@
                   :isRequired="false"
                 >
                   <template #label>Bio</template>
-                  <template #helpertext>e.g. Details about you</template>
+                  <template #helpertext>Max of 350 characters.<span> ({{bioCharactersRemaining}} remaining)</span></template>
                 </base-textarea>
-                <base-button buttonType="submit" mode="cta cta--primary"
+                <base-button buttonType="submit" mode="cta cta--primary" :disabled="bioCharactersRemaining < 0"
                   >Save Bio</base-button
                 >
               </form>
@@ -733,6 +739,7 @@ export default {
       profilePlayerEmbed: "",
       profilePlayerURL: "",
       profileBio: "",
+      confirmedBio: "",
       allGenres: [],
       heroDialogVisible: false,
       genresDialogVisible: false,
@@ -1002,7 +1009,11 @@ export default {
 
     submitBioForm(){
      // console.log(this.profileBio);
-      this.bioDialogVisible = false;
+      
+      if(this.bioCharactersRemaining >= 0){
+        this.bioDialogVisible = false;
+        this.confirmedBio = this.profileBio;
+      }
     },
 
     uploadImage(event) {
@@ -1140,6 +1151,10 @@ export default {
         return this.profileShows;
       }
     },
+    bioCharactersRemaining(){
+      let charCount = this.profileBio.length, limit = 350;
+      return (limit - charCount)
+    }
   },
   directives: {
     clickOutside: vClickOutside.directive,
@@ -1521,6 +1536,10 @@ export default {
   p{
     margin-top: $spacing-s;
   }
+}
+
+.max-characters{
+  margin-top:$spacing-s;
 }
 
 

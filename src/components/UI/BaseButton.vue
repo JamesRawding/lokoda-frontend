@@ -31,4 +31,16 @@ export default {
       @include cta--warning; 
     }
   }
+
+  button:disabled,
+  button[disabled]{
+    opacity: .5;
+
+    &:focus,
+    &:hover{
+      border-color: $primary;
+      background-color: $primary;
+      color: $copy;
+    }
+  }
 </style>
