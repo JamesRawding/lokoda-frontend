@@ -660,12 +660,13 @@
             mode="icon-link icon-link--round"
             :to="link.url"
           >
+            <span class="sr-text">{{ link.name }} account</span>
             <span
               aria-hidden="true"
               class="fab"
               :class="'fa-' + link.name"
             ></span>
-            {{ link.name }} account
+            
           </base-icon-link>
         </div>
       </div>
@@ -1189,6 +1190,7 @@ export default {
     },
 
     submitSocialForm(){
+      this.profileSocialLinks = [];
       if(this.appleMusicLink !== ""){
        const apple = {
           id: "1",
@@ -1951,9 +1953,14 @@ dialog .cta--primary {
   }
 
   .icon-button{
-    top:$spacing-m;
-    right:$spacing-m;
+    top:$spacing-s;
+    right:$spacing-s;
     position: absolute;
+
+    @media(min-width:$desktop){
+      top:$spacing-m;
+      right:$spacing-m; 
+    }
   }
 
   h2 {
@@ -1961,7 +1968,7 @@ dialog .cta--primary {
     text-transform: capitalize;
   }
 
-  .icon-link span {
+  .icon-link .fab {
     text-indent: 0;
   }
 }

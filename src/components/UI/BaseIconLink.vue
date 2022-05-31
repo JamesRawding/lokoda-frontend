@@ -22,6 +22,7 @@ export default {
     color: $copy;
     position: relative;
     text-indent: -100000px;
+    //overflow: hidden;
     text-decoration: none;
 
     // &:before{
