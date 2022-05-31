@@ -161,7 +161,7 @@
           <a
             v-if="!$store.state.loggedIn"
             class="fallback-mailto"
-            :href="'mailto:' + profileEmail + 'subject=Lokoda Message'"
+            :href="'mailto:' + profileEmail + '?subject=New message from Lokoda&body=Hi '+profileName+', I have found your profile on Lokoda.'"
             >Get In Touch</a
           >
         </div>
@@ -264,7 +264,10 @@
             >
               <strong>Enter Bio Details</strong>
               <transition name="error">
-                <p class="error-message max-characters" v-if="bioCharactersRemaining < 0">
+                <p
+                  class="error-message max-characters"
+                  v-if="bioCharactersRemaining < 0"
+                >
                   Maximum characters reached
                 </p>
               </transition>
@@ -275,9 +278,16 @@
                   :isRequired="false"
                 >
                   <template #label>Bio</template>
-                  <template #helpertext>Max of 350 characters.<span> ({{bioCharactersRemaining}} remaining)</span></template>
+                  <template #helpertext
+                    >Max of 350 characters.<span>
+                      ({{ bioCharactersRemaining }} remaining)</span
+                    ></template
+                  >
                 </base-textarea>
-                <base-button buttonType="submit" mode="cta cta--primary" :disabled="bioCharactersRemaining < 0"
+                <base-button
+                  buttonType="submit"
+                  mode="cta cta--primary"
+                  :disabled="bioCharactersRemaining < 0"
                   >Save Bio</base-button
                 >
               </form>
@@ -631,6 +641,95 @@
           </transition>
         </div>
       </div>
+
+      <section class="social-block" v-if="profileSocialLinks.length > 0">
+        <base-icon-button
+          v-if="$store.state.loggedIn && userID == profileID"
+          @click="displaySettingsDialog('Add Social')"
+          buttonType="button"
+          mode="icon-button icon-button--edit icon-button--round"
+          ariaLabel="edit social links"
+        ></base-icon-button>
+      <div class="social-block__inner">
+        <h2 class="h3">Follow {{ profileName }} on:</h2>
+        
+        <div class="social-block__icon-container">
+          <base-icon-link
+            v-for="link in profileSocialLinks"
+            :key="link.name"
+            mode="icon-link icon-link--round"
+            :to="link.url"
+          >
+            <span
+              aria-hidden="true"
+              class="fab"
+              :class="'fa-' + link.name"
+            ></span>
+            {{ link.name }} account
+          </base-icon-link>
+        </div>
+      </div>
+    </section>
+    <div
+      class="add-social"
+      v-else-if="$store.state.loggedIn && userID == profileID"
+    >
+      <base-text-icon-button
+        @click="displaySettingsDialog('Add Social')"
+        buttonType="button"
+        mode="text-icon-button text-icon-button--plus"
+        >Add Social Links</base-text-icon-button
+      >
+    </div>
+
+    <transition>
+      <base-dialog
+        mode="modal-dialog modal-dialog--add-social-links"
+        v-if="socialDialogVisible"
+        @closeDialog="hideSettingsDialog('Add Social')"
+      >
+        <strong>Enter Social Links</strong>
+        <!-- <transition name="error">
+                <p class="error-message max-characters" v-if="bioCharactersRemaining < 0">
+                  Maximum characters reached
+                </p>
+              </transition> -->
+        <form @submit.prevent="submitSocialForm">
+          <base-input inputId="appleMusicLink" inputType="url" v-model="appleMusicLink">
+            <template #label>Apple Music</template>
+          </base-input>
+          <base-input inputId="bandcampLink" inputType="url" v-model="bandcampLink">
+            <template #label>Bandcamp</template>
+          </base-input>
+          <base-input inputId="deezerLink" inputType="url" v-model="deezerLink">
+            <template #label>Deezer</template>
+          </base-input>
+          <base-input inputId="spotifyLink" inputType="url" v-model="spotifyLink">
+            <template #label>Spotify</template>
+          </base-input>
+          <base-input inputId="youtubeLink" inputType="url" v-model="youtubeLink">
+            <template #label>Youtube</template>
+          </base-input>
+          <base-input inputId="tiktokLink" inputType="url" v-model="tiktokLink">
+            <template #label>TikTok</template>
+          </base-input>
+          <base-input inputId="instagramLink" inputType="url" v-model="instagramLink">
+            <template #label>Instagram</template>
+          </base-input>
+          <base-input inputId="twitterLink" inputType="url" v-model="twitterLink">
+            <template #label>Twitter</template>
+          </base-input>
+          <base-input inputId="facebookLink" inputType="url" v-model="facebookLink">
+            <template #label>Facebook</template>
+          </base-input>
+          <base-button buttonType="submit" mode="cta cta--primary"
+            >Save Social Links</base-button
+          >
+        </form>
+      </base-dialog>
+    </transition>
+
+
       <section
         class="qr-section"
         v-if="$store.state.loggedIn && userID == profileID"
@@ -686,6 +785,7 @@
         >Show cancelled</span
       >
     </main>
+
     <the-footer></the-footer>
   </div>
 </template>
@@ -700,6 +800,7 @@ import BaseDialog from "../components/UI/BaseDialog.vue";
 import ChooseFileButton from "../components/UI/ChooseFileButton.vue";
 import BaseButton from "../components/UI/BaseButton.vue";
 import BaseIconButton from "../components/UI/BaseIconButton.vue";
+import BaseIconLink from "../components/UI/BaseIconLink.vue";
 import BasePill from "../components/UI/BasePill.vue";
 import BasePillButton from "../components/UI/BasePillButton.vue";
 import BaseInput from "../components/UI/BaseInput.vue";
@@ -714,6 +815,7 @@ export default {
     ChooseFileButton,
     BaseButton,
     BaseIconButton,
+    BaseIconLink,
     BasePill,
     BasePillButton,
     BaseInput,
@@ -749,6 +851,7 @@ export default {
       addShowDialogVisible: false,
       bioDialogVisible: false,
       editShowDialogVisible: false,
+      socialDialogVisible: false,
       fullListingVisible: false,
       fullShowDetailsVisible: false,
       selectedShow: [],
@@ -768,6 +871,69 @@ export default {
       showCancelledToast: false,
       genresMaxAmount: false,
       playerEmbedError: false,
+
+      profileSocialLinks: [
+        // {
+        //   id:"1",
+        //   name: "apple",
+        //   url: "https://google.com"
+        // },
+        // {
+        //   id:"2",
+        //   name: "bandcamp",
+        //   url: "https://bandcamp.com"
+        // },
+        // {
+        //   id:"3",
+        //   name: "spotify",
+        //   url: "https://bandcamp.com"
+        // },
+        // {
+        //   id:"4",
+        //   name: "deezer",
+        //   url: "https://bandcamp.com"
+        // },
+        // {
+        //   id:"5",
+        //   name: "youtube",
+        //   url: "https://bandcamp.com"
+        // },
+        // {
+        //   id:"6",
+        //   name: "soundcloud",
+        //   url: "https://bandcamp.com"
+        // },
+        // {
+        //   id:"7",
+        //   name: "tiktok",
+        //   url: "https://bandcamp.com"
+        // },
+        // {
+        //   id:"8",
+        //   name: "instagram",
+        //   url: "https://bandcamp.com"
+        // },
+        // {
+        //   id:"9",
+        //   name: "twitter",
+        //   url: "https://bandcamp.com"
+        // },
+        // {
+        //   id:"10",
+        //   name: "facebook-f",
+        //   url: "https://bandcamp.com"
+        // },
+      ],
+      appleMusicLink: "",
+      bandcampLink:"",
+      spotifyLink:"",
+      deezerLink:"",
+      youtubeLink:"",
+      soundcloudLink:"",
+      tiktokLink:"",
+      instagramLink:"",
+      twitterLink:"",
+      facebookLink:"",
     };
   },
   methods: {
@@ -798,6 +964,9 @@ export default {
       if (evt == "Add Show") {
         this.addShowDialogVisible = true;
         this.showsDialogVisible = false;
+      }
+      if (evt == "Add Social") {
+        this.socialDialogVisible = true;
       }
     },
     hideSettingsDialog(evt) {
@@ -842,6 +1011,9 @@ export default {
       }
       if (evt == "Add Bio") {
         this.bioDialogVisible = false;
+      }
+      if (evt == "Add Social") {
+        this.socialDialogVisible = false;
       }
       if (evt == "Edit Show") {
         this.editShowDialogVisible = false;
@@ -1007,13 +1179,99 @@ export default {
       this.selectedShowIndex = "";
     },
 
-    submitBioForm(){
-     // console.log(this.profileBio);
-      
-      if(this.bioCharactersRemaining >= 0){
+    submitBioForm() {
+      // console.log(this.profileBio);
+
+      if (this.bioCharactersRemaining >= 0) {
         this.bioDialogVisible = false;
         this.confirmedBio = this.profileBio;
       }
+    },
+
+    submitSocialForm(){
+      if(this.appleMusicLink !== ""){
+       const apple = {
+          id: "1",
+          name: "apple",
+          url: this.appleMusicLink
+        }
+        this.profileSocialLinks.push(apple);
+      }
+      if(this.bandcampLink !== ""){
+       const bandcamp = {
+          id: "2",
+          name: "bandcamp",
+          url: this.bandcampLink
+        }
+        this.profileSocialLinks.push(bandcamp);
+      }
+      if(this.spotifyLink !== ""){
+       const spotify = {
+          id: "3",
+          name: "spotify",
+          url: this.spotifyLink
+        }
+        this.profileSocialLinks.push(spotify);
+      }
+      if(this.deezerLink !== ""){
+       const deezer = {
+          id: "4",
+          name: "deezer",
+          url: this.deezerLink
+        }
+        this.profileSocialLinks.push(deezer);
+      }
+      if(this.soundcloudLink !== ""){
+       const soundcloud = {
+          id: "5",
+          name: "soundcloud",
+          url: this.soundcloudLink
+        }
+        this.profileSocialLinks.push(soundcloud);
+      }
+
+      if(this.youtubeLink !== ""){
+       const youtube = {
+          id: "6",
+          name: "youtube",
+          url: this.youtubeLink
+        }
+        this.profileSocialLinks.push(youtube);
+      }
+      if(this.tiktokLink !== ""){
+       const tiktok = {
+          id: "7",
+          name: "tiktok",
+          url: this.tiktokLink
+        }
+        this.profileSocialLinks.push(tiktok);
+      }
+      if(this.instagramLink !== ""){
+       const instagram = {
+          id: "8",
+          name: "instagram",
+          url: this.instagramLink
+        }
+        this.profileSocialLinks.push(instagram);
+      }
+      if(this.twitterLink !== ""){
+       const twitter = {
+          id: "9",
+          name: "twitter",
+          url: this.twitterLink
+        }
+        this.profileSocialLinks.push(twitter);
+      }
+      if(this.facebookLink !== ""){
+       const facebook = {
+          id: "10",
+          name: "facebook-f",
+          url: this.facebookLink
+        }
+        this.profileSocialLinks.push(facebook);
+      }
+      
+      this.socialDialogVisible = false;
     },
 
     uploadImage(event) {
@@ -1151,10 +1409,11 @@ export default {
         return this.profileShows;
       }
     },
-    bioCharactersRemaining(){
-      let charCount = this.profileBio.length, limit = 350;
-      return (limit - charCount)
-    }
+    bioCharactersRemaining() {
+      let charCount = this.profileBio.length,
+        limit = 350;
+      return limit - charCount;
+    },
   },
   directives: {
     clickOutside: vClickOutside.directive,
@@ -1411,6 +1670,7 @@ export default {
   //z-index: -1;
   @media (min-width: $desktop) {
     order: 2;
+    padding-bottom: 0;
   }
 
   .icon-button {
@@ -1421,7 +1681,8 @@ export default {
 }
 
 .add-upcoming-shows,
-.add-bio {
+.add-bio,
+.add-social {
   background-color: $lightgrey;
   display: flex;
   justify-content: center;
@@ -1501,13 +1762,15 @@ export default {
   margin-top: $spacing-m;
 }
 
-.bio + .upcoming-shows,
-.modal-dialog--add-bio + .upcoming-shows{
+.modal-dialog--add-bio + .upcoming-shows {
+  margin-top: $spacing-m;
+}
+
+.bio + .upcoming-shows{
   margin-top: $spacing-l;
 }
 
-.upcoming-shows{
-  
+.upcoming-shows {
   .icon-button {
     position: absolute;
     top: 0;
@@ -1519,7 +1782,7 @@ export default {
   }
 }
 
-.bio{
+.bio {
   padding: $spacing-s;
   box-shadow: $box-shadow;
 
@@ -1533,15 +1796,14 @@ export default {
     right: $spacing-s;
   }
 
-  p{
+  p {
     margin-top: $spacing-s;
   }
 }
 
-.max-characters{
-  margin-top:$spacing-s;
+.max-characters {
+  margin-top: $spacing-s;
 }
-
 
 dialog .cta--primary {
   margin: 2rem auto 0 auto;
@@ -1657,6 +1919,51 @@ dialog .cta--primary {
 
 .pill-button--selected:before {
   content: "\f068";
+}
+
+.social-block {
+  background-color: $mid-grey;
+  text-align: center;
+  margin-top:$spacing-l;
+  position: relative;
+  border-radius: $border-radius-reg;
+
+  &__inner {
+    max-width: rem(1200);
+    margin: 0 auto;
+    width: 100%;
+    padding: $spacing-l $spacing-s rem(48) $spacing-s;
+
+    @media (min-width: $desktop) {
+      padding: $spacing-l $spacing-m rem(48) $spacing-m;
+    }
+  }
+
+  &__icon-container {
+    margin-top: $spacing-m;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    a {
+      margin: $spacing-s;
+    }
+  }
+
+  .icon-button{
+    top:$spacing-m;
+    right:$spacing-m;
+    position: absolute;
+  }
+
+  h2 {
+    color: #fff;
+    text-transform: capitalize;
+  }
+
+  .icon-link span {
+    text-indent: 0;
+  }
 }
 
 .qr-section {

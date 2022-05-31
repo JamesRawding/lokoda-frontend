@@ -145,13 +145,18 @@ p{
 h1,
 h2,
 h3,
-h4{
+h4,
+.h1,
+.h2,
+.h3,
+.h4{
   color: inherit;
   font-weight: bold;
   line-height: $heading-line-height;
 }
 
-h1{
+h1,
+.h1{
   font-size: $copy-mobile-xl;
 
   @media(min-width:$desktop){
@@ -159,7 +164,8 @@ h1{
   }
 }
 
-h2{
+h2,
+.h2{
   font-size: $copy-mobile-l;
 
   @media(min-width:$desktop){
@@ -167,7 +173,8 @@ h2{
   }
 }
 
-h3{
+h3,
+.h3{
   font-size: $copy-mobile-m;
 
   @media(min-width:$desktop){

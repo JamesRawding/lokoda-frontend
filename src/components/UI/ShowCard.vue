@@ -80,11 +80,13 @@ export default {
       display: flex;
       flex-direction: column;
       align-items: center;
-      width:rem(58);
+      width:rem(60);
+      flex: 0 0 rem(60);
       padding:$spacing-xxs;
 
       @media(min-width:$desktop){
         width:rem(66);
+        flex: 0 0 rem(66);
       }
     }
 
@@ -117,12 +119,12 @@ export default {
     &__location{
       display: flex;
       flex-direction: column;
-      flex: 1 0 auto;
-      padding:0 $spacing-s;
+      padding:$spacing-s;
       text-transform: capitalize;
 
       @media(min-width:$desktop){
         padding:0 $spacing-m;
+        flex: 1 0 auto;
       }
     }
 
