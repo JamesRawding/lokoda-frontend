@@ -2,8 +2,8 @@
   <header>
     <div class="header-inner">
     <div class="header-left">
-      <router-link class="logo-link" v-if="$store.state.loggedIn" :to="'/profile/'+this.$store.state.userID"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
-      <router-link class="logo-link" v-else to="/"><img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">Discover</span></router-link>
+      <router-link class="logo-link" v-if="$store.state.loggedIn" :to="'/profile/'+this.$store.state.userID"><img width="180" height="34" src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">user profile</span></router-link>
+      <router-link class="logo-link" v-else to="/"><img width="180" height="34" src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo_izjrxu.svg" alt="lokoda logo"><span class="sr-only">Discover</span></router-link>
       <router-link class="cta cta--primary" v-if="!$store.state.loggedIn" to="/registration">Register</router-link>
     </div>
     <div class="header-nav-items">

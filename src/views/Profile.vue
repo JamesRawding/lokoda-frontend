@@ -11,15 +11,17 @@
       <section class="hero-section">
         <div
           class="hero-section__image-block"
-          :class="{ 'hero-section__image-block--no-image': !profileImageURL }"
-        >
+          :class="{ 'hero-section__image-block--no-image': !profileImageURL }">
+      
           <div class="hero-section__image-container" v-if="profileImageURL">
-            <!-- <img :src="profileImageURL" :alt="profileName + ' profile image'" /> -->
+            
             <img
               :src="
                 'https://res.cloudinary.com/dgddraffq/image/upload/w_660,h_400,c_limit,f_auto,q_auto:best,c_fill,g_faces/' +
                 profileImageURL
               "
+              width="660"
+              height="400"
               :alt="profileName + ' profile image'"
               rel="preload"
             />
@@ -1424,10 +1426,10 @@ export default {
     const url = this.$route.params.profileURL;
     this.profileDataLoading = true;
     axios.get("/api/profile/" + url).then((res) => {
+      this.profileImageURL = res.data.image_url;
       this.profileID = res.data.id;
       this.profileName = res.data.name;
       this.profileEmail = res.data.email;
-      this.profileImageURL = res.data.image_url;
       this.profilePlayerURL = res.data.embed_url;
       this.profileLocation = res.data.location;
       this.profileDataLoading = false;

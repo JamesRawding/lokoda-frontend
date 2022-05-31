@@ -16,7 +16,7 @@
       <base-button :class="{'segmented-control--active': promotersVisible}" mode="cta cta--secondary" buttonType="button" @click="showResultType('promoter')">Promoters</base-button>
     </div>
 
-
+  
    <transition name="fade" mode="out-in">
     <div v-if="artistsVisible">
       <div class="results-header">
@@ -27,9 +27,19 @@
         </div>
       </div>
       <div class="grid-parent">
-        <base-card v-for="band in alphabetisedBandResults" :key="band.id">
-          <img v-if="band.image_url !== null " class="lazyload"  :data-src="'https://res.cloudinary.com/dgddraffq/image/upload/w_450,h_250,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+band.image_url" :alt="band.name + ' profile image'">
-          <img v-else class="lazyload" data-src="https://res.cloudinary.com/dgddraffq/image/upload/v1652190684/result-fallback-image_huueaz.jpg" alt="" rel="preload">
+        <base-card v-for="band in alphabetisedBandResults.slice(0, 3)" :key="band.id">
+          <img v-if="band.image_url == null " width="450" height="250" src="https://res.cloudinary.com/dgddraffq/image/upload/c_limit,f_auto,q_auto:best/v1652190684/result-fallback-image_huueaz.jpg" alt="" rel="preload">
+          <img v-else width="450" height="250" :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_450,h_250,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+band.image_url" :alt="band.name + ' profile image'">
+
+          <router-link :to="'/profile/' + band.id"><h3>{{band.name}}</h3></router-link>
+          <span class="location">{{band.location}}</span>
+          <base-pill v-for="genre in band.genres" :key="genre + band.name">
+            {{genre.genre}}
+          </base-pill>
+        </base-card>
+        <base-card v-for="band in alphabetisedBandResults.slice(3)" :key="band.id">
+          <img v-if="band.image_url !== null " class="lazyload" width="450" height="250" :data-src="'https://res.cloudinary.com/dgddraffq/image/upload/w_450,h_250,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+band.image_url" :alt="band.name + ' profile image'">
+          <img v-else class="lazyload" width="450" height="250" data-src="https://res.cloudinary.com/dgddraffq/image/upload/c_limit,f_auto,q_auto:best/v1652190684/result-fallback-image_huueaz.jpg" alt="" rel="preload">
           <router-link :to="'/profile/' + band.id"><h3>{{band.name}}</h3></router-link>
           <span class="location">{{band.location}}</span>
           <base-pill v-for="genre in band.genres" :key="genre + band.name">
@@ -52,8 +62,8 @@
       </div>
       <div class="grid-parent">
         <base-card v-for="promoter in alphabetisedPromoterResults" :key='promoter.id'>
-          <img v-if="promoter.image_url !== null " class="lazyload" :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_450,h_250,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+promoter.image_url" :alt="promoter.name + ' profile image'">
-          <img v-else class="lazyload" src="https://res.cloudinary.com/dgddraffq/image/upload/v1652190684/result-fallback-image_huueaz.jpg" alt="" rel="preload">
+          <img v-if="promoter.image_url !== null " class="lazyload" width="450" height="250" :data-src="'https://res.cloudinary.com/dgddraffq/image/upload/w_450,h_250,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+promoter.image_url" :alt="promoter.name + ' profile image'">
+          <img v-else class="lazyload" width="450" height="250" data-src="https://res.cloudinary.com/dgddraffq/image/upload/c_limit,f_auto,q_auto:best/v1652190684/result-fallback-image_huueaz.jpg" alt="" rel="preload">
           <router-link :to="'/profile/' + promoter.id"><h3>{{promoter.name}}</h3></router-link>
           <span class="location">{{promoter.location}}</span>
           <base-pill v-for="genre in promoter.genres" :key="genre + promoter.name">
