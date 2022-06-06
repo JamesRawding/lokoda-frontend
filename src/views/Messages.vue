@@ -607,7 +607,7 @@ export default {
           messageSenderName: this.thisUserName,
           messageTime: currentTime,
           messageDate: currentDayMonth,
-          message: this.thisUserNewMessage
+          message: this.thisUserNewMessage,
         });
         latestMessageInfo.latestMessage = this.thisUserNewMessage;
         latestMessageInfo.latestMessageDate = currentDayMonth;
@@ -665,7 +665,9 @@ export default {
           messageID: chosenContact.contactID,
           messageRecipientNames: [chosenContact.contactName],
           recipientMessages:[],
-          messageActive: true
+          messageActive: true,
+          messageRecipientIDs: [this.thisUserID,chosenContact.contactID]
+
         });
       }
     },
@@ -699,7 +701,10 @@ export default {
           if (a > b)
               return 1;
           return 0;
-        });    
+        }); 
+        
+        const groupRecipientIDs = groupContactsIDs;
+        groupRecipientIDs.push(this.thisUserID);
         this.groupContactsListVisible = false;
         this.newGroupMessage = true;
         this.messagesListVisible = true;
@@ -710,7 +715,8 @@ export default {
           messageID: groupContactsIDs.join('-'),
           messageRecipientNames: groupContacts,
           recipientMessages:[],
-          messageActive: true
+          messageActive: true,
+          messageRecipientIDs: groupRecipientIDs
         });
       }
     },
@@ -919,6 +925,7 @@ export default {
     },
 
     latestMessages(){
+      console.log(this.messages)
       let timeStampedMessages = this.messages
 
       if(this.searchMessageValue){
