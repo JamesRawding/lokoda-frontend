@@ -1,7 +1,7 @@
 // vue.config.js
 module.exports = {
   devServer: {
-      proxy: 'http://lokoda.co.uk'
+      proxy: 'https://lokoda.co.uk'
   },
   css: {
     loaderOptions: {

@@ -1451,13 +1451,13 @@ export default {
     });
     axios
       .get(
-        "http://api.qrserver.com/v1/create-qr-code/?data=" +
+        "https://api.qrserver.com/v1/create-qr-code/?data=" +
           location.href +
           "&size=200x200"
       )
       .then(() => {
         this.qrImage =
-          "http://api.qrserver.com/v1/create-qr-code/?data=" +
+          "https://api.qrserver.com/v1/create-qr-code/?data=" +
           location.href +
           "&size=200x200";
       });
