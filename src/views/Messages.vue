@@ -235,13 +235,6 @@
       </div>
 
       <div class="group-chat-start" v-if="groupChatContacts.length > 0">
-        <span v-if="groupChatContacts.length === 1">{{groupChatCount}} contact selected</span>
-        <span v-else>{{groupChatCount}} contacts selected</span>
-        <ul class="group-chat-start__list">
-          <li class="group-chat-start__list-item" v-for="contact in groupChatContacts" :key="contact.contactID">
-            <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.contactName + ' profile image'">
-          </li>
-        </ul>
         <base-input
           inputId="groupName"
           inputType="text"
@@ -251,6 +244,14 @@
           <template #label>Group Subject</template>
         </base-input>
         <base-button :disabled="!groupChatName" @click="startGroupChat(groupChatContactsIDs)"  role="button" mode="cta cta--primary">Start Group Chat</base-button>
+        <hr>
+        <span v-if="groupChatContacts.length === 1">{{groupChatCount}} contact selected</span>
+        <span v-else>{{groupChatCount}} contacts selected</span>
+        <ul class="group-chat-start__list">
+          <li class="group-chat-start__list-item" v-for="contact in groupChatContacts" :key="contact.contactID">
+            <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.contactName + ' profile image'">
+          </li>
+        </ul>
       </div>
 
       <section v-if="newGroupMessage" class="active-messages active-messages--new">
@@ -634,6 +635,7 @@ export default {
       this.groupChatContacts = [];
       this.groupChatContactsIDs = [];
       this.groupChatCount = 0;
+      this.groupChatName = '';
       this.messageID = '';
       this.messageRecipientNames = [],
       this.messageRecipientIDs = [],
@@ -696,6 +698,7 @@ export default {
         this.groupChatContacts = [];
         this.groupChatContactsIDs = [];
         this.groupChatCount = 0;
+        this.groupChatName = '';
       }else{
         const groupContacts = [];
         const groupContactsIDs = [];
@@ -756,9 +759,10 @@ export default {
       this.newGroupMessage = false;
       this.groupContactsListVisible = true;
       this.cancelActiveMessage();
-      this.groupChatContacts = []
-      this.groupChatContactsIDs = []
-      this.groupChatCount = 0
+      this.groupChatContacts = [];
+      this.groupChatContactsIDs = [];
+      this.groupChatCount = 0;
+      this.groupChatName = '';
     },
     showMessagesOptions(){
       this.isMessagesOptionsDisplayed = true;
@@ -1608,6 +1612,20 @@ export default {
 
     .cta{
       margin-top: $spacing-s;
+    }
+  }
+
+  .group-chat-start{
+    .input-container{
+      margin-top:0;
+    }
+
+    hr{
+      width: 100%;
+      height: rem(1);
+      border: none;
+      background-color: $lightgrey;
+      margin: $spacing-m 0;
     }
   }
 </style>
