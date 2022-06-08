@@ -13,12 +13,12 @@
             <transition>
             <base-dialog  @closeDialog="hideMessagesOptions" v-if="isMessagesOptionsDisplayed">
               <strong>Message Options</strong>
-              <base-text-icon-button @click="selectMessagesToDelete" mode="text-icon-button text-icon-button--trash">Delete Messages</base-text-icon-button>
+              <base-text-icon-button @click="selectMessagesToDelete" mode="text-icon-button text-icon-button--trash">Delete Chat</base-text-icon-button>
             </base-dialog>
             </transition>
           </div>
         </div>
-        <search-bar @searched="searchMessages" v-if="messages.length > 0" searchId="searchMessages" ariaLabel="search messages" searchPlaceholder="Search Messages"></search-bar>
+        <!-- <search-bar @searched="searchMessages" v-if="messages.length > 0" searchId="searchMessages" ariaLabel="search messages" searchPlaceholder="Search Messages"></search-bar> -->
         <div>
           <ul v-if="!messagesToDelete" class="messages-list">
             <li 
@@ -242,7 +242,15 @@
             <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.contactName + ' profile image'">
           </li>
         </ul>
-        <base-button @click="startGroupChat(groupChatContactsIDs)"  role="button" mode="cta cta--primary">Start Group Chat</base-button>
+        <base-input
+          inputId="groupName"
+          inputType="text"
+          v-model="groupChatName"
+          :isRequired="true"
+        >
+          <template #label>Group Subject</template>
+        </base-input>
+        <base-button :disabled="!groupChatName" @click="startGroupChat(groupChatContactsIDs)"  role="button" mode="cta cta--primary">Start Group Chat</base-button>
       </div>
 
       <section v-if="newGroupMessage" class="active-messages active-messages--new">
@@ -289,7 +297,7 @@
           <strong>Message Options</strong>
           <base-text-icon-button v-if="messageRecipientNames.length > 1" @click="leaveGroup" mode="text-icon-button text-icon-button--logout">Leave Group</base-text-icon-button>
           <base-text-icon-button v-else @click="blockSender" mode="text-icon-button text-icon-button--block">Block Sender</base-text-icon-button>
-          <base-text-icon-button @click="deleteActiveMessage" mode="text-icon-button text-icon-button--trash">Delete Message</base-text-icon-button>
+          <base-text-icon-button @click="deleteActiveMessage" mode="text-icon-button text-icon-button--trash">Delete Chat</base-text-icon-button>
         </base-dialog>
         </transition>
         <ul class="active-messages__messages-list">
@@ -318,6 +326,7 @@ import BaseTextIconButton from '../components/UI/BaseTextIconButton.vue';
 import BaseIconButton from '../components/UI/BaseIconButton.vue';
 import NewMessageInput from '../components/UI/NewMessageInput.vue';
 import SearchBar from '../components/UI/SearchBar.vue';
+import BaseInput from '../components/UI/BaseInput.vue';
 import BaseDialog from '../components/UI/BaseDialog.vue';
 
 export default {
@@ -327,13 +336,14 @@ export default {
     BaseTextIconButton,
     BaseIconButton,
     SearchBar,
+    BaseInput,
     NewMessageInput,
     BaseDialog
   },
   props:['profileID'],
   data(){
     return{ 
-      searchMessageValue: '',
+      // searchMessageValue: '',
       searchContactValue: '',
       messagesListVisible: true,
       messagesSelected: false,
@@ -352,6 +362,7 @@ export default {
       groupChatContactsIDs:[],
       //the above is very hacky
       groupChatCount: 0,
+      groupChatName: "",
       newGroupMessage: false,
       isMessagesOptionsDisplayed: false,
       messagesToDelete: false,
@@ -910,9 +921,9 @@ export default {
       
     },
 
-    searchMessages(val){
-      this.searchMessageValue = val;
-    },
+    // searchMessages(val){
+    //   this.searchMessageValue = val;
+    // },
     searchContacts(val){
       this.searchContactValue = val;
     }
