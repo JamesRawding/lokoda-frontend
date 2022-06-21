@@ -22,40 +22,45 @@
         <div>
           <ul v-if="!messagesToDelete" class="messages-list">
             <li 
-            @click="selectedMessage(messageThread.messageID)" 
-            @keypress.enter="selectedMessage(messageThread.messageID)" 
+            @click="selectedMessage(messageThread.id)" 
+            @keypress.enter="selectedMessage(messageThread.id)" 
             class="messages-list__item" 
             :class="{'messages-list__item--active': messageThread.messageActive}" 
             v-for="messageThread in latestMessages" 
-            :key="messageThread.messageID" 
+            :key="messageThread.id" 
             tabindex="0" 
             role="button">
               <div class="messages-list__item-img">
                 <img src="../assets/images/dummy-profile-pic.jpg" alt="">
               </div>
               <div class="messages-list__item-details">
-                <h2 class="messages-list__item-name"><span v-for="recipientName in messageThread.messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h2>
-                <p class="messages-list__item-preview">{{messageThread.latestMessage}}</p>
+                <!-- <h2 class="messages-list__item-name"><span v-for="recipientName in messageThread.messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h2> -->
+                <h2 class="messages-list__item-name">{{messageThread.name}}</h2>
+                <!-- <p class="messages-list__item-preview">{{messageThread.latestMessage}}</p> -->
+                <p class="messages-list__item-preview">{{messageThread.last_message}}</p>
+
               </div>
               <span class="messages-list__item-date">{{messageThread.latestMessageDate}}</span>
             </li>
           </ul>
           <ul v-else class="messages-list">
             <li
-            @click="messageForDeletion(messageThread.messageID)" 
-            @keypress.enter="messageForDeletion(messageThread.messageID)" 
+            @click="messageForDeletion(messageThread.id)" 
+            @keypress.enter="messageForDeletion(messageThread.id)" 
             class="messages-list__item" 
             :class="{'messages-list__item--active': messageThread.messageActive}" 
             v-for="messageThread in latestMessages" 
-            :key="messageThread.messageID" 
+            :key="messageThread.id" 
             tabindex="0" 
             role="button">
               <div class="messages-list__item-img">
                 <img src="../assets/images/dummy-profile-pic.jpg" alt="">
               </div>
               <div class="messages-list__item-details">
-                <h2 class="messages-list__item-name"><span v-for="recipientName in messageThread.messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h2>
-                <p class="messages-list__item-preview">{{messageThread.latestMessage}}</p>
+                <!-- <h2 class="messages-list__item-name"><span v-for="recipientName in messageThread.messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h2> -->
+                <h2 class="messages-list__item-name">{{messageThread.name}}</h2>
+                <!-- <p class="messages-list__item-preview">{{messageThread.latestMessage}}</p> -->
+                <p class="messages-list__item-preview">{{messageThread.last_message}}</p>
               </div>
               <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="deleteMessagesIDs.includes(messageThread.messageID)"></div>
               <div class="group-contacts-list__item-checked-status" v-else></div>
@@ -288,7 +293,8 @@
       <section v-if="messagesSelected" class="active-messages">
         <div class="active-messages__header">
           <base-icon-button @click="closeMessage" buttonType="button" mode="icon-button icon-button--back" ariaLabel="close message"></base-icon-button>
-          <h3 class="messages-list__item-name"><span v-for="recipientName in messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h3>
+          <!-- <h3 class="messages-list__item-name"><span v-for="recipientName in messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h3> -->
+          <h3 class="messages-list__item-name">{{chatName}}</h3>
 
           <base-icon-button @click="manageActiveMessage" buttonType="button" mode="icon-button icon-button--ellipsis" ariaLabel="more options"></base-icon-button>
           
@@ -302,12 +308,19 @@
         </base-dialog>
         </transition>
         <ul class="active-messages__messages-list">
-          <li 
+          <!-- <li 
             v-for="messages in activeMessages" :key="messages.messageTime + messages.messageDate" 
-            :class="['active-messages__message', (thisUserID === messages.messageSenderID ? 'active-messages__message--user' : 'active-messages__message--recipient'),(messages.doubleMessage ? 'active-messages__message--double' : ''),(messages.messageSenderID === 'memberLeftGroup' ? 'active-messages__message--member-left' : ''),(messages.messageSenderID === 'dateSent' ? 'active-messages__message--date-sent' : '')]">
+            :class="['active-messages__message', (thisUserID === messages.user_id ? 'active-messages__message--user' : 'active-messages__message--recipient'),(messages.doubleMessage ? 'active-messages__message--double' : ''),(messages.messageSenderID === 'memberLeftGroup' ? 'active-messages__message--member-left' : ''),(messages.messageSenderID === 'dateSent' ? 'active-messages__message--date-sent' : '')]">
             <span class="active-messages__message-sender">{{messages.messageSenderName}}</span>
             <span class="active-messages__message-copy">{{messages.message}}</span>
             <span class="active-messages__message-time">{{messages.messageTime}}</span>
+          </li> -->
+          <li 
+            v-for="message in selectedMessagesArray.slice().reverse()" :key="message.id" 
+            :class="['active-messages__message', (thisUserID === message.user_id ? 'active-messages__message--user' : 'active-messages__message--recipient'),(messages.doubleMessage ? 'active-messages__message--double' : ''),(messages.messageSenderID === 'memberLeftGroup' ? 'active-messages__message--member-left' : ''),(messages.messageSenderID === 'dateSent' ? 'active-messages__message--date-sent' : '')]">
+            <span class="active-messages__message-sender">{{message.user_id}}</span>
+            <span class="active-messages__message-copy">{{message.message}}</span>
+            <span class="active-messages__message-time">{{message.created_at}}</span>
           </li>
         </ul>
         <div class="new-message-input-container">
@@ -317,11 +330,14 @@
     </div>
     
   </main>
+  <the-footer></the-footer>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 import TheHeader from '../components/layouts/TheHeader.vue';
+import TheFooter from '../components/layouts/TheFooter.vue';
 import BaseButton from '../components/UI/BaseButton.vue';
 import BaseTextIconButton from '../components/UI/BaseTextIconButton.vue';
 import BaseIconButton from '../components/UI/BaseIconButton.vue';
@@ -333,6 +349,7 @@ import BaseDialog from '../components/UI/BaseDialog.vue';
 export default {
   components:{
     TheHeader,
+    TheFooter,
     BaseButton,
     BaseTextIconButton,
     BaseIconButton,
@@ -344,7 +361,7 @@ export default {
   props:['profileID'],
   data(){
     return{ 
-      // searchMessageValue: '',
+      searchMessageValue: '',
       searchContactValue: '',
       messagesListVisible: true,
       messagesSelected: false,
@@ -357,6 +374,8 @@ export default {
       messageID: '',
       messageRecipientNames: [],
       messageRecipientIDs: [],
+      chatName: '',
+      selectedMessagesArray: [],
       contactsListVisible: false,
       groupContactsListVisible: false,
       groupChatContacts:[],
@@ -410,133 +429,133 @@ export default {
         },
       ],
       messages:[
-        {
-          messageID: 'bon-jovi',
-          messageRecipientIDs: ['bon-jovi'],
-          messageRecipientNames: ['Bon Jovi'],
-          messageRecipientProfilePic: '../assets/images/dummy-profile-pic.jpg',
-          recipientMessages:[
-            {
-              messageSenderID: 'down-to-folk',
-              messageSenderName: 'Down To Folk',
-              messageTime: '20:00',
-              messageDate: '3rd Oct',
-              message: 'Hello World',
-              doubleMessage: false
-            },
-            {
-              messageSenderID: 'bon-jovi',
-              messageSenderName: 'Bon Jovi',
-              messageTime: '21:00',
-              messageDate: '3rd Oct',
-              message: 'Hello to you ello to you ello to you ello to you',
-              doubleMessage: false
-            }
-          ],
-          latestMessage: 'Hello to you ello to you ello to you ello to you',
-          latestMessageDate: '3rd Oct',
-          latestMessageTimestamp: 1641556236655,
-          messageActive: false,
-          messageRead: true
-        },
-        {
-          messageID: 'bros',
-          messageRecipientIDs: ['bros'],
-          messageRecipientNames: ['Bros'],
-          messageRecipientProfilePic: '../assets/images/dummy-profile-pic.jpg',
-          recipientMessages:[
-            {
-              messageSenderID: 'down-to-folk',
-              messageSenderName: 'Down To Folk',
-              messageTime: '22:00',
-              messageDate: '3rd Oct',
-              message: 'Hello Cruel World',
-              doubleMessage: false
-            },
-            {
-              messageSenderID: 'bros',
-              messageSenderName: 'Bros',
-              messageTime: '23:00',
-              messageDate: '4th Oct',
-              message: 'Yo',
-              doubleMessage: false
-            },
-            {
-              messageSenderID: 'bros',
-              messageSenderName: 'Bros',
-              messageTime: '24:00',
-              messageDate: '4th Oct',
-              message: 'Ahh bello',
-              doubleMessage: true
-            }
-          ],
-          latestMessage: 'Ahh bello',
-          latestMessageDate: '4th Oct',
-          latestMessageTimestamp: 1641556236635,
-          messageActive: false,
-          messageRead: false,
-        },
-        {
-          messageID: 'bon-jovi-shawoddywoddy',
-          messageRecipientIDs: ['bon-jovi', 'shawoddywoddy', 'down-to-folk'],
-          messageRecipientNames: ['Bon Jovi', 'Shawoddywoddy', 'down to folk'],
-          messageRecipientProfilePic: '',
-          recipientMessages:[
-            {
-              messageSenderID: 'down-to-folk',
-              messageSenderName: 'Down To Folk',
-              messageTime: '22:00',
-              messageDate: '3rd Oct',
-              message: 'Hello Cruel World',
-              doubleMessage: false
-            },
-            {
-              messageSenderID: 'shawoddywoddy',
-              messageSenderName: 'Shawoddywoddy',
-              messageTime: '23:00',
-              messageDate: '4th Oct',
-              message: 'Yo',
-              doubleMessage: false
-            },
-            {
-              messageSenderID: 'bon-jovi',
-              messageSenderName: 'Bon Jovi',
-              messageTime: '23:30',
-              messageDate: '4th Oct',
-              message: 'Oi Oi',
-              doubleMessage: false
-            },
-            {
-              messageSenderID: 'shawoddywoddy',
-              messageSenderName: 'Shawoddywoddy',
-              messageTime: '23:40',
-              messageDate: '4th Oct',
-              message: 'obrigado',
-              doubleMessage: false
-            },
-            {
-              messageSenderID: 'bon-jovi',
-              messageSenderName: 'Bon Jovi',
-              messageTime: '23:50',
-              messageDate: '4th Oct',
-              message: 'Hola',
-              doubleMessage: false
-            },
-            {
-              messageSenderID: 'bon-jovi',
-              messageSenderName: 'Bon Jovi',
-              messageTime: '23:55',
-              messageDate: '4th Oct',
-              message: 'Bonjourno',
-              doubleMessage: true
-            },
-          ],
-          latestMessage: 'Bonjourno',
-          latestMessageDate: '4th Oct',
-          latestMessageTimestamp: 1641556236615,
-          messageActive: false,
-          messageRead: false,
-        }
+        // {
+        //   messageID: 'bon-jovi',
+        //   messageRecipientIDs: ['bon-jovi'],
+        //   messageRecipientNames: ['Bon Jovi'],
+        //   messageRecipientProfilePic: '../assets/images/dummy-profile-pic.jpg',
+        //   recipientMessages:[
+        //     {
+        //       messageSenderID: 'down-to-folk',
+        //       messageSenderName: 'Down To Folk',
+        //       messageTime: '20:00',
+        //       messageDate: '3rd Oct',
+        //       message: 'Hello World',
+        //       doubleMessage: false
+        //     },
+        //     {
+        //       messageSenderID: 'bon-jovi',
+        //       messageSenderName: 'Bon Jovi',
+        //       messageTime: '21:00',
+        //       messageDate: '3rd Oct',
+        //       message: 'Hello to you ello to you ello to you ello to you',
+        //       doubleMessage: false
+        //     }
+        //   ],
+        //   latestMessage: 'Hello to you ello to you ello to you ello to you',
+        //   latestMessageDate: '3rd Oct',
+        //   latestMessageTimestamp: 1641556236655,
+        //   messageActive: false,
+        //   messageRead: true
+        // },
+        // {
+        //   messageID: 'bros',
+        //   messageRecipientIDs: ['bros'],
+        //   messageRecipientNames: ['Bros'],
+        //   messageRecipientProfilePic: '../assets/images/dummy-profile-pic.jpg',
+        //   recipientMessages:[
+        //     {
+        //       messageSenderID: 'down-to-folk',
+        //       messageSenderName: 'Down To Folk',
+        //       messageTime: '22:00',
+        //       messageDate: '3rd Oct',
+        //       message: 'Hello Cruel World',
+        //       doubleMessage: false
+        //     },
+        //     {
+        //       messageSenderID: 'bros',
+        //       messageSenderName: 'Bros',
+        //       messageTime: '23:00',
+        //       messageDate: '4th Oct',
+        //       message: 'Yo',
+        //       doubleMessage: false
+        //     },
+        //     {
+        //       messageSenderID: 'bros',
+        //       messageSenderName: 'Bros',
+        //       messageTime: '24:00',
+        //       messageDate: '4th Oct',
+        //       message: 'Ahh bello',
+        //       doubleMessage: true
+        //     }
+        //   ],
+        //   latestMessage: 'Ahh bello',
+        //   latestMessageDate: '4th Oct',
+        //   latestMessageTimestamp: 1641556236635,
+        //   messageActive: false,
+        //   messageRead: false,
+        // },
+        // {
+        //   messageID: 'bon-jovi-shawoddywoddy',
+        //   messageRecipientIDs: ['bon-jovi', 'shawoddywoddy', 'down-to-folk'],
+        //   messageRecipientNames: ['Bon Jovi', 'Shawoddywoddy', 'down to folk'],
+        //   messageRecipientProfilePic: '',
+        //   recipientMessages:[
+        //     {
+        //       messageSenderID: 'down-to-folk',
+        //       messageSenderName: 'Down To Folk',
+        //       messageTime: '22:00',
+        //       messageDate: '3rd Oct',
+        //       message: 'Hello Cruel World',
+        //       doubleMessage: false
+        //     },
+        //     {
+        //       messageSenderID: 'shawoddywoddy',
+        //       messageSenderName: 'Shawoddywoddy',
+        //       messageTime: '23:00',
+        //       messageDate: '4th Oct',
+        //       message: 'Yo',
+        //       doubleMessage: false
+        //     },
+        //     {
+        //       messageSenderID: 'bon-jovi',
+        //       messageSenderName: 'Bon Jovi',
+        //       messageTime: '23:30',
+        //       messageDate: '4th Oct',
+        //       message: 'Oi Oi',
+        //       doubleMessage: false
+        //     },
+        //     {
+        //       messageSenderID: 'shawoddywoddy',
+        //       messageSenderName: 'Shawoddywoddy',
+        //       messageTime: '23:40',
+        //       messageDate: '4th Oct',
+        //       message: 'obrigado',
+        //       doubleMessage: false
+        //     },
+        //     {
+        //       messageSenderID: 'bon-jovi',
+        //       messageSenderName: 'Bon Jovi',
+        //       messageTime: '23:50',
+        //       messageDate: '4th Oct',
+        //       message: 'Hola',
+        //       doubleMessage: false
+        //     },
+        //     {
+        //       messageSenderID: 'bon-jovi',
+        //       messageSenderName: 'Bon Jovi',
+        //       messageTime: '23:55',
+        //       messageDate: '4th Oct',
+        //       message: 'Bonjourno',
+        //       doubleMessage: true
+        //     },
+        //   ],
+        //   latestMessage: 'Bonjourno',
+        //   latestMessageDate: '4th Oct',
+        //   latestMessageTimestamp: 1641556236615,
+        //   messageActive: false,
+        //   messageRead: false,
+        // }
       ],
     }
   },
@@ -556,7 +575,7 @@ export default {
     },
     selectedMessage(val){
       this.cancelActiveMessage();
-      const chosenMessage = this.messages.find(message => message.messageID === val);
+      const chosenMessage = this.messages.find(message => message.id === val);
       chosenMessage.messageActive = true;
       if(chosenMessage.messageRead == false){
         chosenMessage.messageRead = true;
@@ -566,12 +585,23 @@ export default {
       this.messagesListVisible = true;
       this.groupContactsListVisible = false;
       this.newMessage = false;
-      this.messageRecipientNames = chosenMessage.messageRecipientNames;
-      this.messageRecipientIDs = chosenMessage.messageRecipientIDs;
+      // this.messageRecipientNames = chosenMessage.messageRecipientNames;
+      this.chatName = chosenMessage.name;
+      // this.messageRecipientIDs = chosenMessage.messageRecipientIDs;
+      axios.get("api/get_group/"+chosenMessage.id).then((res) => {
+        this.selectedMessagesArray = res.data.messages
+        //console.log(res)
+      });
     },
     submitNewMessage(val){
       const currentMessageThread = this.messages.find(message => message.messageActive == true).recipientMessages;
       const latestMessageInfo = this.messages.find(message => message.messageActive == true);
+      const currentMessageID = this.messages.find(message => message.messageActive == true).id;
+
+      //console.log(currentMessageThread)
+      // console.log(latestMessageInfo)
+      // console.log(currentMessageID)
+      
       const nth = function(d) {
           if (d > 3 && d < 21) return 'th';
           switch (d % 10) {
@@ -626,7 +656,15 @@ export default {
         latestMessageInfo.latestMessageTimestamp = new Date().getTime();
         this.newMessage = false;
         this.newGroupMessage = false;
-        this.selectedMessage(latestMessageInfo.messageID)
+        this.selectedMessage(latestMessageInfo.id)
+        // console.log(currentMessageID);
+        // console.log(this.thisUserNewMessage)
+        axios.post("api/add_message",{
+          group_id: currentMessageID,
+          message: this.thisUserNewMessage,
+        }).then((res) => {
+          console.log(res)
+        });
       }
       
     },
@@ -682,6 +720,8 @@ export default {
           messageRecipientIDs: [this.thisUserID,chosenContact.contactID]
 
         });
+
+        
       }
     },
     startGroupChat(val){
@@ -731,6 +771,14 @@ export default {
           recipientMessages:[],
           messageActive: true,
           messageRecipientIDs: groupRecipientIDs
+        });
+
+        axios.post("api/create_group",{
+          name: this.groupChatName,
+          users:groupContacts
+        }).then((res) => {
+          console.log(res)
+          this.groupChatName = ""
         });
       }
     },
@@ -934,10 +982,10 @@ export default {
 
   },
   computed:{
-    activeMessages(){
-      const chosenMessageThread = this.messages.find(message => message.messageActive == true).recipientMessages
-      return chosenMessageThread 
-    },
+    // activeMessages(){
+    //   const chosenMessageThread = this.messages.find(message => message.messageActive == true).recipientMessages
+    //   return chosenMessageThread 
+    // },
 
     latestMessages(){
       console.log(this.messages)
@@ -946,9 +994,11 @@ export default {
       if(this.searchMessageValue){
         timeStampedMessages = this.messages.filter(m => m.messageID.replace(/-/g, ' ').toLowerCase().indexOf(this.searchMessageValue) > -1)
       }
-      return timeStampedMessages.sort(function(x, y){
-        return y.latestMessageTimestamp - x.latestMessageTimestamp;
-      })
+      // return timeStampedMessages.sort(function(x, y){
+      //   return y.latestMessageTimestamp - x.latestMessageTimestamp;
+      // })
+
+      return timeStampedMessages
     },
 
     alphabetisedContacts(){
@@ -1020,6 +1070,16 @@ export default {
       }
     }
 
+
+    // axios.get("api/get_contacts").then((res) => {
+    //   //console.log(res)
+    // });
+
+    axios.get("api/get_groups").then((res) => {
+      //console.log(res)
+      this.messages = res.data
+    });
+
   }
 }
 </script>
@@ -1028,11 +1088,14 @@ export default {
   .messages-page{
     background-color: $copy;
     overflow: auto;
+    
 
     @media(min-width: $desktop){
       background-color: transparent;
+      grid-auto-rows: auto 1fr auto;
     }
   }
+
 
   .page-container{
     padding-top: $spacing-s;
@@ -1042,7 +1105,8 @@ export default {
       padding-bottom: $spacing-m;
     }
   }
-  header{
+  header,
+  footer{
     display: none;
 
     @media(min-width: $desktop){
