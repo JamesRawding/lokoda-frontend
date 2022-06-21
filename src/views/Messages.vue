@@ -366,7 +366,7 @@ export default {
       messagesListVisible: true,
       messagesSelected: false,
       newMessage: false,
-      thisUserID: 'down-to-folk',
+      thisUserID: this.$store.state.userID,
       thisUserName: 'Down To Folk',
       thisUserNewMessage: '',
       thisUserNewMessageDate: '',
@@ -427,6 +427,15 @@ export default {
           contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
           contactBlocked: true
         },
+        {
+          contactID: '03746eb5-7001-11ec-84e7-c8bcc8d04692',
+          contactName: 'Dave',
+          contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
+          contactBlocked: false
+        },
+
+
+        
       ],
       messages:[
         // {
@@ -590,11 +599,13 @@ export default {
       // this.messageRecipientIDs = chosenMessage.messageRecipientIDs;
       axios.get("api/get_group/"+chosenMessage.id).then((res) => {
         this.selectedMessagesArray = res.data.messages
+        
         //console.log(res)
       });
     },
     submitNewMessage(val){
-      const currentMessageThread = this.messages.find(message => message.messageActive == true).recipientMessages;
+      //const currentMessageThread = this.messages.find(message => message.messageActive == true).recipientMessages;
+      const currentMessageThread = this.selectedMessagesArray   
       const latestMessageInfo = this.messages.find(message => message.messageActive == true);
       const currentMessageID = this.messages.find(message => message.messageActive == true).id;
 
@@ -628,42 +639,51 @@ export default {
       }
 
 
-      if(currentMessageThread.find(message => message.messageSenderID === 'dateSent') && currentMessageThread.find(message => message.messageDate === currentDayMonth)){
-        //Nothing here as targeting !== dateSent will return all other IDs
-      }
-      else{
-        currentMessageThread.push({
-          messageSenderID: 'dateSent',
-          messageTime: '',
-          messageDate: currentDayMonth,
-          message: currentDayMonth
-        });
-      }
+      // if(currentMessageThread.find(message => message.messageSenderID === 'dateSent') && currentMessageThread.find(message => message.messageDate === currentDayMonth)){
+      //   //Nothing here as targeting !== dateSent will return all other IDs
+      // }
+      // else{
+      //   currentMessageThread.unshift({
+      //     id: 'dateSent',
+      //     created_at: '',
+      //     messageDate: currentDayMonth,
+      //     message: currentDayMonth
+      //   });
+      // }
 
       
 
 
       if(this.thisUserNewMessage != ''){
-        currentMessageThread.push({
-          messageSenderID: this.thisUserID,
-          messageSenderName: this.thisUserName,
-          messageTime: currentTime,
-          messageDate: currentDayMonth,
-          message: this.thisUserNewMessage,
-        });
+        // currentMessageThread.push({
+        //   messageSenderID: this.thisUserID,
+        //   messageSenderName: this.thisUserName,
+        //   messageTime: currentTime,
+        //   messageDate: currentDayMonth,
+        //   message: this.thisUserNewMessage,
+        // });
+        
         latestMessageInfo.latestMessage = this.thisUserNewMessage;
         latestMessageInfo.latestMessageDate = currentDayMonth;
         latestMessageInfo.latestMessageTimestamp = new Date().getTime();
         this.newMessage = false;
         this.newGroupMessage = false;
-        this.selectedMessage(latestMessageInfo.id)
+        //this.selectedMessage(latestMessageInfo.id)
         // console.log(currentMessageID);
         // console.log(this.thisUserNewMessage)
         axios.post("api/add_message",{
           group_id: currentMessageID,
           message: this.thisUserNewMessage,
-        }).then((res) => {
-          console.log(res)
+        }).then(() => {
+          //console.log(res)
+          
+          currentMessageThread.unshift({
+            //id: this.thisUserID,
+            user_id: this.thisUserID,
+            created_at: currentTime,
+            messageDate: currentDayMonth,
+            message: this.thisUserNewMessage,
+          });
         });
       }
       
@@ -684,11 +704,11 @@ export default {
       this.messagesListVisible = false;
       this.messagesSelected = false;
 
-      for (let i = 0; i < this.messages.length; i++) {
-        if(this.messages[i].recipientMessages.length <= 0){
-          this.messages.shift();
-        }
-      }
+      // for (let i = 0; i < this.messages.length; i++) {
+      //   if(this.messages[i].recipientMessages.length <= 0){
+      //     this.messages.shift();
+      //   }
+      // }
       
     },
     showMessageList(){
@@ -725,6 +745,7 @@ export default {
       }
     },
     startGroupChat(val){
+      console.log(val)
       val.sort((a, b) => {
         if (a < b)
             return -1;
@@ -733,7 +754,7 @@ export default {
         return 0;
       });
       val = val.join('-')
-      if(this.messages.find(message => message.messageID === val)){
+      if(this.messages.find(message => message.id === val)){
         this.selectedMessage(val);
         this.groupChatContacts = [];
         this.groupChatContactsIDs = [];
@@ -988,7 +1009,7 @@ export default {
     // },
 
     latestMessages(){
-      console.log(this.messages)
+      //console.log(this.messages)
       let timeStampedMessages = this.messages
 
       if(this.searchMessageValue){
@@ -1078,6 +1099,7 @@ export default {
     axios.get("api/get_groups").then((res) => {
       //console.log(res)
       this.messages = res.data
+      console.log(res.data)
     });
 
   }
