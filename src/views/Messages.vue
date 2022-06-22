@@ -137,6 +137,24 @@
               <div class="group-contacts-list__item-checked-status" v-else></div>
             </li>
           </ul>
+          <!-- <ul v-else class="contacts-list">
+            <li @click="startGroupMessage" class="contacts-list__item contacts-list__item--new-group">New Group</li>
+            <li
+            @click="startChat(contact.contactID)"
+            @keypress.enter="startChat(contact.contactID)" 
+            class="contacts-list__item" 
+            v-for="contact in alphabetisedContacts" 
+            :key="contact.contactID" 
+            tabindex="0" 
+            role="button">
+              <div class="contacts-list__item-img">
+                <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.contactName + ' profile image'">
+              </div>
+              <div class="messages-list__item-details">
+                <h2 class="messages-list__item-name">{{contact.contactName}}</h2>
+              </div>
+            </li>
+          </ul> -->
           <ul v-else class="contacts-list">
             <li @click="startGroupMessage" class="contacts-list__item contacts-list__item--new-group">New Group</li>
             <li
@@ -239,7 +257,7 @@
         <base-button @click="deleteSelectedContacts" v-if="deleteContactsIDs.length >= 1"   role="button" mode="cta cta--primary">Delete Contact<span v-if="deleteContactsIDs.length > 1">s</span></base-button>
       </div>
 
-      <div class="group-chat-start" v-if="groupChatContacts.length > 0">
+      <!-- <div class="group-chat-start" v-if="groupChatContacts.length > 0">
         <base-input
           inputId="groupName"
           inputType="text"
@@ -249,6 +267,25 @@
           <template #label>Group Subject</template>
         </base-input>
         <base-button :disabled="!groupChatName" @click="startGroupChat(groupChatContactsIDs)"  role="button" mode="cta cta--primary">Start Group Chat</base-button>
+        <hr>
+        <span v-if="groupChatContacts.length === 1">{{groupChatCount}} contact selected</span>
+        <span v-else>{{groupChatCount}} contacts selected</span>
+        <ul class="group-chat-start__list">
+          <li class="group-chat-start__list-item" v-for="contact in groupChatContacts" :key="contact.contactID">
+            <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.contactName + ' profile image'">
+          </li>
+        </ul>
+      </div> -->
+      <div class="group-chat-start" v-if="groupChatContacts.length > 0">
+        <base-input
+          inputId="groupName"
+          inputType="text"
+          v-model="groupChatName"
+          :isRequired="true"
+        >
+          <template #label>Group Subject</template>
+        </base-input>
+        <base-button :disabled="!groupChatName" @click="startChat(groupChatContactsIDs)"  role="button" mode="cta cta--primary">Start Group Chat</base-button>
         <hr>
         <span v-if="groupChatContacts.length === 1">{{groupChatCount}} contact selected</span>
         <span v-else>{{groupChatCount}} contacts selected</span>
@@ -318,7 +355,8 @@
           <li 
             v-for="message in selectedMessagesArray.slice().reverse()" :key="message.id" 
             :class="['active-messages__message', (thisUserID === message.user_id ? 'active-messages__message--user' : 'active-messages__message--recipient'),(messages.doubleMessage ? 'active-messages__message--double' : ''),(messages.messageSenderID === 'memberLeftGroup' ? 'active-messages__message--member-left' : ''),(messages.messageSenderID === 'dateSent' ? 'active-messages__message--date-sent' : '')]">
-            <span class="active-messages__message-sender">{{message.user_id}}</span>
+            <!-- <span class="active-messages__message-sender">{{message.user_id}}</span> -->
+            <span class="active-messages__message-sender">{{ nameMatch(message) }}</span>
             <span class="active-messages__message-copy">{{message.message}}</span>
             <span class="active-messages__message-time">{{message.created_at}}</span>
           </li>
@@ -376,6 +414,7 @@ export default {
       messageRecipientIDs: [],
       chatName: '',
       selectedMessagesArray: [],
+      selectedMessagesUsers:[],
       contactsListVisible: false,
       groupContactsListVisible: false,
       groupChatContacts:[],
@@ -599,10 +638,24 @@ export default {
       // this.messageRecipientIDs = chosenMessage.messageRecipientIDs;
       axios.get("api/get_group/"+chosenMessage.id).then((res) => {
         this.selectedMessagesArray = res.data.messages
-        
-        //console.log(res)
+        this.selectedMessagesUsers = res.data.users
+        console.log(res.data)
       });
     },
+    nameMatch(val){
+      let userName = '';
+      // console.log(val.user_id);
+      // console.log(this.selectedMessagesUsers);
+
+      for (let i = 0; i < this.selectedMessagesUsers.length; i++) {
+        if(val.user_id == this.selectedMessagesUsers[i].id){
+          userName = this.selectedMessagesUsers[i].name
+        }
+      }
+
+      return userName;
+    },
+
     submitNewMessage(val){
       //const currentMessageThread = this.messages.find(message => message.messageActive == true).recipientMessages;
       const currentMessageThread = this.selectedMessagesArray   
@@ -631,12 +684,14 @@ export default {
       this.thisUserNewMessage = val;
 
 
-      for (let i = 0; i < currentMessageThread.length; i++) {
-        var length = currentMessageThread.length
-        if(currentMessageThread[i].messageSenderName == currentMessageThread[(i+length-1)%length].messageSenderName){
-          currentMessageThread[i].doubleMessage = true;
+      const doubleMessageCheck = function(){
+        for (let i = 0; i < currentMessageThread.length; i++) {
+          var length = currentMessageThread.length
+          if(currentMessageThread[i].user_id == currentMessageThread[(i+length-1)%length].user_id){
+            currentMessageThread[i].doubleMessage = true;
+          }
         }
-      }
+      } 
 
 
       // if(currentMessageThread.find(message => message.messageSenderID === 'dateSent') && currentMessageThread.find(message => message.messageDate === currentDayMonth)){
@@ -669,6 +724,7 @@ export default {
         this.newMessage = false;
         this.newGroupMessage = false;
         //this.selectedMessage(latestMessageInfo.id)
+        // console.log(latestMessageInfo);
         // console.log(currentMessageID);
         // console.log(this.thisUserNewMessage)
         axios.post("api/add_message",{
@@ -683,6 +739,7 @@ export default {
             created_at: currentTime,
             messageDate: currentDayMonth,
             message: this.thisUserNewMessage,
+            doubleMessage: doubleMessageCheck,
           });
         });
       }
@@ -722,31 +779,120 @@ export default {
       this.groupContactsListVisible = true;
       this.messagesListVisible = false;
     },
-    startChat(val){
-      this.contactsListVisible = false;
-      this.messagesListVisible = true;
-      if(this.messages.find(message => message.messageID === val)){
-        this.selectedMessage(val)
-      }else{
-        this.newMessage = true;
-        const chosenContact = this.contacts.find(contact => contact.contactID === val);
-        this.messageRecipientNames = chosenContact.contactName;
-        this.messageID = chosenContact.contactID
-        this.messages.unshift({
-          messageID: chosenContact.contactID,
-          messageRecipientNames: [chosenContact.contactName],
-          recipientMessages:[],
-          messageActive: true,
-          messageRecipientIDs: [this.thisUserID,chosenContact.contactID]
+    // startChat(val){
+    //   this.contactsListVisible = false;
+    //   this.messagesListVisible = true;
+    //   if(this.messages.find(message => message.messageID === val)){
+    //     this.selectedMessage(val)
+    //   }else{
+    //     this.newMessage = true;
+    //     const chosenContact = this.contacts.find(contact => contact.contactID === val);
+    //     this.messageRecipientNames = chosenContact.contactName;
+    //     this.messageID = chosenContact.contactID
+    //     this.messages.unshift({
+    //       messageID: chosenContact.contactID,
+    //       messageRecipientNames: [chosenContact.contactName],
+    //       recipientMessages:[],
+    //       messageActive: true,
+    //       messageRecipientIDs: [this.thisUserID,chosenContact.contactID]
 
-        });
+    //     });
 
         
-      }
-    },
-    startGroupChat(val){
-      console.log(val)
-      val.sort((a, b) => {
+    //   }
+    // },
+    // startGroupChat(val){
+    //   console.log(val)
+    //   val.sort((a, b) => {
+    //     if (a < b)
+    //         return -1;
+    //     if (a > b)
+    //         return 1;
+    //     return 0;
+    //   });
+    //   val = val.join('-')
+    //   if(this.messages.find(message => message.id === val)){
+    //     this.selectedMessage(val);
+    //     this.groupChatContacts = [];
+    //     this.groupChatContactsIDs = [];
+    //     this.groupChatCount = 0;
+    //     this.groupChatName = '';
+    //   }else{
+    //     const groupContacts = [];
+    //     const groupContactsIDs = [];
+    //     for (let i = 0; i < this.groupChatContacts.length; i++) {
+    //       groupContacts.push(''+this.groupChatContacts[i].contactName+'')
+    //     }
+    //     for (let i = 0; i < this.groupChatContacts.length; i++) {
+    //       groupContactsIDs.push(''+this.groupChatContacts[i].contactID+'')
+    //     }
+
+    //     groupContactsIDs.sort((a, b) => {
+    //       if (a < b)
+    //           return -1;
+    //       if (a > b)
+    //           return 1;
+    //       return 0;
+    //     }); 
+        
+    //     const groupRecipientIDs = groupContactsIDs;
+    //     groupRecipientIDs.push(this.thisUserID);
+    //     this.groupContactsListVisible = false;
+    //     this.newGroupMessage = true;
+    //     this.messagesListVisible = true;
+    //     this.messageRecipientNames = groupContacts;
+    //     this.groupChatContacts = [];
+
+    //     this.messages.unshift({
+    //       messageID: groupContactsIDs.join('-'),
+    //       messageRecipientNames: groupContacts,
+    //       recipientMessages:[],
+    //       messageActive: true,
+    //       messageRecipientIDs: groupRecipientIDs
+    //     });
+
+    //     axios.post("api/create_group",{
+    //       name: this.groupChatName,
+    //       users:groupContactsIDs
+    //     }).then((res) => {
+    //       console.log(res)
+    //       this.groupChatName = ""
+    //     });
+    //   }
+    // },
+    startChat(val){
+      //console.log(val)
+      if(typeof val === "string"){
+        this.contactsListVisible = false;
+        this.messagesListVisible = true;
+        if(this.messages.find(message => message.id === val)){
+          this.selectedMessage(val)
+        }else{
+          this.newMessage = true;
+          const chosenContact = this.contacts.find(contact => contact.contactID === val);
+          this.messageRecipientNames = chosenContact.contactName;
+          this.messageID = chosenContact.contactID
+          this.messages.unshift({
+            //messageID: chosenContact.contactID,
+            messageRecipientNames: [chosenContact.contactName],
+            recipientMessages:[],
+            messageActive: true,
+            messageRecipientIDs: [this.thisUserID,chosenContact.contactID]
+
+          });
+          
+          axios.post("api/create_group",{
+          name: chosenContact.contactName,
+          users:[chosenContact.contactID]
+        }).then((res) => {
+          console.log(res)
+          this.groupChatName = ""
+        });
+
+          
+        }
+      }else{
+        val.sort((a, b) => {
         if (a < b)
             return -1;
         if (a > b)
@@ -788,26 +934,30 @@ export default {
 
         this.messages.unshift({
           messageID: groupContactsIDs.join('-'),
-          messageRecipientNames: groupContacts,
+          //messageRecipientNames: groupContacts,
           recipientMessages:[],
           messageActive: true,
-          messageRecipientIDs: groupRecipientIDs
+          //messageRecipientIDs: groupRecipientIDs
         });
 
         axios.post("api/create_group",{
           name: this.groupChatName,
-          users:groupContacts
+          users:groupContactsIDs
         }).then((res) => {
           console.log(res)
           this.groupChatName = ""
         });
       }
+      }
+      
     },
     addGroupRecipient(val){
       const groupArray = this.groupChatContacts;
       const groupIDsArray = this.groupChatContactsIDs;
       //the above is a little hacky
       const contact = this.contacts.find(contact => contact.contactID === val);
+
+
       if(!groupArray.includes(contact)){          
           groupArray.push(contact);
           groupIDsArray.push(val);
@@ -1003,10 +1153,12 @@ export default {
 
   },
   computed:{
-    // activeMessages(){
-    //   const chosenMessageThread = this.messages.find(message => message.messageActive == true).recipientMessages
-    //   return chosenMessageThread 
-    // },
+    activeMessages(){
+      const chosenMessageThread = this.messages.find(message => message.messageActive == true).messages
+      return chosenMessageThread 
+    },
+
+    
 
     latestMessages(){
       //console.log(this.messages)
@@ -1099,7 +1251,7 @@ export default {
     axios.get("api/get_groups").then((res) => {
       //console.log(res)
       this.messages = res.data
-      console.log(res.data)
+      //console.log(res.data)
     });
 
   }
@@ -1139,8 +1291,7 @@ export default {
   .page-grid{
     @media(min-width: $desktop){
       display: grid;
-      grid-template-columns: 370px 1fr;
-      grid-column-gap: $spacing-m;
+      grid-template-columns: 400px 1fr;
     }
   }
 
@@ -1152,6 +1303,7 @@ export default {
 
     @media(min-width: $desktop){
       display: block;
+      padding-right: $spacing-m;
     }
 
     &__back-link{
@@ -1269,6 +1421,12 @@ export default {
   .messages-list,
   .contacts-list,
   .group-contacts-list{
+    @media(min-width:$desktop){
+      overflow-y: auto;
+      max-height: rem(410);
+      padding-right: $spacing-m;
+    }
+    
 
     &__item{
       color:#fff;
@@ -1295,6 +1453,7 @@ export default {
           background-color: $copy;
           border-top-left-radius: $border-radius-reg;
           border-bottom-left-radius: $border-radius-reg;
+          position: relative;
           margin-right:rem(-32);
           padding-right: rem(48);
         } 
@@ -1433,8 +1592,9 @@ export default {
     @media(min-width:$desktop){
       position: relative;
       border-radius:$border-radius-reg;
-      max-height: rem(600);
-      min-height: rem(400);
+      max-height: rem(535);
+      height: 100%;
+      //min-height: rem(400);
     }
     
 
@@ -1448,6 +1608,7 @@ export default {
 
       @media(min-width:$desktop){
         padding: $spacing-s $spacing-m;
+        overflow: visible;
       }
 
       .icon-button{
@@ -1598,6 +1759,7 @@ export default {
         position: absolute;
         top: rem(-20);
         left:0;
+        text-transform: capitalize;
 
         @media(min-width:$desktop){
           font-size: $copy-desktop-xs;
