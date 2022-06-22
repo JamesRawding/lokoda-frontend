@@ -296,22 +296,25 @@
         </ul>
       </div>
 
-      <section v-if="newGroupMessage" class="active-messages active-messages--new">
+      <!-- <section v-if="newGroupMessage" class="active-messages active-messages--new">
         <div class="active-messages__header">
           <base-button @click="cancelGroupMessage" buttonType="button" mode="active-messages__cancel-btn">Cancel <span class="sr-only">new message</span></base-button>
           <h3 class="messages-list__item-name"><span v-for="recipientName in messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h3>
+          <h3 class="messages-list__item-name">Group{{chatName}}</h3>
 
         </div>
         <div class="new-message-input-container">
           <new-message-input @sendNewMessage="submitNewMessage" ariaLabel="Send new message" inputId="newGroupMessage"></new-message-input>
         </div>
-      </section>
+      </section> -->
 
       
       <section v-if="newMessage" class="active-messages active-messages--new">
         <div class="active-messages__header">
           <base-button @click="cancelMessage" buttonType="button" mode="active-messages__cancel-btn">Cancel <span class="sr-only">new message</span></base-button>
-          <h3 class="messages-list__item-name">{{messageRecipientNames}}</h3>
+          <!-- <h3 class="messages-list__item-name">{{messageRecipientNames}}</h3> -->
+          <h3 class="messages-list__item-name">{{chatName}}</h3>
+          
 
         </div>
         <ul class="active-messages__messages-list">
@@ -339,7 +342,7 @@
         <transition>
         <base-dialog  @closeDialog="hideActiveMessageOptions" v-if="isActiveMessageOptionsDisplayed">
           <strong>Message Options</strong>
-          <base-text-icon-button v-if="messageRecipientNames.length > 1" @click="leaveGroup" mode="text-icon-button text-icon-button--logout">Leave Group</base-text-icon-button>
+          <base-text-icon-button v-if="selectedMessagesUsers.length > 2" @click="leaveGroup" mode="text-icon-button text-icon-button--logout">Leave Group</base-text-icon-button>
           <base-text-icon-button v-else @click="blockSender" mode="text-icon-button text-icon-button--block">Block Sender</base-text-icon-button>
           <base-text-icon-button @click="deleteActiveMessage" mode="text-icon-button text-icon-button--trash">Delete Chat</base-text-icon-button>
         </base-dialog>
@@ -354,7 +357,7 @@
           </li> -->
           <li 
             v-for="message in selectedMessagesArray.slice().reverse()" :key="message.id" 
-            :class="['active-messages__message', (thisUserID === message.user_id ? 'active-messages__message--user' : 'active-messages__message--recipient'),(messages.doubleMessage ? 'active-messages__message--double' : ''),(messages.messageSenderID === 'memberLeftGroup' ? 'active-messages__message--member-left' : ''),(messages.messageSenderID === 'dateSent' ? 'active-messages__message--date-sent' : '')]">
+            :class="['active-messages__message', (thisUserID === message.user_id ? 'active-messages__message--user' : 'active-messages__message--recipient'),(message.doubleMessage ? 'active-messages__message--double' : ''),(messages.messageSenderID === 'memberLeftGroup' ? 'active-messages__message--member-left' : ''),(messages.messageSenderID === 'dateSent' ? 'active-messages__message--date-sent' : '')]">
             <!-- <span class="active-messages__message-sender">{{message.user_id}}</span> -->
             <span class="active-messages__message-sender">{{ nameMatch(message) }}</span>
             <span class="active-messages__message-copy">{{message.message}}</span>
@@ -415,6 +418,7 @@ export default {
       chatName: '',
       selectedMessagesArray: [],
       selectedMessagesUsers:[],
+      //selectedMessageLatestSender: '',
       contactsListVisible: false,
       groupContactsListVisible: false,
       groupChatContacts:[],
@@ -422,7 +426,7 @@ export default {
       //the above is very hacky
       groupChatCount: 0,
       groupChatName: "",
-      newGroupMessage: false,
+      //newGroupMessage: false,
       isMessagesOptionsDisplayed: false,
       messagesToDelete: false,
       deleteMessagesIDs: [],
@@ -629,6 +633,8 @@ export default {
         chosenMessage.messageRead = true;
         this.$store.commit('messagesUnreadDecrement');
       }
+  
+      //this.selectedMessageLatestSender
       this.messagesSelected = true;
       this.messagesListVisible = true;
       this.groupContactsListVisible = false;
@@ -639,8 +645,22 @@ export default {
       axios.get("api/get_group/"+chosenMessage.id).then((res) => {
         this.selectedMessagesArray = res.data.messages
         this.selectedMessagesUsers = res.data.users
-        console.log(res.data)
+        //console.log(res.data.messages)
+        //console.log(res.data.messages[0].user)
+
+        if(this.selectedMessagesArray && this.selectedMessagesArray.length){
+          this.selectedMessagesArray.map(function(value, index, elements) {
+          let next = elements[index+1];
+
+            if(elements.length - 1 === index){
+              // do nothing
+            }else if(value.user_id === next.user_id){
+             value.doubleMessage = true
+           } 
+        });
+        }
       });
+      
     },
     nameMatch(val){
       let userName = '';
@@ -684,14 +704,16 @@ export default {
       this.thisUserNewMessage = val;
 
 
-      const doubleMessageCheck = function(){
-        for (let i = 0; i < currentMessageThread.length; i++) {
-          var length = currentMessageThread.length
-          if(currentMessageThread[i].user_id == currentMessageThread[(i+length-1)%length].user_id){
-            currentMessageThread[i].doubleMessage = true;
-          }
-        }
-      } 
+
+        // for (let i = 0; i < currentMessageThread.length; i++) {
+        //   var length = currentMessageThread.length
+        //   if(currentMessageThread[i].user_id == currentMessageThread[(i+length-1)%length].user_id){
+        //     currentMessageThread[i].doubleMessage = true;
+
+        //     console.log('double')
+        //   }
+        // }
+  
 
 
       // if(currentMessageThread.find(message => message.messageSenderID === 'dateSent') && currentMessageThread.find(message => message.messageDate === currentDayMonth)){
@@ -722,7 +744,7 @@ export default {
         latestMessageInfo.latestMessageDate = currentDayMonth;
         latestMessageInfo.latestMessageTimestamp = new Date().getTime();
         this.newMessage = false;
-        this.newGroupMessage = false;
+        //this.newGroupMessage = false;
         //this.selectedMessage(latestMessageInfo.id)
         // console.log(latestMessageInfo);
         // console.log(currentMessageID);
@@ -739,7 +761,6 @@ export default {
             created_at: currentTime,
             messageDate: currentDayMonth,
             message: this.thisUserNewMessage,
-            doubleMessage: doubleMessageCheck,
           });
         });
       }
@@ -871,6 +892,7 @@ export default {
           this.newMessage = true;
           const chosenContact = this.contacts.find(contact => contact.contactID === val);
           this.messageRecipientNames = chosenContact.contactName;
+          this.chatName = chosenContact.contactName;
           this.messageID = chosenContact.contactID
           this.messages.unshift({
             //messageID: chosenContact.contactID,
@@ -886,7 +908,7 @@ export default {
           users:[chosenContact.contactID]
         }).then((res) => {
           console.log(res)
-          this.groupChatName = ""
+          
         });
 
           
@@ -927,10 +949,12 @@ export default {
         const groupRecipientIDs = groupContactsIDs;
         groupRecipientIDs.push(this.thisUserID);
         this.groupContactsListVisible = false;
-        this.newGroupMessage = true;
+        //this.newGroupMessage = true;
+        this.newMessage = true;
         this.messagesListVisible = true;
         this.messageRecipientNames = groupContacts;
         this.groupChatContacts = [];
+        this.chatName = this.groupChatName;
 
         this.messages.unshift({
           messageID: groupContactsIDs.join('-'),
@@ -945,7 +969,6 @@ export default {
           users:groupContactsIDs
         }).then((res) => {
           console.log(res)
-          this.groupChatName = ""
         });
       }
       }
@@ -972,17 +995,24 @@ export default {
       this.messages.shift();
       this.newMessage = false;
       this.cancelActiveMessage();
-    },
-    cancelGroupMessage(){
-      this.messages.shift();
-      this.newGroupMessage = false;
+      this.chatName = '';
+
       this.groupContactsListVisible = true;
-      this.cancelActiveMessage();
       this.groupChatContacts = [];
       this.groupChatContactsIDs = [];
       this.groupChatCount = 0;
       this.groupChatName = '';
     },
+    // cancelGroupMessage(){
+    //   this.messages.shift();
+    //   this.newGroupMessage = false;
+    //   this.groupContactsListVisible = true;
+    //   this.cancelActiveMessage();
+    //   this.groupChatContacts = [];
+    //   this.groupChatContactsIDs = [];
+    //   this.groupChatCount = 0;
+    //   this.groupChatName = '';
+    // },
     showMessagesOptions(){
       this.isMessagesOptionsDisplayed = true;
     },
