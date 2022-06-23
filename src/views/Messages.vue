@@ -62,7 +62,7 @@
                 <!-- <p class="messages-list__item-preview">{{messageThread.latestMessage}}</p> -->
                 <p class="messages-list__item-preview">{{messageThread.last_message}}</p>
               </div>
-              <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="deleteMessagesIDs.includes(messageThread.messageID)"></div>
+              <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="deleteMessagesIDs.includes(messageThread.id)"></div>
               <div class="group-contacts-list__item-checked-status" v-else></div>
             </li>
           </ul>
@@ -345,6 +345,20 @@
           <base-text-icon-button v-if="selectedMessagesUsers.length > 2" @click="leaveGroup" mode="text-icon-button text-icon-button--logout">Leave Group</base-text-icon-button>
           <base-text-icon-button v-else @click="blockSender" mode="text-icon-button text-icon-button--block">Block Sender</base-text-icon-button>
           <base-text-icon-button @click="deleteActiveMessage" mode="text-icon-button text-icon-button--trash">Delete Chat</base-text-icon-button>
+          <div v-if="selectedMessagesUsers.length > 2">
+            <hr>
+            <strong>Group Members</strong>
+            <ul class="message-option-list">
+              <li v-for="user in selectedMessagesUsers" :key="user.id">
+                <img v-if="user.avatar_url" class="avatar-image" :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+user.avatar_url" :alt="user.name + ' avatar image'">
+                <div v-else class="avatar-image avatar-image--fallback">
+                  {{user.name.slice(0,1)}}
+                </div>
+                {{user.name}}
+              </li>
+            </ul>
+          </div>
+          
         </base-dialog>
         </transition>
         <ul class="active-messages__messages-list">
@@ -626,13 +640,14 @@ export default {
       this.cancelActiveMessage();
     },
     selectedMessage(val){
+      console.log(val)
       this.cancelActiveMessage();
       const chosenMessage = this.messages.find(message => message.id === val);
       chosenMessage.messageActive = true;
-      if(chosenMessage.messageRead == false){
-        chosenMessage.messageRead = true;
-        this.$store.commit('messagesUnreadDecrement');
-      }
+      // if(chosenMessage.messageRead == false){
+      //   chosenMessage.messageRead = true;
+      //   this.$store.commit('messagesUnreadDecrement');
+      // }
   
       //this.selectedMessageLatestSender
       this.messagesSelected = true;
@@ -647,6 +662,7 @@ export default {
         this.selectedMessagesUsers = res.data.users
         //console.log(res.data.messages)
         //console.log(res.data.messages[0].user)
+        console.log(res.data)
 
         if(this.selectedMessagesArray && this.selectedMessagesArray.length){
           this.selectedMessagesArray.map(function(value, index, elements) {
@@ -882,11 +898,15 @@ export default {
     //   }
     // },
     startChat(val){
-      //console.log(val)
+      console.log(val)
       if(typeof val === "string"){
         this.contactsListVisible = false;
         this.messagesListVisible = true;
+        console.log(this.messages)
+        // const test = this.messages.find(message => message.users.length > 2).name
+        // console.log(test)
         if(this.messages.find(message => message.id === val)){
+          console.log('samesies')
           this.selectedMessage(val)
         }else{
           this.newMessage = true;
@@ -1318,6 +1338,21 @@ export default {
     }
   }
 
+  .avatar-image{
+    border-radius: 100%;
+    overflow: hidden;
+    text-indent: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &--fallback{
+      background-color: #2A8470;
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+
   .page-grid{
     @media(min-width: $desktop){
       display: grid;
@@ -1682,6 +1717,30 @@ export default {
         right: 0;
         left: auto;
         top: rem(65);
+      }
+    }
+
+    .message-option-list{
+      text-transform: capitalize;
+      font-size: $copy-mobile-xs;
+      @media(min-width:$desktop){
+        font-size: $copy-desktop-xs;
+      }
+      li{
+        margin-top:$spacing-xs;
+        display: flex;
+        align-items: center;
+      }
+
+
+      .avatar-image{
+        width: rem(20);
+        height: rem(20);
+        margin-right: $spacing-xs;
+
+        &--fallback{
+          font-size: $copy-mobile-xs;
+        }
       }
     }
 
