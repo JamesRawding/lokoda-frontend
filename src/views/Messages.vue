@@ -20,7 +20,11 @@
         </div>
         <!-- <search-bar @searched="searchMessages" v-if="messages.length > 0" searchId="searchMessages" ariaLabel="search messages" searchPlaceholder="Search Messages"></search-bar> -->
         <div>
-          <ul v-if="!messagesToDelete" class="messages-list">
+          <div  v-if="messagesLoading" class="messages-loading">
+            <span class="spinner"></span>Messages loading
+          </div>
+
+          <ul v-else-if="!messagesToDelete" class="messages-list">
             <li 
             @click="selectedMessage(messageThread.id)" 
             @keypress.enter="selectedMessage(messageThread.id)" 
@@ -30,17 +34,19 @@
             :key="messageThread.id" 
             tabindex="0" 
             role="button">
-              <div class="messages-list__item-img">
-                <img src="../assets/images/dummy-profile-pic.jpg" alt="">
-              </div>
+                
+              <div v-if="messageThread.users.length <= 2 && usersInGroup(messageThread)" class="messages-list__item-img messages-list__item-img--fallback">{{usersInGroup(messageThread)}}</div>
+              <img v-else-if="messageThread.users.length <= 2"  :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+usersInGroup(messageThread)" alt="">
+              <div v-else class="messages-list__item-img messages-list__item-img--group"></div>
+              
               <div class="messages-list__item-details">
                 <!-- <h2 class="messages-list__item-name"><span v-for="recipientName in messageThread.messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h2> -->
                 <h2 class="messages-list__item-name">{{messageThread.name}}</h2>
                 <!-- <p class="messages-list__item-preview">{{messageThread.latestMessage}}</p> -->
-                <p class="messages-list__item-preview">{{messageThread.last_message}}</p>
+                <p class="messages-list__item-preview">{{lastMessagePreview(messageThread)}}</p>
 
               </div>
-              <span class="messages-list__item-date">{{messageThread.latestMessageDate}}</span>
+              <span class="messages-list__item-date">{{lastMessageDate(messageThread)}}</span>
             </li>
           </ul>
           <ul v-else class="messages-list">
@@ -53,8 +59,11 @@
             :key="messageThread.id" 
             tabindex="0" 
             role="button">
-              <div class="messages-list__item-img">
-                <img src="../assets/images/dummy-profile-pic.jpg" alt="">
+              <div v-if="messageThread.users.length <= 2" class="messages-list__item-img">
+                <img v-for="user in messageThread.users" :key="user.id" :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+user.avatar_url" :alt="user.name+ ' avatar picture'">
+              </div>
+              <div v-else class="messages-list__item-img">
+                group
               </div>
               <div class="messages-list__item-details">
                 <!-- <h2 class="messages-list__item-name"><span v-for="recipientName in messageThread.messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h2> -->
@@ -67,10 +76,10 @@
             </li>
           </ul>
         </div>
-        <div v-if="latestMessages.length === 0 && searchMessageValue === ''" class="no-messages">
+        <div v-if="!messagesLoading && latestMessages.length === 0 && searchMessageValue === ''" class="no-messages">
           <strong>You currently have no messages.</strong>
         </div>
-        <div v-else-if="latestMessages.length === 0 && searchMessageValue !== ''" class="no-messages">
+        <div v-else-if="!messagesLoading && latestMessages.length === 0 && searchMessageValue !== ''" class="no-messages">
           <strong>No contacts match that search.</strong>
         </div>
       </section>
@@ -375,7 +384,7 @@
             <!-- <span class="active-messages__message-sender">{{message.user_id}}</span> -->
             <span class="active-messages__message-sender">{{ nameMatch(message) }}</span>
             <span class="active-messages__message-copy">{{message.message}}</span>
-            <span class="active-messages__message-time">{{message.created_at}}</span>
+            <span class="active-messages__message-time">{{message.created_time}}</span>
           </li>
         </ul>
         <div class="new-message-input-container">
@@ -418,6 +427,7 @@ export default {
     return{ 
       searchMessageValue: '',
       searchContactValue: '',
+      messagesLoading: true,
       messagesListVisible: true,
       messagesSelected: false,
       newMessage: false,
@@ -662,7 +672,7 @@ export default {
         this.selectedMessagesUsers = res.data.users
         //console.log(res.data.messages)
         //console.log(res.data.messages[0].user)
-        console.log(res.data)
+        //console.log(res.data)
 
         if(this.selectedMessagesArray && this.selectedMessagesArray.length){
           this.selectedMessagesArray.map(function(value, index, elements) {
@@ -692,6 +702,31 @@ export default {
       return userName;
     },
 
+     usersInGroup(val){
+      for (let i = 0; i < val.users.length; i++) {
+        if(val.users[i].id !== this.$store.state.userID){
+          if(val.users[i].avatar_url == null){       
+            return val.users[i].name.slice(0,1)
+          }else{
+            return val.users[i].avatar_url;
+          }  
+        }
+      }
+    },
+
+    lastMessagePreview(val){
+      for (let i = 0; i < val.messages.length; i++) {
+        return val.messages[i].message
+      }
+
+    },
+
+    lastMessageDate(val){
+      for (let i = 0; i < val.messages.length; i++) {
+        return val.messages[i].created_day
+        //this needs to be date and month!
+      }
+    },
     submitNewMessage(val){
       //const currentMessageThread = this.messages.find(message => message.messageActive == true).recipientMessages;
       const currentMessageThread = this.selectedMessagesArray   
@@ -747,8 +782,8 @@ export default {
       
 
 
-      if(this.thisUserNewMessage != ''){
-        // currentMessageThread.push({
+      if(this.thisUserNewMessage !== '' && this.thisUserNewMessage !== ' '){
+        // currentMessageThread.push({ 
         //   messageSenderID: this.thisUserID,
         //   messageSenderName: this.thisUserName,
         //   messageTime: currentTime,
@@ -1207,9 +1242,6 @@ export default {
       const chosenMessageThread = this.messages.find(message => message.messageActive == true).messages
       return chosenMessageThread 
     },
-
-    
-
     latestMessages(){
       //console.log(this.messages)
       let timeStampedMessages = this.messages
@@ -1300,9 +1332,11 @@ export default {
 
     axios.get("api/get_groups").then((res) => {
       //console.log(res)
-      this.messages = res.data
-      //console.log(res.data)
+      this.messages = res.data;
+      this.messagesLoading = false;
+      console.log(res.data)
     });
+    
 
   }
 }
@@ -1483,6 +1517,17 @@ export default {
     }
   }
 
+  .messages-loading{
+    display: flex;
+    justify-content: center;
+    padding-top: $spacing-xl;
+    color: #fff;
+    @media(min-width:$desktop){
+      padding-right: $spacing-m;
+      color: $copy;
+    }
+  }
+
   .messages-list,
   .contacts-list,
   .group-contacts-list{
@@ -1570,6 +1615,31 @@ export default {
       height: rem(36);
       overflow: hidden;
       border-radius: 100%;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+
+
+      &--group,
+      &--fallback{
+        background-color: #2A8470;
+        color: #fff;
+        
+      }
+
+      &--group{
+        &:before{
+          font-family: "Font Awesome 5 Pro";
+          font-weight: 300;
+          font-size: $copy-mobile;
+          content:'\f0c0';
+        }
+      }
+
+      &--fallback{
+        font-weight: 600;
+        text-transform: capitalize;
+      }
     }
 
     &__item-details{

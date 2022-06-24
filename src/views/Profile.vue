@@ -941,12 +941,16 @@ export default {
   },
   methods: {
     createNewContact() {
-      this.$store.commit({
-        type: "createNewContact",
-        contactID: this.profileID,
-        contactName: this.profileName,
-        contactProfilePic: this.profileImageURL,
-      });
+      // this.$store.commit({
+      //   type: "createNewContact",
+      //   contactID: this.profileID,
+      //   contactName: this.profileName,
+      //   contactProfilePic: this.profileImageURL,
+      // });
+      axios.get("api/add_contact/"+this.profileID).then((res) => {
+        console.log(res)
+      })
+
     },
     displaySettingsDialog(evt) {
       if (evt == "Hero Image") {

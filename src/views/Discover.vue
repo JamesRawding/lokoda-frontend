@@ -218,6 +218,7 @@ export default {
     }).then((res) => {
       this.bands = res.data;
       this.resultsLoading = false;
+      console.log(res.data)
     });
 
     axios.post("api/search",{
