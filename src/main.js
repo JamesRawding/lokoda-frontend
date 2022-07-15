@@ -17,10 +17,10 @@ const store = createStore({
       token: '',
       messagesUnread: 2,
       newContact: {
-        contactID: '',
-        contactName: '',
+        id: '',
+        name: '',
         contactProfilePic: '',
-        contactBlocked: false
+        blocked: false
       },
       genres:[],
       profiles:[],

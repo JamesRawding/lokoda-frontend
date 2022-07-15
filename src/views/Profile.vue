@@ -941,14 +941,16 @@ export default {
   },
   methods: {
     createNewContact() {
-      // this.$store.commit({
-      //   type: "createNewContact",
-      //   contactID: this.profileID,
-      //   contactName: this.profileName,
-      //   contactProfilePic: this.profileImageURL,
-      // });
-      axios.get("api/add_contact/"+this.profileID).then((res) => {
-        console.log(res)
+      this.$store.commit({
+        type: "createNewContact",
+        contactID: this.profileID,
+        contactName: this.profileName,
+        // contactProfilePic: this.profileImageURL,
+      });
+      axios.get("/api/add_contact/"+this.profileID).then((res) => {
+
+        //console.log(this.profileID)
+        console.log(res.data)
       })
 
     },

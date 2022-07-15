@@ -34,7 +34,7 @@
             :key="messageThread.id" 
             tabindex="0" 
             role="button">
-                
+
               <div v-if="messageThread.users.length <= 2 && usersInGroup(messageThread)" class="messages-list__item-img messages-list__item-img--fallback">{{usersInGroup(messageThread)}}</div>
               <img v-else-if="messageThread.users.length <= 2"  :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+usersInGroup(messageThread)" alt="">
               <div v-else class="messages-list__item-img messages-list__item-img--group"></div>
@@ -109,40 +109,40 @@
           <ul v-if="contactsToBlock" class="contacts-list">
             <li @click="startGroupMessage" class="contacts-list__item contacts-list__item--new-group">New Group</li>
             <li
-            @click="contactForBlocking(contact.contactID)" 
-            @keypress.enter="contactForBlocking(contact.contactID)"
+            @click="contactForBlocking(contact.id)" 
+            @keypress.enter="contactForBlocking(contact.id)"
             class="contacts-list__item" 
             v-for="contact in alphabetisedContacts" 
-            :key="contact.contactID" 
+            :key="contact.id" 
             tabindex="0" 
             role="button">
               <div class="contacts-list__item-img">
-                <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.contactName + ' profile image'">
+                <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.name + ' profile image'">
               </div>
               <div class="messages-list__item-details">
-                <h2 class="messages-list__item-name">{{contact.contactName}}</h2>
+                <h2 class="messages-list__item-name">{{contact.name}}</h2>
               </div>
-              <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="blockContactsIDs.includes(contact.contactID)"></div>
+              <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="blockContactsIDs.includes(contact.id)"></div>
               <div class="group-contacts-list__item-checked-status" v-else></div>
             </li>
           </ul>
           <ul v-else-if="contactsToDelete" class="contacts-list">
             <li @click="startGroupMessage" class="contacts-list__item contacts-list__item--new-group">New Group</li>
             <li
-            @click="contactForDeletion(contact.contactID)" 
-            @keypress.enter="contactForDeletion(contact.contactID)"
+            @click="contactForDeletion(contact.id)" 
+            @keypress.enter="contactForDeletion(contact.id)"
             class="contacts-list__item" 
             v-for="contact in alphabetisedContacts" 
-            :key="contact.contactID" 
+            :key="contact.id" 
             tabindex="0" 
             role="button">
               <div class="contacts-list__item-img">
-                <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.contactName + ' profile image'">
+                <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.name + ' profile image'">
               </div>
               <div class="messages-list__item-details">
-                <h2 class="messages-list__item-name">{{contact.contactName}}</h2>
+                <h2 class="messages-list__item-name">{{contact.name}}</h2>
               </div>
-              <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="deleteContactsIDs.includes(contact.contactID)"></div>
+              <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="deleteContactsIDs.includes(contact.id)"></div>
               <div class="group-contacts-list__item-checked-status" v-else></div>
             </li>
           </ul>
@@ -167,18 +167,18 @@
           <ul v-else class="contacts-list">
             <li @click="startGroupMessage" class="contacts-list__item contacts-list__item--new-group">New Group</li>
             <li
-            @click="startChat(contact.contactID)"
-            @keypress.enter="startChat(contact.contactID)" 
+            @click="startChat(contact.id)"
+            @keypress.enter="startChat(contact.id)" 
             class="contacts-list__item" 
             v-for="contact in alphabetisedContacts" 
-            :key="contact.contactID" 
+            :key="contact.id" 
             tabindex="0" 
             role="button">
               <div class="contacts-list__item-img">
-                <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.contactName + ' profile image'">
+                <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.name + ' profile image'">
               </div>
               <div class="messages-list__item-details">
-                <h2 class="messages-list__item-name">{{contact.contactName}}</h2>
+                <h2 class="messages-list__item-name">{{contact.name}}</h2>
               </div>
             </li>
           </ul>
@@ -205,21 +205,21 @@
         <div>
           <ul class="group-contacts-list">
             <li
-            @click="addGroupRecipient(contact.contactID)" 
+            @click="addGroupRecipient(contact.id)" 
             class="group-contacts-list__item"
             v-for="contact in alphabetisedContacts" 
-            :key="contact.contactID" 
+            :key="contact.id" 
             tabindex="0" 
             role="checkbox"
-            :aria-checked="groupChatContactsIDs.includes(contact.contactID) ? 'true' : 'false'"
-            :aria-labelledby="contact.contactID+'-checkbox'">
+            :aria-checked="groupChatContactsIDs.includes(contact.id) ? 'true' : 'false'"
+            :aria-labelledby="contact.id+'-checkbox'">
               <div class="group-contacts-list__item-img">
-                <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.contactName + ' profile image'">
+                <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.name + ' profile image'">
               </div>
               <div class="group-contacts-list__item-details">
-                <span class="sr-only" :id="contact.contactID+'-checkbox'"> Add {{contact.contactName}} to group chat </span>
-                <h2 class="group-contacts-list__item-name">{{contact.contactName}}</h2>
-                <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="groupChatContactsIDs.includes(contact.contactID)"></div>
+                <span class="sr-only" :id="contact.id+'-checkbox'"> Add {{contact.name}} to group chat </span>
+                <h2 class="group-contacts-list__item-name">{{contact.name}}</h2>
+                <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="groupChatContactsIDs.includes(contact.id)"></div>
                 <div class="group-contacts-list__item-checked-status" v-else></div>
               </div>
             </li>
@@ -249,7 +249,7 @@
       <div class="block-contacts-count" v-if="contactsToBlock">
         <span>{{blockContactsCount}} contact<span v-if="blockContactsIDs.length > 1">s</span> selected</span>
         <ul class="block-contacts-count__list">
-          <li class="block-contacts-count__list-item" v-for="contact in blockContactsIDs" :key="contact.contactID">
+          <li class="block-contacts-count__list-item" v-for="contact in blockContactsIDs" :key="contact.id">
             <img src="../assets/images/dummy-profile-pic.jpg" alt="">
           </li>
         </ul>
@@ -259,7 +259,7 @@
       <div class="delete-contacts-count" v-if="contactsToDelete">
         <span>{{deleteContactsCount}} contact<span v-if="deleteContactsIDs.length > 1">s</span> selected</span>
         <ul class="delete-contacts-count__list">
-          <li class="delete-contacts-count__list-item" v-for="contact in deleteContactsIDs" :key="contact.contactID">
+          <li class="delete-contacts-count__list-item" v-for="contact in deleteContactsIDs" :key="contact.id">
             <img src="../assets/images/dummy-profile-pic.jpg" alt="">
           </li>
         </ul>
@@ -299,8 +299,8 @@
         <span v-if="groupChatContacts.length === 1">{{groupChatCount}} contact selected</span>
         <span v-else>{{groupChatCount}} contacts selected</span>
         <ul class="group-chat-start__list">
-          <li class="group-chat-start__list-item" v-for="contact in groupChatContacts" :key="contact.contactID">
-            <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.contactName + ' profile image'">
+          <li class="group-chat-start__list-item" v-for="contact in groupChatContacts" :key="contact.id">
+            <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.name + ' profile image'">
           </li>
         </ul>
       </div>
@@ -327,14 +327,17 @@
 
         </div>
         <ul class="active-messages__messages-list">
-          <li v-for="messages in activeMessages" :key="messages.messageTime + messages.messageDate" class="active-messages__message" :class="thisUserID === messages.messageSenderID ? 'active-messages__message--user' : 'active-messages__message--recipient'">
-            <span class="active-messages__message-sender">{{messages.messageSenderName}}</span>
-            <span class="active-messages__message-copy">{{messages.message}}</span>
-            <span class="active-messages__message-time">{{messages.messageTime}}</span>
+          <li 
+            v-for="message in selectedMessagesArray.slice().reverse()" :key="message.id" 
+            :class="['active-messages__message', (thisUserID === message.user_id ? 'active-messages__message--user' : 'active-messages__message--recipient'),(message.doubleMessage ? 'active-messages__message--double' : ''),(messages.messageSenderID === 'memberLeftGroup' ? 'active-messages__message--member-left' : ''),(messages.messageSenderID === 'dateSent' ? 'active-messages__message--date-sent' : '')]">
+            <!-- <span class="active-messages__message-sender">{{message.user_id}}</span> -->
+            <span class="active-messages__message-sender">{{ nameMatch(message) }}</span>
+            <span class="active-messages__message-copy">{{message.message}}</span>
+            <span class="active-messages__message-time">{{message.created_time}}</span>
           </li>
         </ul>
         <div class="new-message-input-container">
-          <new-message-input @sendNewMessage="submitNewMessage" ariaLabel="Send new message" inputId="newMessage"></new-message-input>
+          <new-message-input @sendNewMessage="submitStartChat" ariaLabel="Send new message" inputId="newMessage"></new-message-input>
         </div>
       </section>
 
@@ -440,6 +443,7 @@ export default {
       messageRecipientNames: [],
       messageRecipientIDs: [],
       chatName: '',
+      newChatID: '',
       selectedMessagesArray: [],
       selectedMessagesUsers:[],
       //selectedMessageLatestSender: '',
@@ -464,42 +468,42 @@ export default {
       deleteContactsCount: 0,
       isActiveMessageOptionsDisplayed: false,
       contacts:[
-        {
-          contactID: 'bon-jovi',
-          contactName: 'Bon Jovi',
-          contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
-          contactBlocked: false
-        },
-        {
-          contactID: 'goldie-lookin-chain',
-          contactName: 'Goldie Lookin Chain',
-          contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
-          contactBlocked: false
-        },
-        {
-          contactID: 'shawoddywoddy',
-          contactName: 'Shawoddywoddy',
-          contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
-          contactBlocked: false
-        },
-        {
-          contactID: 'bros',
-          contactName: 'Bros',
-          contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
-          contactBlocked: false
-        },
-        {
-          contactID: 'gary-glitter',
-          contactName: 'Gary Glitter',
-          contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
-          contactBlocked: true
-        },
-        {
-          contactID: '03746eb5-7001-11ec-84e7-c8bcc8d04692',
-          contactName: 'Dave',
-          contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
-          contactBlocked: false
-        },
+        // {
+        //   contactID: 'bon-jovi',
+        //   contactName: 'Bon Jovi',
+        //   contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
+        //   contactBlocked: false
+        // },
+        // {
+        //   contactID: 'goldie-lookin-chain',
+        //   contactName: 'Goldie Lookin Chain',
+        //   contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
+        //   contactBlocked: false
+        // },
+        // {
+        //   contactID: 'shawoddywoddy',
+        //   contactName: 'Shawoddywoddy',
+        //   contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
+        //   contactBlocked: false
+        // },
+        // {
+        //   contactID: 'bros',
+        //   contactName: 'Bros',
+        //   contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
+        //   contactBlocked: false
+        // },
+        // {
+        //   contactID: 'gary-glitter',
+        //   contactName: 'Gary Glitter',
+        //   contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
+        //   contactBlocked: true
+        // },
+        // {
+        //   contactID: '03746eb5-7001-11ec-84e7-c8bcc8d04692',
+        //   contactName: 'Dave',
+        //   contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
+        //   contactBlocked: false
+        // },
 
 
         
@@ -650,7 +654,7 @@ export default {
       this.cancelActiveMessage();
     },
     selectedMessage(val){
-      console.log(val)
+      //console.log(val)
       this.cancelActiveMessage();
       const chosenMessage = this.messages.find(message => message.id === val);
       chosenMessage.messageActive = true;
@@ -668,8 +672,8 @@ export default {
       this.chatName = chosenMessage.name;
       // this.messageRecipientIDs = chosenMessage.messageRecipientIDs;
       axios.get("api/get_group/"+chosenMessage.id).then((res) => {
-        this.selectedMessagesArray = res.data.messages
-        this.selectedMessagesUsers = res.data.users
+        this.selectedMessagesArray = res.data.messages;
+        this.selectedMessagesUsers = res.data.users;
         //console.log(res.data.messages)
         //console.log(res.data.messages[0].user)
         //console.log(res.data)
@@ -723,13 +727,34 @@ export default {
 
     lastMessageDate(val){
       for (let i = 0; i < val.messages.length; i++) {
-        return val.messages[i].created_day
+        return val.messages[i].created_date
         //this needs to be date and month!
       }
     },
+
+    submitStartChat(val){
+      axios.post("api/add_message",{
+          group_id: this.newChatID,
+          message: val,
+        }).then(() => {
+
+          axios.get("api/get_groups").then((res) => {
+          
+          this.messages = res.data;
+          this.newMessage = false;
+          this.selectedMessage(this.newChatID);
+          this.newChatID = '';
+          
+        });
+        });
+
+      
+    },
+
     submitNewMessage(val){
       //const currentMessageThread = this.messages.find(message => message.messageActive == true).recipientMessages;
-      const currentMessageThread = this.selectedMessagesArray   
+      //const currentMessageThread = this.selectedMessagesArray   
+      
       const latestMessageInfo = this.messages.find(message => message.messageActive == true);
       const currentMessageID = this.messages.find(message => message.messageActive == true).id;
 
@@ -750,7 +775,7 @@ export default {
       const currentMonth = currentDate.toLocaleString('default', { month: 'short' });
       const currentDay = currentDate.getDay();
       const currentDayFormatted = currentDay+nth(currentDay);
-      const currentTime = currentDate.getHours() + ":" + (currentDate.getMinutes()<10?'0':'') + currentDate.getMinutes();
+      //const currentTime = currentDate.getHours() + ":" + (currentDate.getMinutes()<10?'0':'') + currentDate.getMinutes();
       const currentDayMonth = currentDayFormatted + " " + currentMonth;
       this.thisUserNewMessage = val;
 
@@ -806,13 +831,20 @@ export default {
         }).then(() => {
           //console.log(res)
           
-          currentMessageThread.unshift({
-            //id: this.thisUserID,
-            user_id: this.thisUserID,
-            created_at: currentTime,
-            messageDate: currentDayMonth,
-            message: this.thisUserNewMessage,
-          });
+          // currentMessageThread.unshift({
+          //   //id: this.thisUserID,
+          //   user_id: this.thisUserID,
+          //   created_at: currentTime,
+          //   messageDate: currentDayMonth,
+          //   message: this.thisUserNewMessage,
+          // });
+          axios.get("api/get_groups").then((res) => {
+          
+          this.messages = res.data;
+          this.selectedMessage(currentMessageID);
+          
+          
+        });
         });
       }
       
@@ -933,41 +965,89 @@ export default {
     //   }
     // },
     startChat(val){
-      console.log(val)
+      //console.log(val)
       if(typeof val === "string"){
         this.contactsListVisible = false;
         this.messagesListVisible = true;
         console.log(this.messages)
-        // const test = this.messages.find(message => message.users.length > 2).name
-        // console.log(test)
-        if(this.messages.find(message => message.id === val)){
-          console.log('samesies')
-          this.selectedMessage(val)
-        }else{
-          this.newMessage = true;
-          const chosenContact = this.contacts.find(contact => contact.contactID === val);
-          this.messageRecipientNames = chosenContact.contactName;
-          this.chatName = chosenContact.contactName;
-          this.messageID = chosenContact.contactID
-          this.messages.unshift({
-            //messageID: chosenContact.contactID,
-            messageRecipientNames: [chosenContact.contactName],
-            recipientMessages:[],
-            messageActive: true,
-            messageRecipientIDs: [this.thisUserID,chosenContact.contactID]
+        console.log(val)
+        
+        
+        for (let i = 0; i < this.messages.length; i++) {
+        let groupUsers = this.messages[i];
+        let groupUsersIDs = this.messages[i].users
 
-          });
-          
-          axios.post("api/create_group",{
-          name: chosenContact.contactName,
-          users:[chosenContact.contactID]
-        }).then((res) => {
-          console.log(res)
-          
-        });
+        //console.log(groupUsersIDs)
 
-          
+          if (groupUsers.users.length === 2 && groupUsersIDs.find(x => x.id === val)) {
+            // console.log('one 2 one')
+            // console.log(groupUsers.id)
+            this.newMessage = false;
+            this.selectedMessage(groupUsers.id)
+            break;
+            
+          }else{
+            this.newMessage = true;
+            const chosenContact = this.contacts.find(contact => contact.id === val);
+            //console.log(chosenContact)
+            this.messageRecipientNames = chosenContact.name;
+            this.chatName = chosenContact.name;
+
+            // axios.post("/api/create_group",{
+            //   name: chosenContact.name,
+            //   users:[chosenContact.id]
+            // }).then((res) => {
+            //   //console.log('here')
+            //   this.newChatID = res.data.id;
+            //   axios.get("api/get_groups").then((res) => {
+              
+            //   this.messages = res.data;
+            // });
+              
+            // })
+                   
+          }
         }
+        
+        
+        // if(this.messages.find(message => message.id === val)){
+        //   console.log('samesies')
+        //   //this.selectedMessage(val)
+        // }else{
+        //   console.log('not samesies')
+        //   this.newMessage = true;
+        //   const chosenContact = this.contacts.find(contact => contact.id === val);
+        //   //console.log(chosenContact)
+        //   this.messageRecipientNames = chosenContact.name;
+        //   this.chatName = chosenContact.name;
+        //   //this.messageID = chosenContact.contactID
+        //   // this.messages.unshift({
+        //   //   //messageID: chosenContact.contactID,
+        //   //   messageRecipientNames: [chosenContact.name],
+        //   //   recipientMessages:[],
+        //   //   messageActive: true,
+        //   //   messageRecipientIDs: [this.thisUserID,chosenContact.id]
+
+        //   // });
+          
+        // //   axios.post("/api/create_group",{
+        // //   name: chosenContact.name,
+        // //   users:[chosenContact.id]
+        // // }).then((res) => {
+        // //   //console.log('here')
+        // //   this.newChatID = res.data.id;
+
+        // //   axios.get("api/get_groups").then((res) => {
+          
+        // //   this.messages = res.data;
+        // // });
+          
+        // // });
+
+        
+
+          
+        // }
       }else{
         val.sort((a, b) => {
         if (a < b)
@@ -978,7 +1058,7 @@ export default {
       });
       val = val.join('-')
       if(this.messages.find(message => message.id === val)){
-        this.selectedMessage(val);
+        //this.selectedMessage(val);
         this.groupChatContacts = [];
         this.groupChatContactsIDs = [];
         this.groupChatCount = 0;
@@ -987,10 +1067,10 @@ export default {
         const groupContacts = [];
         const groupContactsIDs = [];
         for (let i = 0; i < this.groupChatContacts.length; i++) {
-          groupContacts.push(''+this.groupChatContacts[i].contactName+'')
+          groupContacts.push(''+this.groupChatContacts[i].name+'')
         }
         for (let i = 0; i < this.groupChatContacts.length; i++) {
-          groupContactsIDs.push(''+this.groupChatContacts[i].contactID+'')
+          groupContactsIDs.push(''+this.groupChatContacts[i].id+'')
         }
 
         groupContactsIDs.sort((a, b) => {
@@ -1019,12 +1099,12 @@ export default {
           //messageRecipientIDs: groupRecipientIDs
         });
 
-        axios.post("api/create_group",{
-          name: this.groupChatName,
-          users:groupContactsIDs
-        }).then((res) => {
-          console.log(res)
-        });
+        // axios.post("api/create_group",{
+        //   name: this.groupChatName,
+        //   users:groupContactsIDs
+        // }).then((res) => {
+        //   console.log(res)
+        // });
       }
       }
       
@@ -1033,7 +1113,7 @@ export default {
       const groupArray = this.groupChatContacts;
       const groupIDsArray = this.groupChatContactsIDs;
       //the above is a little hacky
-      const contact = this.contacts.find(contact => contact.contactID === val);
+      const contact = this.contacts.find(contact => contact.id === val);
 
 
       if(!groupArray.includes(contact)){          
@@ -1050,7 +1130,21 @@ export default {
       this.messages.shift();
       this.newMessage = false;
       this.cancelActiveMessage();
+
+      axios.get("api/delete_group/"+this.newChatID).then((res) => {
+        this.messages = res.data.messages;
+
+        axios.get("api/get_groups").then((res) => {
+          //console.log(res)
+          this.messages = res.data;
+          
+        });
+      });
+
+
       this.chatName = '';
+
+
 
       this.groupContactsListVisible = true;
       this.groupChatContacts = [];
@@ -1148,7 +1242,7 @@ export default {
 
       for (let i = 0; i < this.blockContactsIDs.length; i++) {
         let selectedContact = this.blockContactsIDs[i];
-        const blockContact = contactsArray.find(contact => contact.contactID === selectedContact);
+        const blockContact = contactsArray.find(contact => contact.id === selectedContact);
         blockContact.contactBlocked = true
       }
       this.blockContactsIDs = [];
@@ -1177,7 +1271,7 @@ export default {
 
       for (let i = 0; i < this.deleteContactsIDs.length; i++) {
         let selectedContact = this.deleteContactsIDs[i]
-        contactsArray.splice(contactsArray.findIndex(v => v.contactID === selectedContact), 1);
+        contactsArray.splice(contactsArray.findIndex(v => v.id === selectedContact), 1);
       }
       this.deleteContactsIDs = [];
     },
@@ -1193,7 +1287,7 @@ export default {
     blockSender(){
       const contactToBlock = this.messages.find(message => message.messageActive == true).messageID;
       const contactsArray = this.alphabetisedContacts;
-      const blockContact = contactsArray.find(contact => contact.contactID === contactToBlock);
+      const blockContact = contactsArray.find(contact => contact.id === contactToBlock);
       blockContact.contactBlocked = true;
       this.messagesSelected = false;
       this.isActiveMessageOptionsDisplayed = false;
@@ -1238,10 +1332,11 @@ export default {
 
   },
   computed:{
-    activeMessages(){
-      const chosenMessageThread = this.messages.find(message => message.messageActive == true).messages
-      return chosenMessageThread 
-    },
+    // activeMessages(){
+    //   const chosenMessageThread = this.messages.find(message => message.messageActive == true)
+
+    //   return chosenMessageThread 
+    // },
     latestMessages(){
       //console.log(this.messages)
       let timeStampedMessages = this.messages
@@ -1257,18 +1352,19 @@ export default {
     },
 
     alphabetisedContacts(){
-      let unblockedContacts = this.contacts.filter(contacts => contacts.contactBlocked == false)
+
+      let unblockedContacts = this.contacts.filter(contacts => contacts.blocked == false)
       
       if(this.searchContactValue){
-        unblockedContacts = this.contacts.filter(m => m.contactName.toLowerCase().indexOf(this.searchContactValue) > -1)
+        unblockedContacts = this.contacts.filter(m => m.name.toLowerCase().indexOf(this.searchContactValue) > -1)
       }
 
       return unblockedContacts
-      .filter(unblockedContacts => unblockedContacts.contactName.toLowerCase())
+      .filter(unblockedContacts => unblockedContacts.name.toLowerCase())
       .sort((a, b) => {
-          if (a.contactName < b.contactName)
+          if (a.name < b.name)
               return -1;
-          if (a.contactName > b.contactName)
+          if (a.name > b.name)
               return 1;
           return 0;
       });
@@ -1292,17 +1388,17 @@ export default {
     }
 
 
-    const newContact = {
-      contactID: this.$store.state.newContact.contactID,
-      contactName: this.$store.state.newContact.contactName,
-      contactProfilePic: this.$store.state.newContact.contactProfilePic,
-      contactBlocked: false
-    }
-    this.contacts.push(newContact);
+    // const newContact = {
+    //   id: this.$store.state.newContact.id,
+    //   name: this.$store.state.newContact.contactName,
+    //   contactProfilePic: this.$store.state.newContact.contactProfilePic,
+    //   blocked: false
+    // }
+    //this.contacts.push(newContact);
     
     
 
-    if(this.$store.state.newContact.contactID != ''){
+    if(this.$store.state.newContact.contactID){
       this.contactsListVisible = false;
       this.messagesListVisible = true;
       if(this.messages.find(message => message.messageID === this.$store.state.newContact.contactID)){
@@ -1311,30 +1407,35 @@ export default {
         this.$store.commit('resetNewContact');
       }else{
         this.newMessage = true;
+        this.chatName = this.$store.state.newContact.contactName
         const chosenContact = this.$store.state.newContact;
         this.messageRecipientNames = chosenContact.contactName;
         this.messageID = chosenContact.contactID
-        this.messages.unshift({
-          messageID: chosenContact.contactID,
-          messageRecipientNames: [chosenContact.contactName],
-          recipientMessages:[],
-          messageActive: true
-        });
+        // this.messages.unshift({
+        //   messageID: chosenContact.id,
+        //   messageRecipientNames: [chosenContact.name],
+        //   recipientMessages:[],
+        //   messageActive: true
+        // });
         
         this.$store.commit('resetNewContact');
       }
     }
 
 
-    // axios.get("api/get_contacts").then((res) => {
-    //   //console.log(res)
-    // });
-
     axios.get("api/get_groups").then((res) => {
-      //console.log(res)
+      console.log(res)
       this.messages = res.data;
       this.messagesLoading = false;
-      console.log(res.data)
+      
+    });
+
+    axios.get("api/get_contacts").then((res) => {
+      //console.log('get contacts api')
+      this.contacts = res.data;
+      this.messagesLoading = false;
+      // console.log(res.data)
+      // console.log(this.contacts)
     });
     
 
@@ -1514,6 +1615,7 @@ export default {
 
     @media(min-width:$desktop){
       margin-top:$spacing-s;
+      margin-right: $spacing-m;
     }
   }
 
@@ -1653,6 +1755,7 @@ export default {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      text-transform: capitalize;
 
       span{
         margin-right: $spacing-xs;

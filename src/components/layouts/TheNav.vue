@@ -22,13 +22,14 @@
     bottom:0;
     left:0;
     right:0;
-    background-color: #fff;
+    background-color: $mid-grey;
     padding:$spacing-xs;
     z-index: 1;
 
     @media(min-width:$desktop){
       position: relative;
       box-shadow: none;
+      background-color: #fff;
     }
 
     div{
@@ -61,10 +62,12 @@
       color: $copy;
       left: auto;
       position: absolute;
+      color: #fff;
 
       @media(min-width:$desktop){
         margin-right: $spacing-s;
         position: relative;
+        color: $copy;
       }
     }
 
