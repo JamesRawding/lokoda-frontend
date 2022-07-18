@@ -11,10 +11,9 @@
       <section class="hero-section">
         <div
           class="hero-section__image-block"
-          :class="{ 'hero-section__image-block--no-image': !profileImageURL }">
-      
+          :class="{ 'hero-section__image-block--no-image': !profileImageURL }"
+        >
           <div class="hero-section__image-container" v-if="profileImageURL">
-            
             <img
               :src="
                 'https://res.cloudinary.com/dgddraffq/image/upload/w_660,h_400,c_limit,f_auto,q_auto:best,c_fill,g_faces/' +
@@ -163,7 +162,13 @@
           <a
             v-if="!$store.state.loggedIn"
             class="fallback-mailto"
-            :href="'mailto:' + profileEmail + '?subject=New message from Lokoda&body=Hi '+profileName+', I have found your profile on Lokoda.'"
+            :href="
+              'mailto:' +
+              profileEmail +
+              '?subject=New message from Lokoda&body=Hi ' +
+              profileName +
+              ', I have found your profile on Lokoda.'
+            "
             >Get In Touch</a
           >
         </div>
@@ -652,86 +657,120 @@
           mode="icon-button icon-button--edit icon-button--round"
           ariaLabel="edit social links"
         ></base-icon-button>
-      <div class="social-block__inner">
-        <h2 class="h3">Follow {{ profileName }} on:</h2>
-        
-        <div class="social-block__icon-container">
-          <base-icon-link
-            v-for="link in profileSocialLinks"
-            :key="link.name"
-            mode="icon-link icon-link--round"
-            :to="link.url"
-          >
-            <span class="sr-text">{{ link.name }} account</span>
-            <span
-              aria-hidden="true"
-              class="fab"
-              :class="'fa-' + link.name"
-            ></span>
-            
-          </base-icon-link>
-        </div>
-      </div>
-    </section>
-    <div
-      class="add-social"
-      v-else-if="$store.state.loggedIn && userID == profileID"
-    >
-      <base-text-icon-button
-        @click="displaySettingsDialog('Add Social')"
-        buttonType="button"
-        mode="text-icon-button text-icon-button--plus"
-        >Add Social Links</base-text-icon-button
-      >
-    </div>
+        <div class="social-block__inner">
+          <h2 class="h3">Follow {{ profileName }} on:</h2>
 
-    <transition>
-      <base-dialog
-        mode="modal-dialog modal-dialog--add-social-links"
-        v-if="socialDialogVisible"
-        @closeDialog="hideSettingsDialog('Add Social')"
+          <div class="social-block__icon-container">
+            <base-icon-link
+              v-for="link in profileSocialLinks"
+              :key="link.name"
+              mode="icon-link icon-link--round"
+              :to="link.url"
+            >
+              <span class="sr-text">{{ link.name }} account</span>
+              <span
+                aria-hidden="true"
+                class="fab"
+                :class="'fa-' + link.name"
+              ></span>
+            </base-icon-link>
+          </div>
+        </div>
+      </section>
+      <div
+        class="add-social"
+        v-else-if="$store.state.loggedIn && userID == profileID"
       >
-        <strong>Enter Social Links</strong>
-        <!-- <transition name="error">
+        <base-text-icon-button
+          @click="displaySettingsDialog('Add Social')"
+          buttonType="button"
+          mode="text-icon-button text-icon-button--plus"
+          >Add Social Links</base-text-icon-button
+        >
+      </div>
+
+      <transition>
+        <base-dialog
+          mode="modal-dialog modal-dialog--add-social-links"
+          v-if="socialDialogVisible"
+          @closeDialog="hideSettingsDialog('Add Social')"
+        >
+          <strong>Enter Social Links</strong>
+          <!-- <transition name="error">
                 <p class="error-message max-characters" v-if="bioCharactersRemaining < 0">
                   Maximum characters reached
                 </p>
               </transition> -->
-        <form @submit.prevent="submitSocialForm">
-          <base-input inputId="appleMusicLink" inputType="url" v-model="appleMusicLink">
-            <template #label>Apple Music</template>
-          </base-input>
-          <base-input inputId="bandcampLink" inputType="url" v-model="bandcampLink">
-            <template #label>Bandcamp</template>
-          </base-input>
-          <base-input inputId="deezerLink" inputType="url" v-model="deezerLink">
-            <template #label>Deezer</template>
-          </base-input>
-          <base-input inputId="spotifyLink" inputType="url" v-model="spotifyLink">
-            <template #label>Spotify</template>
-          </base-input>
-          <base-input inputId="youtubeLink" inputType="url" v-model="youtubeLink">
-            <template #label>Youtube</template>
-          </base-input>
-          <base-input inputId="tiktokLink" inputType="url" v-model="tiktokLink">
-            <template #label>TikTok</template>
-          </base-input>
-          <base-input inputId="instagramLink" inputType="url" v-model="instagramLink">
-            <template #label>Instagram</template>
-          </base-input>
-          <base-input inputId="twitterLink" inputType="url" v-model="twitterLink">
-            <template #label>Twitter</template>
-          </base-input>
-          <base-input inputId="facebookLink" inputType="url" v-model="facebookLink">
-            <template #label>Facebook</template>
-          </base-input>
-          <base-button buttonType="submit" mode="cta cta--primary"
-            >Save Social Links</base-button
-          >
-        </form>
-      </base-dialog>
-    </transition>
-
+          <form @submit.prevent="submitSocialForm">
+            <base-input
+              inputId="appleMusicLink"
+              inputType="url"
+              v-model="appleMusicLink"
+            >
+              <template #label>Apple Music</template>
+            </base-input>
+            <base-input
+              inputId="bandcampLink"
+              inputType="url"
+              v-model="bandcampLink"
+            >
+              <template #label>Bandcamp</template>
+            </base-input>
+            <base-input
+              inputId="deezerLink"
+              inputType="url"
+              v-model="deezerLink"
+            >
+              <template #label>Deezer</template>
+            </base-input>
+            <base-input
+              inputId="spotifyLink"
+              inputType="url"
+              v-model="spotifyLink"
+            >
+              <template #label>Spotify</template>
+            </base-input>
+            <base-input
+              inputId="youtubeLink"
+              inputType="url"
+              v-model="youtubeLink"
+            >
+              <template #label>Youtube</template>
+            </base-input>
+            <base-input
+              inputId="tiktokLink"
+              inputType="url"
+              v-model="tiktokLink"
+            >
+              <template #label>TikTok</template>
+            </base-input>
+            <base-input
+              inputId="instagramLink"
+              inputType="url"
+              v-model="instagramLink"
+            >
+              <template #label>Instagram</template>
+            </base-input>
+            <base-input
+              inputId="twitterLink"
+              inputType="url"
+              v-model="twitterLink"
+            >
+              <template #label>Twitter</template>
+            </base-input>
+            <base-input
+              inputId="facebookLink"
+              inputType="url"
+              v-model="facebookLink"
+            >
+              <template #label>Facebook</template>
+            </base-input>
+            <base-button buttonType="submit" mode="cta cta--primary"
+              >Save Social Links</base-button
+            >
+          </form>
+        </base-dialog>
+      </transition>
 
       <section
         class="qr-section"
@@ -928,31 +967,46 @@ export default {
         // },
       ],
       appleMusicLink: "",
-      bandcampLink:"",
-      spotifyLink:"",
-      deezerLink:"",
-      youtubeLink:"",
-      soundcloudLink:"",
-      tiktokLink:"",
-      instagramLink:"",
-      twitterLink:"",
-      facebookLink:"",
+      bandcampLink: "",
+      spotifyLink: "",
+      deezerLink: "",
+      youtubeLink: "",
+      soundcloudLink: "",
+      tiktokLink: "",
+      instagramLink: "",
+      twitterLink: "",
+      facebookLink: "",
     };
   },
   methods: {
     createNewContact() {
-      this.$store.commit({
-        type: "createNewContact",
-        contactID: this.profileID,
-        contactName: this.profileName,
-        // contactProfilePic: this.profileImageURL,
+      axios.get("/api/get_contacts").then((res) => {
+        if (res.data.some((e) => e.id === this.profileID)) {
+          //console.log("contact alreasdy exists");
+          this.$store.commit({
+            type: "createNewContact",
+            contactID: this.profileID,
+            contactName: this.profileName,
+          });
+        } else {
+          //console.log("contact doesnt exist");
+          this.$store.commit({
+            type: "createNewContact",
+            contactID: this.profileID,
+            contactName: this.profileName,
+          });
+          axios.get("/api/add_contact/" + this.profileID).then((res) => {
+            console.log(res.data);
+            axios.get("api/get_contacts").then((res) => {
+              console.log('get contacts api')
+              this.contacts = res.data;
+              this.messagesLoading = false;
+              // console.log(res.data)
+              // console.log(this.contacts)
+            });
+          });
+        }
       });
-      axios.get("/api/add_contact/"+this.profileID).then((res) => {
-
-        //console.log(this.profileID)
-        console.log(res.data)
-      })
-
     },
     displaySettingsDialog(evt) {
       if (evt == "Hero Image") {
@@ -1197,90 +1251,90 @@ export default {
       }
     },
 
-    submitSocialForm(){
+    submitSocialForm() {
       this.profileSocialLinks = [];
-      if(this.appleMusicLink !== ""){
-       const apple = {
+      if (this.appleMusicLink !== "") {
+        const apple = {
           id: "1",
           name: "apple",
-          url: this.appleMusicLink
-        }
+          url: this.appleMusicLink,
+        };
         this.profileSocialLinks.push(apple);
       }
-      if(this.bandcampLink !== ""){
-       const bandcamp = {
+      if (this.bandcampLink !== "") {
+        const bandcamp = {
           id: "2",
           name: "bandcamp",
-          url: this.bandcampLink
-        }
+          url: this.bandcampLink,
+        };
         this.profileSocialLinks.push(bandcamp);
       }
-      if(this.spotifyLink !== ""){
-       const spotify = {
+      if (this.spotifyLink !== "") {
+        const spotify = {
           id: "3",
           name: "spotify",
-          url: this.spotifyLink
-        }
+          url: this.spotifyLink,
+        };
         this.profileSocialLinks.push(spotify);
       }
-      if(this.deezerLink !== ""){
-       const deezer = {
+      if (this.deezerLink !== "") {
+        const deezer = {
           id: "4",
           name: "deezer",
-          url: this.deezerLink
-        }
+          url: this.deezerLink,
+        };
         this.profileSocialLinks.push(deezer);
       }
-      if(this.soundcloudLink !== ""){
-       const soundcloud = {
+      if (this.soundcloudLink !== "") {
+        const soundcloud = {
           id: "5",
           name: "soundcloud",
-          url: this.soundcloudLink
-        }
+          url: this.soundcloudLink,
+        };
         this.profileSocialLinks.push(soundcloud);
       }
 
-      if(this.youtubeLink !== ""){
-       const youtube = {
+      if (this.youtubeLink !== "") {
+        const youtube = {
           id: "6",
           name: "youtube",
-          url: this.youtubeLink
-        }
+          url: this.youtubeLink,
+        };
         this.profileSocialLinks.push(youtube);
       }
-      if(this.tiktokLink !== ""){
-       const tiktok = {
+      if (this.tiktokLink !== "") {
+        const tiktok = {
           id: "7",
           name: "tiktok",
-          url: this.tiktokLink
-        }
+          url: this.tiktokLink,
+        };
         this.profileSocialLinks.push(tiktok);
       }
-      if(this.instagramLink !== ""){
-       const instagram = {
+      if (this.instagramLink !== "") {
+        const instagram = {
           id: "8",
           name: "instagram",
-          url: this.instagramLink
-        }
+          url: this.instagramLink,
+        };
         this.profileSocialLinks.push(instagram);
       }
-      if(this.twitterLink !== ""){
-       const twitter = {
+      if (this.twitterLink !== "") {
+        const twitter = {
           id: "9",
           name: "twitter",
-          url: this.twitterLink
-        }
+          url: this.twitterLink,
+        };
         this.profileSocialLinks.push(twitter);
       }
-      if(this.facebookLink !== ""){
-       const facebook = {
+      if (this.facebookLink !== "") {
+        const facebook = {
           id: "10",
           name: "facebook-f",
-          url: this.facebookLink
-        }
+          url: this.facebookLink,
+        };
         this.profileSocialLinks.push(facebook);
       }
-      
+
       this.socialDialogVisible = false;
     },
 
@@ -1776,7 +1830,7 @@ export default {
   margin-top: $spacing-m;
 }
 
-.bio + .upcoming-shows{
+.bio + .upcoming-shows {
   margin-top: $spacing-l;
 }
 
@@ -1934,7 +1988,7 @@ dialog .cta--primary {
 .social-block {
   background-color: $mid-grey;
   text-align: center;
-  margin-top:$spacing-l;
+  margin-top: $spacing-l;
   position: relative;
   border-radius: $border-radius-reg;
 
@@ -1960,14 +2014,14 @@ dialog .cta--primary {
     }
   }
 
-  .icon-button{
-    top:$spacing-s;
-    right:$spacing-s;
+  .icon-button {
+    top: $spacing-s;
+    right: $spacing-s;
     position: absolute;
 
-    @media(min-width:$desktop){
-      top:$spacing-m;
-      right:$spacing-m; 
+    @media (min-width: $desktop) {
+      top: $spacing-m;
+      right: $spacing-m;
     }
   }
 

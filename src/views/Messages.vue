@@ -980,18 +980,20 @@ export default {
         //console.log(groupUsersIDs)
 
           if (groupUsers.users.length === 2 && groupUsersIDs.find(x => x.id === val)) {
-            // console.log('one 2 one')
+             console.log('one 2 one')
             // console.log(groupUsers.id)
             this.newMessage = false;
             this.selectedMessage(groupUsers.id)
-            break;
+           // break;
+            return true;
             
           }else{
-            this.newMessage = true;
-            const chosenContact = this.contacts.find(contact => contact.id === val);
-            //console.log(chosenContact)
-            this.messageRecipientNames = chosenContact.name;
-            this.chatName = chosenContact.name;
+            // console.log('group')
+            // this.newMessage = true;
+            // const chosenContact = this.contacts.find(contact => contact.id === val);
+            // //console.log(chosenContact)
+            // this.messageRecipientNames = chosenContact.name;
+            // this.chatName = chosenContact.name;
 
             // axios.post("/api/create_group",{
             //   name: chosenContact.name,
@@ -1008,6 +1010,28 @@ export default {
                    
           }
         }
+
+        console.log('group')
+            this.newMessage = true;
+            const chosenContact = this.contacts.find(contact => contact.id === val);
+            //console.log(chosenContact)
+            this.messageRecipientNames = chosenContact.name;
+            this.chatName = chosenContact.name;
+
+            axios.post("/api/create_group",{
+              name: chosenContact.name,
+              users:[chosenContact.id]
+            }).then((res) => {
+              //console.log('here')
+              this.newChatID = res.data.id;
+              axios.get("api/get_groups").then((res) => {
+              
+              this.messages = res.data;
+            });
+              
+            })
+
+        return true;
         
         
         // if(this.messages.find(message => message.id === val)){
@@ -1398,14 +1422,56 @@ export default {
     
     
 
-    if(this.$store.state.newContact.contactID){
+    
+
+
+    axios.get("api/get_groups").then((res) => {
+      // console.log('gt groups api')
+      //console.log(res)
+      this.messages = res.data;
+      this.messagesLoading = false;
+
+      axios.get("api/get_contacts").then((res) => {
+      //console.log('get contacts api')
+      this.contacts = res.data;
+      this.messagesLoading = false;
+      // console.log(res.data)
+      // console.log(this.contacts)
+
+
+      if(this.$store.state.newContact.contactID){
+        //console.log(this.$store.state.newContact.contactID)
       this.contactsListVisible = false;
       this.messagesListVisible = true;
-      if(this.messages.find(message => message.messageID === this.$store.state.newContact.contactID)){
-        this.selectedMessage(this.$store.state.newContact.contactID);
+      // console.log('gt contacts api')
+      // console.log(this.messages)
+      // if(this.messages.find(message => message.messageID === this.$store.state.newContact.contactID)){
+      //   this.selectedMessage(this.$store.state.newContact.contactID);
         
-        this.$store.commit('resetNewContact');
-      }else{
+      //   this.$store.commit('resetNewContact');
+      // }
+
+      for (let i = 0; i < this.messages.length; i++) {
+        let groupUsers = this.messages[i];
+        let groupUsersIDs = this.messages[i].users
+
+        //console.log(groupUsers)
+        //console.log(groupUsersIDs)
+
+        //console.log(groupUsersIDs)
+
+          if (groupUsers.users.length === 2 && groupUsersIDs.find(x => x.id === this.$store.state.newContact.contactID)) {
+             //console.log('one 2 one')
+             //console.log(groupUsers.id)
+            this.newMessage = false;
+            this.selectedMessage(groupUsers.id)
+            this.$store.commit('resetNewContact');
+           // break;
+            return true;
+          }
+      
+      
+      else{
         this.newMessage = true;
         this.chatName = this.$store.state.newContact.contactName
         const chosenContact = this.$store.state.newContact;
@@ -1417,26 +1483,15 @@ export default {
         //   recipientMessages:[],
         //   messageActive: true
         // });
-        
-        this.$store.commit('resetNewContact');
+        //this.$store.commit('resetNewContact');
+      }
       }
     }
-
-
-    axios.get("api/get_groups").then((res) => {
-      console.log(res)
-      this.messages = res.data;
-      this.messagesLoading = false;
+    });
       
     });
 
-    axios.get("api/get_contacts").then((res) => {
-      //console.log('get contacts api')
-      this.contacts = res.data;
-      this.messagesLoading = false;
-      // console.log(res.data)
-      // console.log(this.contacts)
-    });
+    
     
 
   }
