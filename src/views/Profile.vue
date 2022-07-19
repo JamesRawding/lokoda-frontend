@@ -981,6 +981,8 @@ export default {
   methods: {
     createNewContact() {
       axios.get("/api/get_contacts").then((res) => {
+        // console.log('fetch contacts')
+        // console.log(this.profileID)
         if (res.data.some((e) => e.id === this.profileID)) {
           //console.log("contact alreasdy exists");
           this.$store.commit({
@@ -995,10 +997,11 @@ export default {
             contactID: this.profileID,
             contactName: this.profileName,
           });
-          axios.get("/api/add_contact/" + this.profileID).then((res) => {
-            console.log(res.data);
+          axios.get("/api/add_contact/" + this.profileID).then(() => {
+            // console.log('add contact')
+            // console.log(res.data);
             axios.get("api/get_contacts").then((res) => {
-              console.log('get contacts api')
+              //console.log('get contacts after contact added')
               this.contacts = res.data;
               this.messagesLoading = false;
               // console.log(res.data)

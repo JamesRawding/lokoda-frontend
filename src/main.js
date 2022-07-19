@@ -17,8 +17,8 @@ const store = createStore({
       token: '',
       messagesUnread: 2,
       newContact: {
-        id: '',
-        name: '',
+        contactID: '',
+        contactName: '',
         contactProfilePic: '',
         blocked: false
       },
@@ -106,11 +106,14 @@ const store = createStore({
       state.newContact.contactID = payload.contactID;
       state.newContact.contactName = payload.contactName;
       state.newContact.contactProfilePic = payload.contactProfilePic;
+      // console.log('new contact being created')
+      // console.log(payload.contactID)
     },
     resetNewContact(state){
       state.newContact.contactID = '';
       state.newContact.contactName = '';
       state.newContact.contactProfilePic = '';
+      //console.log('new contact being reset')
     },
     setProfileURL(state, payload){
       state.profile.profileURL = payload;
