@@ -24,20 +24,24 @@
             <span class="spinner"></span>Messages loading
           </div>
 
-          <ul v-else-if="!messagesToDelete" class="messages-list">
+          <ul v-else-if="!messagesToDelete && messages" class="messages-list">
             <li 
             @click="selectedMessage(messageThread.id)" 
             @keypress.enter="selectedMessage(messageThread.id)" 
             class="messages-list__item" 
             :class="{'messages-list__item--active': messageThread.messageActive}" 
-            v-for="messageThread in latestMessages" 
+            v-for="messageThread in messages" 
             :key="messageThread.id" 
             tabindex="0" 
             role="button">
 
-              <div v-if="messageThread.users.length <= 2 && usersInGroup(messageThread)" class="messages-list__item-img messages-list__item-img--fallback">{{usersInGroup(messageThread)}}</div>
-              <img v-else-if="messageThread.users.length <= 2"  :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+usersInGroup(messageThread)" alt="">
-              <div v-else class="messages-list__item-img messages-list__item-img--group"></div>
+              <div v-if="messageThread.users.length == 2 && messageThreadImage(messageThread) == true" class="messages-list__item-img">
+                <img :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+usersInGroup(messageThread)" alt="">
+              </div>
+              <div v-if="messageThread.users.length == 2 && messageThreadImage(messageThread) == false" class="messages-list__item-img messages-list__item-img messages-list__item-img--fallback">
+                {{usersInGroup(messageThread)}}
+              </div>
+              <div v-else-if="messageThread.users.length !== 2" class="messages-list__item-img messages-list__item-img--group"></div>
               
               <div class="messages-list__item-details">
                 <!-- <h2 class="messages-list__item-name"><span v-for="recipientName in messageThread.messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h2> -->
@@ -51,35 +55,37 @@
           </ul>
           <ul v-else class="messages-list">
             <li
-            @click="messageForDeletion(messageThread.id)" 
-            @keypress.enter="messageForDeletion(messageThread.id)" 
+            @click="messageForDeletion(messageThread)" 
+            @keypress.enter="messageForDeletion(messageThread)" 
             class="messages-list__item" 
             :class="{'messages-list__item--active': messageThread.messageActive}" 
-            v-for="messageThread in latestMessages" 
+            v-for="messageThread in messages" 
             :key="messageThread.id" 
             tabindex="0" 
             role="button">
-              <div v-if="messageThread.users.length <= 2" class="messages-list__item-img">
-                <img v-for="user in messageThread.users" :key="user.id" :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+user.avatar_url" :alt="user.name+ ' avatar picture'">
+              <div v-if="messageThread.users.length == 2 && messageThreadImage(messageThread) == true" class="messages-list__item-img">
+                <img :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+usersInGroup(messageThread)" alt="">
               </div>
-              <div v-else class="messages-list__item-img">
-                group
+              <div v-if="messageThread.users.length == 2 && messageThreadImage(messageThread) == false" class="messages-list__item-img messages-list__item-img messages-list__item-img--fallback">
+                {{usersInGroup(messageThread)}}
               </div>
+              <div v-else-if="messageThread.users.length !== 2" class="messages-list__item-img messages-list__item-img--group"></div>
+
               <div class="messages-list__item-details">
                 <!-- <h2 class="messages-list__item-name"><span v-for="recipientName in messageThread.messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h2> -->
                 <h2 class="messages-list__item-name">{{messageThread.name}}</h2>
                 <!-- <p class="messages-list__item-preview">{{messageThread.latestMessage}}</p> -->
                 <p class="messages-list__item-preview">{{messageThread.last_message}}</p>
               </div>
-              <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="deleteMessagesIDs.includes(messageThread.id)"></div>
+              <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="deleteMessagesIDs.includes(messageThread)"></div>
               <div class="group-contacts-list__item-checked-status" v-else></div>
             </li>
           </ul>
         </div>
-        <div v-if="!messagesLoading && latestMessages.length === 0 && searchMessageValue === ''" class="no-messages">
+        <div v-if="!messagesLoading && messages.length === 0 && searchMessageValue === ''" class="no-messages">
           <strong>You currently have no messages.</strong>
         </div>
-        <div v-else-if="!messagesLoading && latestMessages.length === 0 && searchMessageValue !== ''" class="no-messages">
+        <div v-else-if="!messagesLoading && messages.length === 0 && searchMessageValue !== ''" class="no-messages">
           <strong>No contacts match that search.</strong>
         </div>
       </section>
@@ -109,40 +115,47 @@
           <ul v-if="contactsToBlock" class="contacts-list">
             <li @click="startGroupMessage" class="contacts-list__item contacts-list__item--new-group">New Group</li>
             <li
-            @click="contactForBlocking(contact.id)" 
-            @keypress.enter="contactForBlocking(contact.id)"
+            @click="contactForBlocking(contact)" 
+            @keypress.enter="contactForBlocking(contact)"
             class="contacts-list__item" 
             v-for="contact in alphabetisedContacts" 
             :key="contact.id" 
             tabindex="0" 
             role="button">
-              <div class="contacts-list__item-img">
-                <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.name + ' profile image'">
+              <div v-if="contact.avatar_url" class="contacts-list__item-img">
+                <img   :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+contact.avatar_url" alt="">
               </div>
+              <div v-else class="contacts-list__item-img contacts-list__item-img--fallback">
+                  {{contact.name.slice(0,1)}}
+              </div>
+              
               <div class="messages-list__item-details">
                 <h2 class="messages-list__item-name">{{contact.name}}</h2>
               </div>
-              <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="blockContactsIDs.includes(contact.id)"></div>
+              <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="blockContactsIDs.includes(contact)"></div>
               <div class="group-contacts-list__item-checked-status" v-else></div>
             </li>
           </ul>
           <ul v-else-if="contactsToDelete" class="contacts-list">
             <li @click="startGroupMessage" class="contacts-list__item contacts-list__item--new-group">New Group</li>
             <li
-            @click="contactForDeletion(contact.id)" 
-            @keypress.enter="contactForDeletion(contact.id)"
+            @click="contactForDeletion(contact)" 
+            @keypress.enter="contactForDeletion(contact)"
             class="contacts-list__item" 
             v-for="contact in alphabetisedContacts" 
             :key="contact.id" 
             tabindex="0" 
             role="button">
-              <div class="contacts-list__item-img">
-                <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.name + ' profile image'">
+              <div v-if="contact.avatar_url" class="contacts-list__item-img">
+                <img   :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+contact.avatar_url" alt="">
+              </div>
+              <div v-else class="contacts-list__item-img contacts-list__item-img--fallback">
+                  {{contact.name.slice(0,1)}}
               </div>
               <div class="messages-list__item-details">
                 <h2 class="messages-list__item-name">{{contact.name}}</h2>
               </div>
-              <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="deleteContactsIDs.includes(contact.id)"></div>
+              <div class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked" v-if="deleteContactsIDs.includes(contact)"></div>
               <div class="group-contacts-list__item-checked-status" v-else></div>
             </li>
           </ul>
@@ -174,8 +187,11 @@
             :key="contact.id" 
             tabindex="0" 
             role="button">
-              <div class="contacts-list__item-img">
-                <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.name + ' profile image'">
+              <div v-if="contact.avatar_url" class="contacts-list__item-img">
+                <img   :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+contact.avatar_url" alt="">
+              </div>
+              <div v-else class="contacts-list__item-img contacts-list__item-img--fallback">
+                  {{contact.name.slice(0,1)}}
               </div>
               <div class="messages-list__item-details">
                 <h2 class="messages-list__item-name">{{contact.name}}</h2>
@@ -213,8 +229,11 @@
             role="checkbox"
             :aria-checked="groupChatContactsIDs.includes(contact.id) ? 'true' : 'false'"
             :aria-labelledby="contact.id+'-checkbox'">
-              <div class="group-contacts-list__item-img">
-                <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.name + ' profile image'">
+              <div v-if="contact.avatar_url" class="contacts-list__item-img">
+                <img :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+contact.avatar_url" alt="">
+              </div>
+              <div v-else class="contacts-list__item-img contacts-list__item-img--fallback">
+                  {{contact.name.slice(0,1)}}
               </div>
               <div class="group-contacts-list__item-details">
                 <span class="sr-only" :id="contact.id+'-checkbox'"> Add {{contact.name}} to group chat </span>
@@ -240,7 +259,30 @@
         <span>{{deleteMessagesCount}} message<span v-if="deleteMessagesIDs.length > 1">s</span> selected</span>
         <ul class="delete-messages-count__list">
           <li class="delete-messages-count__list-item" v-for="message in deleteMessagesIDs" :key="message.messageID">
-            <img src="../assets/images/dummy-profile-pic.jpg" alt="">
+            <!-- <div v-if="message.users.length === 2 && ">One to one</div>
+            <div v-else>Group</div> -->
+            <!-- {{message.users}} -->
+            <div v-if="message.users.length === 2">
+              <div v-for="user in message.users" :key="user.id">
+              <!-- <div v-if="user.id === !thisUserID && user.avatar_url !== null">{{user.avatar_url}}</div>
+              <div v-else>No image</div> -->
+              <!-- <div v-else>{{user.name}}</div> -->
+
+              <!-- <div v-if="user.id !== thisUserID && user.avatar_url">Has an image</div>
+              <div v-else>no image</div> -->
+              <div class="delete-messages-count__list-item--fallback" v-if="user.id !== thisUserID && user.avatar_url == null">{{user.name.slice(0,1)}}</div>
+              <img v-else-if="user.id !== thisUserID && user.avatar_url !== null" :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+user.avatar_url" alt="">
+
+              <!-- <div v-else>Me</div> -->
+              <!-- <span>Group user ID{{user.id}}</span>
+              <span>This user Id == {{thisUserID}}</span> -->
+
+              <!-- {{user.avatar_url}} -->
+              </div>
+            </div>
+            <div class="delete-messages-count__list-item--group" v-else></div>
+            
+            <!-- <img src="../assets/images/dummy-profile-pic.jpg" alt=""> -->
           </li>
         </ul>
         <base-button v-if="deleteMessagesIDs.length >= 1" @click="deleteSelectedMessages"  role="button" mode="cta cta--primary">Delete Message<span v-if="deleteMessagesIDs.length > 1">s</span></base-button>
@@ -250,7 +292,10 @@
         <span>{{blockContactsCount}} contact<span v-if="blockContactsIDs.length > 1">s</span> selected</span>
         <ul class="block-contacts-count__list">
           <li class="block-contacts-count__list-item" v-for="contact in blockContactsIDs" :key="contact.id">
-            <img src="../assets/images/dummy-profile-pic.jpg" alt="">
+            <img v-if="contact.avatar_url"  :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+contact.avatar_url" alt="">
+              <div v-else class="group-chat-start__list-item--fallback">
+                  {{contact.name.slice(0,1)}}
+              </div>
           </li>
         </ul>
         <base-button @click="blockSelectedContacts" v-if="blockContactsIDs.length >= 1"   role="button" mode="cta cta--primary">Block Contact<span v-if="blockContactsIDs.length > 1">s</span></base-button>
@@ -260,7 +305,10 @@
         <span>{{deleteContactsCount}} contact<span v-if="deleteContactsIDs.length > 1">s</span> selected</span>
         <ul class="delete-contacts-count__list">
           <li class="delete-contacts-count__list-item" v-for="contact in deleteContactsIDs" :key="contact.id">
-            <img src="../assets/images/dummy-profile-pic.jpg" alt="">
+            <img v-if="contact.avatar_url"  :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+contact.avatar_url" alt="">
+              <div v-else class="group-chat-start__list-item--fallback">
+                  {{contact.name.slice(0,1)}}
+              </div>
           </li>
         </ul>
         <base-button @click="deleteSelectedContacts" v-if="deleteContactsIDs.length >= 1"   role="button" mode="cta cta--primary">Delete Contact<span v-if="deleteContactsIDs.length > 1">s</span></base-button>
@@ -300,7 +348,10 @@
         <span v-else>{{groupChatCount}} contacts selected</span>
         <ul class="group-chat-start__list">
           <li class="group-chat-start__list-item" v-for="contact in groupChatContacts" :key="contact.id">
-            <img src="../assets/images/dummy-profile-pic.jpg" :alt="contact.name + ' profile image'">
+              <img v-if="contact.avatar_url"  :src="'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/'+contact.avatar_url" alt="">
+              <div v-else class="group-chat-start__list-item--fallback">
+                  {{contact.name.slice(0,1)}}
+              </div>
           </li>
         </ul>
       </div>
@@ -467,176 +518,8 @@ export default {
       deleteContactsIDs: [],
       deleteContactsCount: 0,
       isActiveMessageOptionsDisplayed: false,
-      contacts:[
-        // {
-        //   contactID: 'bon-jovi',
-        //   contactName: 'Bon Jovi',
-        //   contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
-        //   contactBlocked: false
-        // },
-        // {
-        //   contactID: 'goldie-lookin-chain',
-        //   contactName: 'Goldie Lookin Chain',
-        //   contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
-        //   contactBlocked: false
-        // },
-        // {
-        //   contactID: 'shawoddywoddy',
-        //   contactName: 'Shawoddywoddy',
-        //   contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
-        //   contactBlocked: false
-        // },
-        // {
-        //   contactID: 'bros',
-        //   contactName: 'Bros',
-        //   contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
-        //   contactBlocked: false
-        // },
-        // {
-        //   contactID: 'gary-glitter',
-        //   contactName: 'Gary Glitter',
-        //   contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
-        //   contactBlocked: true
-        // },
-        // {
-        //   contactID: '03746eb5-7001-11ec-84e7-c8bcc8d04692',
-        //   contactName: 'Dave',
-        //   contactProfilePic: '../assets/images/dummy-profile-pic.jpg',
-        //   contactBlocked: false
-        // },
-
-
-        
-      ],
-      messages:[
-        // {
-        //   messageID: 'bon-jovi',
-        //   messageRecipientIDs: ['bon-jovi'],
-        //   messageRecipientNames: ['Bon Jovi'],
-        //   messageRecipientProfilePic: '../assets/images/dummy-profile-pic.jpg',
-        //   recipientMessages:[
-        //     {
-        //       messageSenderID: 'down-to-folk',
-        //       messageSenderName: 'Down To Folk',
-        //       messageTime: '20:00',
-        //       messageDate: '3rd Oct',
-        //       message: 'Hello World',
-        //       doubleMessage: false
-        //     },
-        //     {
-        //       messageSenderID: 'bon-jovi',
-        //       messageSenderName: 'Bon Jovi',
-        //       messageTime: '21:00',
-        //       messageDate: '3rd Oct',
-        //       message: 'Hello to you ello to you ello to you ello to you',
-        //       doubleMessage: false
-        //     }
-        //   ],
-        //   latestMessage: 'Hello to you ello to you ello to you ello to you',
-        //   latestMessageDate: '3rd Oct',
-        //   latestMessageTimestamp: 1641556236655,
-        //   messageActive: false,
-        //   messageRead: true
-        // },
-        // {
-        //   messageID: 'bros',
-        //   messageRecipientIDs: ['bros'],
-        //   messageRecipientNames: ['Bros'],
-        //   messageRecipientProfilePic: '../assets/images/dummy-profile-pic.jpg',
-        //   recipientMessages:[
-        //     {
-        //       messageSenderID: 'down-to-folk',
-        //       messageSenderName: 'Down To Folk',
-        //       messageTime: '22:00',
-        //       messageDate: '3rd Oct',
-        //       message: 'Hello Cruel World',
-        //       doubleMessage: false
-        //     },
-        //     {
-        //       messageSenderID: 'bros',
-        //       messageSenderName: 'Bros',
-        //       messageTime: '23:00',
-        //       messageDate: '4th Oct',
-        //       message: 'Yo',
-        //       doubleMessage: false
-        //     },
-        //     {
-        //       messageSenderID: 'bros',
-        //       messageSenderName: 'Bros',
-        //       messageTime: '24:00',
-        //       messageDate: '4th Oct',
-        //       message: 'Ahh bello',
-        //       doubleMessage: true
-        //     }
-        //   ],
-        //   latestMessage: 'Ahh bello',
-        //   latestMessageDate: '4th Oct',
-        //   latestMessageTimestamp: 1641556236635,
-        //   messageActive: false,
-        //   messageRead: false,
-        // },
-        // {
-        //   messageID: 'bon-jovi-shawoddywoddy',
-        //   messageRecipientIDs: ['bon-jovi', 'shawoddywoddy', 'down-to-folk'],
-        //   messageRecipientNames: ['Bon Jovi', 'Shawoddywoddy', 'down to folk'],
-        //   messageRecipientProfilePic: '',
-        //   recipientMessages:[
-        //     {
-        //       messageSenderID: 'down-to-folk',
-        //       messageSenderName: 'Down To Folk',
-        //       messageTime: '22:00',
-        //       messageDate: '3rd Oct',
-        //       message: 'Hello Cruel World',
-        //       doubleMessage: false
-        //     },
-        //     {
-        //       messageSenderID: 'shawoddywoddy',
-        //       messageSenderName: 'Shawoddywoddy',
-        //       messageTime: '23:00',
-        //       messageDate: '4th Oct',
-        //       message: 'Yo',
-        //       doubleMessage: false
-        //     },
-        //     {
-        //       messageSenderID: 'bon-jovi',
-        //       messageSenderName: 'Bon Jovi',
-        //       messageTime: '23:30',
-        //       messageDate: '4th Oct',
-        //       message: 'Oi Oi',
-        //       doubleMessage: false
-        //     },
-        //     {
-        //       messageSenderID: 'shawoddywoddy',
-        //       messageSenderName: 'Shawoddywoddy',
-        //       messageTime: '23:40',
-        //       messageDate: '4th Oct',
-        //       message: 'obrigado',
-        //       doubleMessage: false
-        //     },
-        //     {
-        //       messageSenderID: 'bon-jovi',
-        //       messageSenderName: 'Bon Jovi',
-        //       messageTime: '23:50',
-        //       messageDate: '4th Oct',
-        //       message: 'Hola',
-        //       doubleMessage: false
-        //     },
-        //     {
-        //       messageSenderID: 'bon-jovi',
-        //       messageSenderName: 'Bon Jovi',
-        //       messageTime: '23:55',
-        //       messageDate: '4th Oct',
-        //       message: 'Bonjourno',
-        //       doubleMessage: true
-        //     },
-        //   ],
-        //   latestMessage: 'Bonjourno',
-        //   latestMessageDate: '4th Oct',
-        //   latestMessageTimestamp: 1641556236615,
-        //   messageActive: false,
-        //   messageRead: false,
-        // }
-      ],
+      contacts:[],
+      messages:[],
     }
   },
   methods:{
@@ -712,10 +595,47 @@ export default {
           if(val.users[i].avatar_url == null){       
             return val.users[i].name.slice(0,1)
           }else{
+            // console.log('image is here')
+            // console.log(val.users[i].avatar_url)
             return val.users[i].avatar_url;
           }  
         }
       }
+    },
+
+    messageThreadImage(val){
+      // console.log('here')
+         //console.log(val.users);
+
+        //const user = val.users.find(user => user.id !== this.thisUserID )
+
+        for (let i = 0; i < val.users.length; i++) {
+          const userID = val.users[i].id;
+          if(userID !== this.thisUserID){
+            const user = val.users[i];
+            //console.log(user)
+
+            if(user.avatar_url){
+              //console.log('has image')
+              return true;
+            }else{
+             //console.log('NO image') 
+             return false;
+            }
+          }
+          
+        }
+
+        // if(user.avatar_url){
+        //   console.log('has image')
+        // }else{
+        //   ('no image')
+        // }
+        //console.log(user)
+
+        //return user;
+
+
     },
 
     lastMessagePreview(val){
@@ -1088,14 +1008,16 @@ export default {
           
         // }
       }else{
-        val.sort((a, b) => {
-        if (a < b)
-            return -1;
-        if (a > b)
-            return 1;
-        return 0;
-      });
-      val = val.join('-')
+        // console.log('its a group')
+        // console.log(val)
+      //   val.sort((a, b) => {
+      //   if (a < b)
+      //       return -1;
+      //   if (a > b)
+      //       return 1;
+      //   return 0;
+      // });
+      // val = val.join('-')
       if(this.messages.find(message => message.id === val)){
         //this.selectedMessage(val);
         this.groupChatContacts = [];
@@ -1112,13 +1034,13 @@ export default {
           groupContactsIDs.push(''+this.groupChatContacts[i].id+'')
         }
 
-        groupContactsIDs.sort((a, b) => {
-          if (a < b)
-              return -1;
-          if (a > b)
-              return 1;
-          return 0;
-        }); 
+        // groupContactsIDs.sort((a, b) => {
+        //   if (a < b)
+        //       return -1;
+        //   if (a > b)
+        //       return 1;
+        //   return 0;
+        // }); 
         
         const groupRecipientIDs = groupContactsIDs;
         groupRecipientIDs.push(this.thisUserID);
@@ -1130,13 +1052,13 @@ export default {
         this.groupChatContacts = [];
         this.chatName = this.groupChatName;
 
-        this.messages.unshift({
-          messageID: groupContactsIDs.join('-'),
-          //messageRecipientNames: groupContacts,
-          recipientMessages:[],
-          messageActive: true,
-          //messageRecipientIDs: groupRecipientIDs
-        });
+        // this.messages.unshift({
+        //   messageID: groupContactsIDs.join('-'),
+        //   //messageRecipientNames: groupContacts,
+        //   recipientMessages:[],
+        //   messageActive: true,
+        //   //messageRecipientIDs: groupRecipientIDs
+        // });
 
         // axios.post("api/create_group",{
         //   name: this.groupChatName,
@@ -1149,10 +1071,14 @@ export default {
       
     },
     addGroupRecipient(val){
+      //console.log(val)
       const groupArray = this.groupChatContacts;
       const groupIDsArray = this.groupChatContactsIDs;
       //the above is a little hacky
       const contact = this.contacts.find(contact => contact.id === val);
+
+      // console.log(groupArray)
+      //  console.log(groupIDsArray)
 
 
       if(!groupArray.includes(contact)){          
@@ -1214,6 +1140,7 @@ export default {
       this.hideMessagesOptions();
     },
     messageForDeletion(val){
+      //console.log(val)
       const deleteMessagesArray = this.deleteMessagesIDs;
       if(!deleteMessagesArray.includes(val)){          
           deleteMessagesArray.push(val);
@@ -1225,7 +1152,7 @@ export default {
     },
 
     deleteSelectedMessages(){
-      const messageArray = this.latestMessages;
+      const messageArray = this.messages;
       this.messagesToDelete = false;
       this.deleteMessagesCount = 0;
 
@@ -1264,6 +1191,7 @@ export default {
     },
 
     contactForBlocking(val){
+      //console.log(val)
       const blockContactsArray = this.blockContactsIDs;
       if(!blockContactsArray.includes(val)){          
           blockContactsArray.push(val);
@@ -1335,7 +1263,7 @@ export default {
 
     deleteActiveMessage(){
       const messageToDelete = this.messages.find(message => message.messageActive == true).messageID;
-      const messageArray = this.latestMessages;
+      const messageArray = this.messages;
       messageArray.splice(messageArray.findIndex(v => v.messageID === messageToDelete), 1); 
       this.messagesSelected = false;
       this.isActiveMessageOptionsDisplayed = false;
@@ -1384,19 +1312,19 @@ export default {
 
     //   return chosenMessageThread 
     // },
-    latestMessages(){
-      //console.log(this.messages)
-      let timeStampedMessages = this.messages
+    // latestMessages(){
+    //   //console.log(this.messages)
+    //   let timeStampedMessages = this.messages
 
-      if(this.searchMessageValue){
-        timeStampedMessages = this.messages.filter(m => m.messageID.replace(/-/g, ' ').toLowerCase().indexOf(this.searchMessageValue) > -1)
-      }
-      // return timeStampedMessages.sort(function(x, y){
-      //   return y.latestMessageTimestamp - x.latestMessageTimestamp;
-      // })
+    //   if(this.searchMessageValue){
+    //     timeStampedMessages = this.messages.filter(m => m.messageID.replace(/-/g, ' ').toLowerCase().indexOf(this.searchMessageValue) > -1)
+    //   }
+    //   // return timeStampedMessages.sort(function(x, y){
+    //   //   return y.latestMessageTimestamp - x.latestMessageTimestamp;
+    //   // })
 
-      return timeStampedMessages
-    },
+    //   return timeStampedMessages
+    // },
 
     alphabetisedContacts(){
 
@@ -1450,12 +1378,13 @@ export default {
 
     axios.get("api/get_groups").then((res) => {
       // console.log('gt groups api')
-      //console.log(res)
+      // console.log(res)
       this.messages = res.data;
+      //console.log(this.messages)
       this.messagesLoading = false;
 
       axios.get("api/get_contacts").then((res) => {
-      //console.log('get contacts api')
+      //console.log(res.data)
       this.contacts = res.data;
       this.messagesLoading = false;
       // console.log(res.data)
@@ -2189,6 +2118,34 @@ export default {
 
       &:first-of-type{
         margin-left: 0;
+      }
+
+      &--fallback,
+      &--group{
+        background-color:$dark-green;
+        color: #fff;
+        overflow: hidden;
+        border-radius: 100%;
+        text-align: center;
+        font-size: $copy-mobile-xs;
+        height: rem(25);
+        width: rem(25);
+        border:rem(1) solid #fff;
+        padding-top:rem(6);
+      }
+
+      &--fallback{
+        text-transform: capitalize;
+        font-weight: 600;
+      }
+
+      &--group{
+        &:before{
+          font-family: "Font Awesome 5 Pro";
+          font-weight: 300;
+          font-size: $copy-mobile-xs;
+          content:'\f0c0';
+        }
       }
     }
 
