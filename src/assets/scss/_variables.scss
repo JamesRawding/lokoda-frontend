@@ -224,3 +224,14 @@ $spacing-xl: rem(128);
     }
   }
 }
+
+@mixin cancel-sr-text{
+  clip: auto;
+  -webkit-clip-path: none;
+  clip-path: none;
+  height: auto;
+  width: auto;
+  margin: 0;
+  overflow: auto;
+  position: relative;
+}

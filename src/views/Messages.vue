@@ -6,11 +6,13 @@
         <section v-if="messagesListVisible">
           <div class="messages-header">
             <a
+              v-if="!messagesToDelete"
               class="messages-header__back-link"
               href="javascript:history.go(-1)"
               ><span class="sr-only"> Go Back</span></a
             >
-            <h1>Messages</h1>
+            <h1 v-if="messagesToDelete">Delete Chats</h1>
+            <h1 v-else>Chats</h1>
             <div class="messages-header__button-container">
               <base-text-icon-button
                 v-if="!messagesToDelete"
@@ -23,7 +25,7 @@
                 v-else
                 @click="showMessageList"
                 mode="text-icon-button text-icon-button--back"
-                >Messages</base-text-icon-button
+                ><span class="sr-text">Chats</span></base-text-icon-button
               >
               <base-text-icon-button
                 @click="showMessagesOptions"
@@ -38,7 +40,7 @@
                   @closeDialog="hideMessagesOptions"
                   v-if="isMessagesOptionsDisplayed"
                 >
-                  <strong>Message Options</strong>
+                  <strong>Chat Options</strong>
                   <base-text-icon-button
                     @click="selectMessagesToDelete"
                     mode="text-icon-button text-icon-button--trash"
@@ -51,7 +53,7 @@
           <!-- <search-bar @searched="searchMessages" v-if="messages.length > 0" searchId="searchMessages" ariaLabel="search messages" searchPlaceholder="Search Messages"></search-bar> -->
           <div>
             <div v-if="messagesLoading" class="messages-loading">
-              <span class="spinner"></span>Messages loading
+              <span class="spinner"></span>Chats loading
             </div>
 
             <ul v-else-if="!messagesToDelete && messages" class="messages-list">
@@ -205,17 +207,19 @@
 
         <section v-else-if="contactsListVisible">
           <div class="messages-header">
-            <base-icon-button
+            <!-- <base-icon-button
               @click="showMessageList"
               mode="icon-button icon-button--back"
               ariaLabel="back to messages"
-            ></base-icon-button>
-            <h1>New Message</h1>
+            ></base-icon-button> -->
+            <h1 v-if="contactsToBlock">Block Contacts</h1>
+            <h1 v-else-if="contactsToDelete">Delete Contacts</h1>
+            <h1 v-else>New Chat</h1>
             <div class="messages-header__button-container">
               <base-text-icon-button
                 @click="showMessageList"
                 mode="text-icon-button text-icon-button--back"
-                >Messages</base-text-icon-button
+                ><span class="sr-text">Chats</span></base-text-icon-button
               >
               <base-text-icon-button
                 @click="showContactsOptions"
@@ -256,7 +260,7 @@
                 @click="startGroupMessage"
                 class="contacts-list__item contacts-list__item--new-group"
               >
-                New Group
+                New Group Chat
               </li>
               <li
                 @click="contactForBlocking(contact)"
@@ -301,7 +305,7 @@
                 @click="startGroupMessage"
                 class="contacts-list__item contacts-list__item--new-group"
               >
-                New Group
+                New Group Chat
               </li>
               <li
                 @click="contactForDeletion(contact)"
@@ -346,7 +350,7 @@
                 @click="startGroupMessage"
                 class="contacts-list__item contacts-list__item--new-group"
               >
-                New Group
+                New Group Chat
               </li>
               <li
                 @click="startChat(contact.id)"
@@ -398,17 +402,17 @@
 
         <section v-else-if="groupContactsListVisible">
           <div class="messages-header">
-            <base-icon-button
+            <!-- <base-icon-button
               @click="showContacts"
               mode="icon-button icon-button--back"
               ariaLabel="back to contacts"
-            ></base-icon-button>
-            <h1>New Group</h1>
+            ></base-icon-button> -->
+            <h1>New Group Chat</h1>
             <div class="messages-header__button-container">
               <base-text-icon-button
                 @click="showContacts"
                 mode="text-icon-button text-icon-button--back"
-                >Contacts</base-text-icon-button
+                ><span class="sr-text">Contacts</span></base-text-icon-button
               >
             </div>
           </div>
@@ -657,7 +661,7 @@
               @click="cancelMessage"
               buttonType="button"
               mode="active-messages__cancel-btn"
-              >Cancel <span class="sr-only">new message</span></base-button
+              >Cancel <span class="sr-only">new chat</span></base-button
             >
             <h3 class="messages-list__item-name">{{ chatName }}</h3>
           </div>
@@ -721,7 +725,7 @@
               @closeDialog="hideActiveMessageOptions"
               v-if="isActiveMessageOptionsDisplayed"
             >
-              <strong>Message Options</strong>
+              <strong>Chat Options</strong>
               <base-text-icon-button
                 v-if="selectedMessagesUsers.length > 2"
                 @click="leaveGroup"
@@ -1640,7 +1644,7 @@ footer {
 
     @media (min-width: $desktop) {
       color: $copy;
-      font-size: $copy-desktop-xl;
+      font-size: $copy-desktop-l;
     }
   }
 
@@ -1657,13 +1661,21 @@ footer {
     }
 
     .text-icon-button--back {
-      display: none;
+        color: #fff;
+        width: rem(44);
+        justify-content: center;
 
       @media (min-width: $desktop) {
-        display: flex;
+        width: auto;
+        color: $copy;
+       // display: flex;
         padding: 0 $spacing-s;
         font-size: $copy-desktop-s;
         border-radius: $border-radius-reg;
+
+        .sr-text{
+          @include cancel-sr-text;
+        }
 
         &:hover{
           background-color: $lightergrey;
@@ -1921,6 +1933,15 @@ footer {
     @media (min-width: $desktop) {
       font-size: $copy-desktop-xs;
       flex: 0 0 rem(70);
+    }
+  }
+
+  .icon-button--trash{
+    background-color: transparent;
+    color:#fff;
+    @media (min-width: $desktop) {
+      background-color: #fff;
+      color:$copy;
     }
   }
 
