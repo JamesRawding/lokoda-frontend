@@ -14,12 +14,16 @@ export default {
   .icon-button{
     width:rem(44);
     height: rem(44);
-    border: none;
+    border: rem(2) solid transparent;
     background-color:#fff;
     display: flex;
     align-items: center;
     justify-content: center;
     color: $copy;
+
+    &:hover{
+      border-color: $dark-green;
+    }
 
 
     &:before{
@@ -30,6 +34,7 @@ export default {
 
 
     &--round{
+      border: none;
       border-radius:100%;
       box-shadow: $box-shadow;
 

@@ -102,10 +102,9 @@
                 }}</span>
               </li>
             </ul>
-            <ul v-else class="messages-list">
+            <ul v-else class="messages-list messages-list--manage">
               <li
-                @click="messageForDeletion(messageThread)"
-                @keypress.enter="messageForDeletion(messageThread)"
+                
                 class="messages-list__item"
                 :class="{
                   'messages-list__item--active': messageThread.messageActive,
@@ -151,17 +150,25 @@
                   </h2>
                   <!-- <p class="messages-list__item-preview">{{messageThread.latestMessage}}</p> -->
                   <p class="messages-list__item-preview">
-                    {{ messageThread.last_message }}
+                    {{ lastMessagePreview(messageThread) }}
                   </p>
                 </div>
-                <div
+
+                <base-icon-button
+                  @click="messageForDeletion(messageThread)"
+                  @keypress.enter="messageForDeletion(messageThread)"
+                  mode="icon-button icon-button--trash"
+                  ariaLabel="delete this message"
+                ></base-icon-button>
+
+                <!-- <div
                   class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked"
                   v-if="deleteMessagesIDs.includes(messageThread)"
                 ></div>
                 <div
                   class="group-contacts-list__item-checked-status"
                   v-else
-                ></div>
+                ></div> -->
               </li>
             </ul>
           </div>
@@ -235,7 +242,7 @@
             searchPlaceholder="Search Contacts"
           ></search-bar>
           <div>
-            <ul v-if="contactsToBlock" class="contacts-list">
+            <ul v-if="contactsToBlock" class="contacts-list contacts-list--manage">
               <li
                 @click="startGroupMessage"
                 class="contacts-list__item contacts-list__item--new-group"
@@ -280,7 +287,7 @@
                 ></div>
               </li>
             </ul>
-            <ul v-else-if="contactsToDelete" class="contacts-list">
+            <ul v-else-if="contactsToDelete" class="contacts-list contacts-list--manage">
               <li
                 @click="startGroupMessage"
                 class="contacts-list__item contacts-list__item--new-group"
@@ -404,7 +411,7 @@
             searchPlaceholder="Search Contacts"
           ></search-bar>
           <div>
-            <ul class="group-contacts-list">
+            <ul class="group-contacts-list group-contacts-list--manage">
               <li
                 @click="addGroupRecipient(contact.id)"
                 class="group-contacts-list__item"
@@ -469,7 +476,7 @@
           </div>
         </section>
 
-        <div class="delete-messages-count" v-if="messagesToDelete">
+        <!-- <div class="delete-messages-count" v-if="messagesToDelete">
           <span
             >{{ deleteMessagesCount }} message<span
               v-if="deleteMessagesIDs.length > 1"
@@ -515,7 +522,7 @@
               >s</span
             ></base-button
           >
-        </div>
+        </div> -->
 
         <div class="block-contacts-count" v-if="contactsToBlock">
           <span
@@ -643,7 +650,6 @@
               mode="active-messages__cancel-btn"
               >Cancel <span class="sr-only">new message</span></base-button
             >
-            <!-- <h3 class="messages-list__item-name">{{messageRecipientNames}}</h3> -->
             <h3 class="messages-list__item-name">{{ chatName }}</h3>
           </div>
           <ul class="active-messages__messages-list">
@@ -664,7 +670,6 @@
                   : '',
               ]"
             >
-              <!-- <span class="active-messages__message-sender">{{message.user_id}}</span> -->
               <span class="active-messages__message-sender">{{
                 nameMatch(message)
               }}</span>
@@ -693,7 +698,6 @@
               mode="icon-button icon-button--back"
               ariaLabel="close message"
             ></base-icon-button>
-            <!-- <h3 class="messages-list__item-name"><span v-for="recipientName in messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h3> -->
             <h3 class="messages-list__item-name">{{ chatName }}</h3>
 
             <base-icon-button
@@ -712,6 +716,7 @@
               <base-text-icon-button
                 v-if="selectedMessagesUsers.length > 2"
                 @click="leaveGroup"
+                @keypress.enter="leaveGroup"
                 mode="text-icon-button text-icon-button--logout"
                 >Leave Group</base-text-icon-button
               >
@@ -723,6 +728,7 @@
               >
               <base-text-icon-button
                 @click="deleteActiveMessage"
+                @keypress.enter="deleteActiveMessage"
                 mode="text-icon-button text-icon-button--trash"
                 >Delete Chat</base-text-icon-button
               >
@@ -849,8 +855,8 @@ export default {
       //newGroupMessage: false,
       isMessagesOptionsDisplayed: false,
       messagesToDelete: false,
-      deleteMessagesIDs: [],
-      deleteMessagesCount: 0,
+      //deleteMessagesIDs: [],
+      //deleteMessagesCount: 0,
       isContactsOptionsDisplayed: false,
       contactsToBlock: false,
       blockContactsIDs: [],
@@ -1203,30 +1209,39 @@ export default {
       this.hideMessagesOptions();
     },
     messageForDeletion(val) {
-      const deleteMessagesArray = this.deleteMessagesIDs;
-      if (!deleteMessagesArray.includes(val)) {
-        deleteMessagesArray.push(val);
-        this.deleteMessagesCount += 1;
-      } else {
-        deleteMessagesArray.splice(deleteMessagesArray.indexOf(val), 1);
-        this.deleteMessagesCount -= 1;
-      }
+      axios.get("api/delete_group/" + val.id).then(() => {
+        axios.get("api/get_groups").then((res) => {
+          this.messages = res.data;
+          this.messagesToDelete = false;
+          this.cancelActiveMessage();
+          })
+      });
+
+
+      // const deleteMessagesArray = this.deleteMessagesIDs;
+      // if (!deleteMessagesArray.includes(val)) {
+      //   deleteMessagesArray.push(val);
+      //   this.deleteMessagesCount += 1;
+      // } else {
+      //   deleteMessagesArray.splice(deleteMessagesArray.indexOf(val), 1);
+      //   this.deleteMessagesCount -= 1;
+      // }
     },
 
-    deleteSelectedMessages() {
-      const messageArray = this.messages;
-      this.messagesToDelete = false;
-      this.deleteMessagesCount = 0;
+    // deleteSelectedMessages() {
+    //   const messageArray = this.messages;
+    //   this.messagesToDelete = false;
+    //   this.deleteMessagesCount = 0;
 
-      for (let i = 0; i < this.deleteMessagesIDs.length; i++) {
-        let selectedMessage = this.deleteMessagesIDs[i];
-        messageArray.splice(
-          messageArray.findIndex((v) => v.messageID === selectedMessage),
-          1
-        );
-      }
-      this.deleteMessagesIDs = [];
-    },
+    //   for (let i = 0; i < this.deleteMessagesIDs.length; i++) {
+    //     let selectedMessage = this.deleteMessagesIDs[i];
+    //     messageArray.splice(
+    //       messageArray.findIndex((v) => v.messageID === selectedMessage),
+    //       1
+    //     );
+    //   }
+    //   this.deleteMessagesIDs = [];
+    // },
 
     hideCounts() {
       this.contactsToBlock = false;
@@ -1236,8 +1251,8 @@ export default {
       this.deleteContactsCount = 0;
       this.deleteContactsIDs = [];
       this.messagesToDelete = false;
-      this.deleteMessagesCount = 0;
-      this.deleteMessagesIDs = [];
+      // this.deleteMessagesCount = 0;
+      // this.deleteMessagesIDs = [];
     },
 
     showContactsOptions() {
@@ -1267,18 +1282,22 @@ export default {
     },
 
     blockSelectedContacts() {
-      const contactsArray = this.alphabetisedContacts;
+
+      let arrayOfIDs = []
       this.contactsToBlock = false;
       this.blockContactsCount = 0;
-
       for (let i = 0; i < this.blockContactsIDs.length; i++) {
-        let selectedContact = this.blockContactsIDs[i];
-        const blockContact = contactsArray.find(
-          (contact) => contact.id === selectedContact
-        );
-        blockContact.contactBlocked = true;
+        arrayOfIDs.push(this.blockContactsIDs[i].id)        
       }
-      this.blockContactsIDs = [];
+       axios.post("api/blockcontacts",{
+        contacts: arrayOfIDs,
+       }).then(() => {
+        axios.get("api/get_contacts").then((res) => {
+          this.contacts = res.data;
+          arrayOfIDs = [];
+          this.blockContactsIDs = [];
+        })
+      })
     },
 
     selectContactsToDelete() {
@@ -1298,18 +1317,22 @@ export default {
     },
 
     deleteSelectedContacts() {
-      const contactsArray = this.alphabetisedContacts;
+      let arrayOfIDs = []
       this.contactsToDelete = false;
       this.deleteContactsCount = 0;
-
       for (let i = 0; i < this.deleteContactsIDs.length; i++) {
-        let selectedContact = this.deleteContactsIDs[i];
-        contactsArray.splice(
-          contactsArray.findIndex((v) => v.id === selectedContact),
-          1
-        );
+        arrayOfIDs.push(this.deleteContactsIDs[i].id)        
       }
-      this.deleteContactsIDs = [];
+       axios.post("api/delete_contacts",{
+        contacts: arrayOfIDs,
+       }).then(() => {
+        axios.get("api/get_contacts").then((res) => {
+          this.contacts = res.data;
+          arrayOfIDs = [];
+          this.deleteContactsIDs = [];
+        })
+      })
+      
     },
 
     manageActiveMessage() {
@@ -1321,63 +1344,96 @@ export default {
     },
 
     blockSender() {
-      const contactToBlock = this.messages.find(
+      let contactToBlock = this.messages.find(
         (message) => message.messageActive == true
-      ).messageID;
-      const contactsArray = this.alphabetisedContacts;
-      const blockContact = contactsArray.find(
-        (contact) => contact.id === contactToBlock
-      );
-      blockContact.contactBlocked = true;
-      this.messagesSelected = false;
-      this.isActiveMessageOptionsDisplayed = false;
-      this.deleteActiveMessage();
+      ).id;
+
+      axios.get("api/blockcontact/" + contactToBlock).then((res) => {
+        console.log(res);
+        axios.get("api/get_contacts").then((res) => {
+          this.contacts = res.data;
+          contactToBlock = '';
+          this.messagesSelected = false;
+          this.isActiveMessageOptionsDisplayed = false;
+          this.deleteActiveMessage();
+        })
+      })  
     },
 
     deleteActiveMessage() {
       const messageToDelete = this.messages.find(
         (message) => message.messageActive == true
-      ).messageID;
-      const messageArray = this.messages;
-      messageArray.splice(
-        messageArray.findIndex((v) => v.messageID === messageToDelete),
-        1
-      );
-      this.messagesSelected = false;
-      this.isActiveMessageOptionsDisplayed = false;
+      ).id;
+
+       axios.get("api/delete_group/" + messageToDelete).then(() => {
+        axios.get("api/get_groups").then((res) => {
+          this.messages = res.data;
+          this.messagesSelected = false;
+          this.isActiveMessageOptionsDisplayed = false;
+          })
+      });
+      // const messageArray = this.messages;
+      // messageArray.splice(
+      //   messageArray.findIndex((v) => v.messageID === messageToDelete),
+      //   1
+      // );
+      
     },
 
     leaveGroup() {
-      const activeMessage = this.messages.find(
+      const activeMessageID = this.messages.find(
         (message) => message.messageActive == true
-      );
-      const activeMessageRecipientsIDArray = activeMessage.messageRecipientIDs;
-      const activeMessageRecipientsNamesArray =
-        activeMessage.messageRecipientNames;
+      ).id;
 
-      if (activeMessageRecipientsIDArray.includes(this.thisUserID)) {
-        this.deleteActiveMessage();
-        activeMessage.recipientMessages.push({
-          messageSenderID: "memberLeftGroup",
-          message: this.thisUserName + " left the group.",
-        });
-        activeMessageRecipientsIDArray.splice(
-          activeMessageRecipientsIDArray.findIndex(
-            (v) => v.recipientID === this.thisUserID
-          ),
-          1
-        );
-        activeMessageRecipientsNamesArray.splice(
-          activeMessageRecipientsNamesArray.findIndex(
-            (v) => v.recipientName === this.thisUserName
-          ),
-          1
-        );
-      }
+      console.log(activeMessageID)
 
-      this.messagesSelected = false;
-      this.isActiveMessageOptionsDisplayed = false;
-      this.cancelActiveMessage();
+      //  axios
+      //     .post("api/add_message", {
+      //       group_id: currentMessageID,
+      //       message: this.thisUserNewMessage,
+      //     })
+      //     .then(() => {
+      //       axios.get("api/get_groups").then((res) => {
+      //         this.messages = res.data;
+      //         this.selectedMessage(currentMessageID);
+      //       });
+      //     });
+     // const activeMessageRecipientsIDArray = activeMessage.users;
+
+      //console.log(activeMessageRecipientsIDArray)
+
+      // for (let i = 0; i < activeMessageRecipientsIDArray.length; i++) {
+      //   console.log(activeMessageRecipientsIDArray[i].id) 
+      // }
+      // const activeMessageRecipientsNamesArray =
+      //   activeMessage.messageRecipientNames;
+
+      // if (activeMessageRecipientsIDArray.includes(this.thisUserID)) {
+      //   this.deleteActiveMessage();
+      //   // activeMessage.recipientMessages.push({
+      //   //   messageSenderID: "memberLeftGroup",
+      //   //   message: this.thisUserName + " left the group.",
+      //   // });
+      //   activeMessageRecipientsIDArray.splice(
+      //     activeMessageRecipientsIDArray.findIndex(
+      //       (v) => v.recipientID === this.thisUserID
+      //     ),
+      //     1
+      //   );
+      //   activeMessageRecipientsNamesArray.splice(
+      //     activeMessageRecipientsNamesArray.findIndex(
+      //       (v) => v.recipientName === this.thisUserName
+      //     ),
+      //     1
+      //   );
+      // }
+
+
+
+
+      // this.messagesSelected = false;
+      // this.isActiveMessageOptionsDisplayed = false;
+      // this.cancelActiveMessage();
     },
     searchContacts(val) {
       this.searchContactValue = val;
@@ -1432,6 +1488,7 @@ export default {
 
       axios.get("api/get_contacts").then((res) => {
         this.contacts = res.data;
+        console.log(this.contacts)
         this.messagesLoading = false;
 
         if (this.$store.state.newContact.contactID) {
@@ -1595,6 +1652,17 @@ footer {
 
       @media (min-width: $desktop) {
         display: flex;
+        padding: 0 $spacing-s;
+        font-size: $copy-desktop-s;
+        border-radius: $border-radius-reg;
+
+        &:hover{
+          background-color: $lightergrey;
+        }
+
+        &:before{
+          margin-right: $spacing-xs;
+        }
       }
     }
 
@@ -1616,7 +1684,15 @@ footer {
     @media (min-width: $desktop) {
       width: auto;
       color: $copy;
-      text-indent: 0;
+      text-indent: 0; 
+      padding: 0 $spacing-s;
+      font-size: $copy-desktop-s;
+      border-radius: $border-radius-reg;
+
+      &:hover{
+        background-color: $lightergrey;
+      }
+     
 
       .sr-text {
         clip: initial;
@@ -1637,7 +1713,7 @@ footer {
 
       @media (min-width: $desktop) {
         color: $copy;
-        margin-right: $spacing-s;
+        margin-right: $spacing-xs;
       }
     }
   }
@@ -1679,6 +1755,13 @@ footer {
     border-top: rem(1) solid $dark-green;
     padding: $spacing-s 0;
     cursor: pointer;
+    transition: background-color .25s ease-in-out;
+
+     @media(min-width:$desktop){
+      &:hover{
+        background-color: $lightergrey;
+      }
+    }
 
     @media (min-width: $desktop) {
       color: $copy;
@@ -1700,6 +1783,10 @@ footer {
         position: relative;
         margin-right: rem(-32);
         padding-right: rem(48);
+
+        &:hover{
+          background-color: $copy;
+        }
       }
     }
 
@@ -1729,6 +1816,7 @@ footer {
       position: relative;
       border-radius: 100%;
       margin-left: $spacing-s;
+      cursor:pointer;
 
       &--checked:before {
         border-radius: 100%;
@@ -1824,6 +1912,15 @@ footer {
     @media (min-width: $desktop) {
       font-size: $copy-desktop-xs;
       flex: 0 0 rem(70);
+    }
+  }
+
+  &--manage{
+    .messages-list__item:hover,
+    .contacts-list__item:hover,
+    .group-contacts-list__item:hover{
+      cursor: default;
+      background-color:transparent;
     }
   }
 }
@@ -2130,6 +2227,7 @@ footer {
   &__list-item {
     display: inline-block;
     margin-left: rem(-10);
+
 
     &:first-of-type {
       margin-left: 0;

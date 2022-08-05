@@ -438,19 +438,19 @@ export default {
   }
 
   .dialog-container{
-    position: relative;
 
     @media(min-width:$desktop){
       order:2;
+      position: relative;
     }
   }
 
   dialog{
-    width: 100%;
-    position: relative;
 
     @media(min-width:$desktop){
+      width: 100%;
       border-radius: $border-radius-reg;
+      position: relative;
     }
     
     .cta--primary{

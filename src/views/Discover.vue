@@ -130,10 +130,8 @@ export default {
     },
     selectedGenre(value){
       this.genreDropdownValue = value
-      //console.log(value)
     },
     selectedDistance(value){
-      console.log(value)
       this.distanceDropdownValue = value
     },
     enteredNameSearch(value){
@@ -218,14 +216,12 @@ export default {
     }).then((res) => {
       this.bands = res.data;
       this.resultsLoading = false;
-      console.log(res.data)
     });
 
     axios.post("api/search",{
       account_type: 'promoter',
     }).then((res) => {
       this.promoters = res.data;
-      //console.log(res)
     });
   }
 

@@ -52,7 +52,7 @@ export default {
       padding-left: 2rem;
       padding-right: 2rem;
       &:hover{
-        background-color: $lightgrey;
+        background-color: $lightergrey;
       }
     }
   }

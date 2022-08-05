@@ -61,7 +61,7 @@ export default {
       padding-right: rem(32);
 
       &:hover{
-        background-color: $lightgrey;
+        background-color: $lightergrey;
       }
     }
   }

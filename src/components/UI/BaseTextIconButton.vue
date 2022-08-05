@@ -105,7 +105,7 @@ export default {
       width:calc(100% + 4rem);
 
       &:hover{
-        background-color: $lightgrey;
+        background-color: $lightergrey;
       }
     }
   }
@@ -117,10 +117,18 @@ export default {
       padding-left: rem(32);
       padding-right: rem(32);
       width:calc(100% + 4rem);
-      &:hover,
-      &--active{
-        background-color: $lightgrey;
+      &:hover{
+        background-color: $lightergrey;
       }
+      &--active{
+        color: #fff;
+        background-color: $mid-grey;
+
+        &:hover{
+          color: $copy;
+        }
+      }
+
     }
   }
 </style>

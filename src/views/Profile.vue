@@ -1604,6 +1604,16 @@ export default {
       bottom: $spacing-s;
       right: $spacing-s;
     }
+
+    > .text-icon-button{
+      @media(min-width:$desktop){
+        padding: 0 $spacing-s;
+        border-radius: $border-radius-reg;
+        &:hover{
+          background-color: $lightergrey;
+        }
+      }
+    }
   }
 
   &__image-container {
@@ -1729,6 +1739,16 @@ export default {
       font-size: $copy-desktop-s;
     }
   }
+
+  .text-icon-button{
+    @media(min-width:$desktop){
+      padding: 0 $spacing-s;
+      border-radius: $border-radius-reg;
+      &:hover{
+        background-color: $lightergrey;
+      }
+    }
+  }
 }
 
 .player-embed-block {
@@ -1769,6 +1789,16 @@ export default {
     padding: $spacing-m;
     width: 100%;
     border-radius: $border-radius-reg;
+  }
+
+  .text-icon-button{
+    @media(min-width:$desktop){
+      padding: 0 $spacing-s;
+      border-radius: $border-radius-reg;
+      &:hover{
+        background-color: $lightergrey;
+      }
+    }
   }
 }
 
