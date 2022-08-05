@@ -107,7 +107,10 @@ export default {
       &:hover{
         background-color: $lightergrey;
       }
-    }
+      &:nth-of-type(2){
+        margin-top:$spacing-s;
+      }
+    }    
   }
 
   .sidebar-nav .text-icon-button{

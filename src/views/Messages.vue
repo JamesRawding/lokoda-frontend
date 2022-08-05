@@ -13,10 +13,17 @@
             <h1>Messages</h1>
             <div class="messages-header__button-container">
               <base-text-icon-button
+                v-if="!messagesToDelete"
                 @click="showContacts"
                 mode="text-icon-button text-icon-button--new-message"
                 aria-label="new message"
                 ><span class="sr-text">New</span></base-text-icon-button
+              >
+              <base-text-icon-button
+                v-else
+                @click="showMessageList"
+                mode="text-icon-button text-icon-button--back"
+                >Messages</base-text-icon-button
               >
               <base-text-icon-button
                 @click="showMessagesOptions"
@@ -24,6 +31,8 @@
                 aria-label="manage messages"
                 ><span class="sr-text">Manage</span></base-text-icon-button
               >
+
+              
               <transition>
                 <base-dialog
                   @closeDialog="hideMessagesOptions"
