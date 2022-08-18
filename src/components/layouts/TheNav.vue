@@ -83,7 +83,7 @@
 
     &--discover{
       &:before{
-        content: '\f2b9';
+        content: '\f8eb';
         font-size: rem(30);
       }
     }

@@ -256,12 +256,12 @@
           ></search-bar>
           <div>
             <ul v-if="contactsToBlock" class="contacts-list contacts-list--manage">
-              <li
+              <!-- <li
                 @click="startGroupMessage"
                 class="contacts-list__item contacts-list__item--new-group"
               >
                 New Group Chat
-              </li>
+              </li> -->
               <li
                 @click="contactForBlocking(contact)"
                 @keypress.enter="contactForBlocking(contact)"
@@ -301,12 +301,12 @@
               </li>
             </ul>
             <ul v-else-if="contactsToDelete" class="contacts-list contacts-list--manage">
-              <li
+              <!-- <li
                 @click="startGroupMessage"
                 class="contacts-list__item contacts-list__item--new-group"
               >
                 New Group Chat
-              </li>
+              </li> -->
               <li
                 @click="contactForDeletion(contact)"
                 @keypress.enter="contactForDeletion(contact)"
@@ -539,11 +539,11 @@
 
         <div class="block-contacts-count" v-if="contactsToBlock">
           <span
-            >{{ blockContactsCount }} contact<span
+            >{{ blockContactsCount }} Contact<span
               v-if="blockContactsIDs.length > 1"
               >s</span
             >
-            selected</span
+            Selected</span
           >
           <ul class="block-contacts-count__list">
             <li
@@ -577,11 +577,11 @@
 
         <div class="delete-contacts-count" v-if="contactsToDelete">
           <span
-            >{{ deleteContactsCount }} contact<span
+            >{{ deleteContactsCount }} Contact<span
               v-if="deleteContactsIDs.length > 1"
               >s</span
             >
-            selected</span
+            Selected</span
           >
           <ul class="delete-contacts-count__list">
             <li
@@ -631,9 +631,9 @@
           >
           <hr />
           <span v-if="groupChatContacts.length === 1"
-            >{{ groupChatCount }} contact selected</span
+            >{{ groupChatCount }} Contact Selected</span
           >
-          <span v-else>{{ groupChatCount }} contacts selected</span>
+          <span v-else>{{ groupChatCount }} Contacts Selected</span>
           <ul class="group-chat-start__list">
             <li
               class="group-chat-start__list-item"
@@ -1449,7 +1449,7 @@ export default {
       // this.cancelActiveMessage();
     },
     searchContacts(val) {
-      this.searchContactValue = val;
+      this.searchContactValue = val.toLowerCase();
     },
 
     getGroupsInterval() {
