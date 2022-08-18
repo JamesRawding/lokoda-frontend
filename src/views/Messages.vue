@@ -1468,17 +1468,18 @@ export default {
 
       if (this.searchContactValue) {
         unblockedContacts = this.contacts.filter(
-          (m) => m.name.toLowerCase().indexOf(this.searchContactValue) > -1
+          (m) => m.name.toLowerCase().indexOf(this.searchContactValue) > -1 && m.blocked == false
         );
       }
-
       return unblockedContacts
-        .filter((unblockedContacts) => unblockedContacts.name.toLowerCase())
-        .sort((a, b) => {
-          if (a.name < b.name) return -1;
-          if (a.name > b.name) return 1;
-          return 0;
-        });
+      // return unblockedContacts
+      //   .filter((unblockedContacts) => unblockedContacts.name.toLowerCase())
+      //   .sort((a, b) => {
+      //     if (a.name < b.name) return -1;
+      //     if (a.name > b.name) return 1;
+      //     return 0;
+      //   });
+
     },
   },
   updated() {
@@ -1501,7 +1502,7 @@ export default {
 
       axios.get("api/get_contacts").then((res) => {
         this.contacts = res.data;
-        console.log(this.contacts)
+        //console.log(this.contacts)
         this.messagesLoading = false;
 
         if (this.$store.state.newContact.contactID) {
