@@ -1193,7 +1193,7 @@ export default {
       this.newMessage = false;
       this.cancelActiveMessage();
 
-      axios.get("api/delete_group/" + this.newChatID).then((res) => {
+      axios.get("api/leave_group/" + this.newChatID).then((res) => {
         this.messages = res.data.messages;
 
         axios.get("api/get_groups").then((res) => {
@@ -1222,7 +1222,7 @@ export default {
       this.hideMessagesOptions();
     },
     messageForDeletion(val) {
-      axios.get("api/delete_group/" + val.id).then(() => {
+      axios.get("api/leave_group/" + val.id).then(() => {
         axios.get("api/get_groups").then((res) => {
           this.messages = res.data;
           this.messagesToDelete = false;
@@ -1378,7 +1378,7 @@ export default {
         (message) => message.messageActive == true
       ).id;
 
-       axios.get("api/delete_group/" + messageToDelete).then(() => {
+       axios.get("api/leave_group/" + messageToDelete).then(() => {
         axios.get("api/get_groups").then((res) => {
           this.messages = res.data;
           this.messagesSelected = false;
