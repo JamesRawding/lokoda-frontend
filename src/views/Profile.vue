@@ -717,6 +717,13 @@
               <template #label>Bandcamp</template>
             </base-input>
             <base-input
+              inputId="soundcloudLink"
+              inputType="url"
+              v-model="soundcloudLink"
+            >
+              <template #label>Soundcloud</template>
+            </base-input>
+            <base-input
               inputId="deezerLink"
               inputType="url"
               v-model="deezerLink"
@@ -764,6 +771,13 @@
               v-model="facebookLink"
             >
               <template #label>Facebook</template>
+            </base-input>
+            <base-input
+              inputId="snapchatLink"
+              inputType="url"
+              v-model="snapchatLink"
+            >
+              <template #label>Snapchat</template>
             </base-input>
             <base-button buttonType="submit" mode="cta cta--primary"
               >Save Social Links</base-button
@@ -976,6 +990,7 @@ export default {
       instagramLink: "",
       twitterLink: "",
       facebookLink: "",
+      snapchatLink: "",
     };
   },
   methods: {
@@ -1270,6 +1285,12 @@ export default {
           url: this.appleMusicLink,
         };
         this.profileSocialLinks.push(apple);
+        axios.post("/api/social", {
+          name: 'apple',
+          url: this.appleMusicLink,
+        }).then((res) => {
+          console.log(res)
+        });
       }
       if (this.bandcampLink !== "") {
         const bandcamp = {
@@ -1278,6 +1299,12 @@ export default {
           url: this.bandcampLink,
         };
         this.profileSocialLinks.push(bandcamp);
+        axios.post("/api/social", {
+          name: 'bandcamp',
+          url: this.bandcampLink,
+        }).then((res) => {
+          console.log(res)
+        });
       }
       if (this.spotifyLink !== "") {
         const spotify = {
@@ -1286,6 +1313,12 @@ export default {
           url: this.spotifyLink,
         };
         this.profileSocialLinks.push(spotify);
+        axios.post("/api/social", {
+          name: 'spotify',
+          url: this.spotifyLink,
+        }).then((res) => {
+          console.log(res)
+        });
       }
       if (this.deezerLink !== "") {
         const deezer = {
@@ -1294,6 +1327,12 @@ export default {
           url: this.deezerLink,
         };
         this.profileSocialLinks.push(deezer);
+        axios.post("/api/social", {
+          name: 'deezer',
+          url: this.deezerLink,
+        }).then((res) => {
+          console.log(res)
+        });
       }
       if (this.soundcloudLink !== "") {
         const soundcloud = {
@@ -1302,6 +1341,12 @@ export default {
           url: this.soundcloudLink,
         };
         this.profileSocialLinks.push(soundcloud);
+        axios.post("/api/social", {
+          name: 'soundcloud',
+          url: this.soundcloudLink,
+        }).then((res) => {
+          console.log(res)
+        });
       }
 
       if (this.youtubeLink !== "") {
@@ -1311,6 +1356,12 @@ export default {
           url: this.youtubeLink,
         };
         this.profileSocialLinks.push(youtube);
+        axios.post("/api/social", {
+          name: 'youtube',
+          url: this.youtubeLink,
+        }).then((res) => {
+          console.log(res)
+        });
       }
       if (this.tiktokLink !== "") {
         const tiktok = {
@@ -1319,6 +1370,12 @@ export default {
           url: this.tiktokLink,
         };
         this.profileSocialLinks.push(tiktok);
+        axios.post("/api/social", {
+          name: 'tiktok',
+          url: this.tiktokLink,
+        }).then((res) => {
+          console.log(res)
+        });
       }
       if (this.instagramLink !== "") {
         const instagram = {
@@ -1327,6 +1384,12 @@ export default {
           url: this.instagramLink,
         };
         this.profileSocialLinks.push(instagram);
+        axios.post("/api/social", {
+          name: 'instagram',
+          url: this.instagramLink,
+        }).then((res) => {
+          console.log(res)
+        });
       }
       if (this.twitterLink !== "") {
         const twitter = {
@@ -1335,6 +1398,12 @@ export default {
           url: this.twitterLink,
         };
         this.profileSocialLinks.push(twitter);
+        axios.post("/api/social", {
+          name: 'twitter',
+          url: this.twitterLink,
+        }).then((res) => {
+          console.log(res)
+        });
       }
       if (this.facebookLink !== "") {
         const facebook = {
@@ -1343,6 +1412,27 @@ export default {
           url: this.facebookLink,
         };
         this.profileSocialLinks.push(facebook);
+        axios.post("/api/social", {
+          name: 'facebook',
+          url: this.facebookLink,
+        }).then((res) => {
+          console.log(res)
+        });
+      }
+
+      if (this.snapchatLink !== "") {
+        const snapchat = {
+          id: "10",
+          name: "snapchat",
+          url: this.snapchatLink,
+        };
+        this.profileSocialLinks.push(snapchat);
+        axios.post("/api/social", {
+          name: 'snapchat',
+          url: this.snapchatLink,
+        }).then((res) => {
+          console.log(res)
+        });
       }
 
       this.socialDialogVisible = false;
@@ -1496,7 +1586,6 @@ export default {
     const url = this.$route.params.profileURL;
     this.profileDataLoading = true;
     axios.get("/api/profile/" + url).then((res) => {
-      console.log(res)
       this.profileImageURL = res.data.image_url;
       this.profileID = res.data.id;
       this.profileName = res.data.name;
@@ -1538,6 +1627,60 @@ export default {
 
     axios.get("/api/get_genres").then((res) => {
       this.allGenres = res.data;
+    });
+
+
+   axios.get("/api/social/" + url).then((res) => {
+      this.profileSocialLinks = res.data;
+
+        
+
+      const returnAppleObject = res.data.find(element => element.name === 'apple');
+      const returnBandcampObject = res.data.find(element => element.name === 'bandcamp');
+      const returnSpotifypObject = res.data.find(element => element.name === 'spotify');
+      const returnDeezerObject = res.data.find(element => element.name === 'deezer');
+      const returnYoutubeObject = res.data.find(element => element.name === 'youtube');
+      const returnSoundcloudObject = res.data.find(element => element.name === 'soundcloud');
+      const returnTiktokObject = res.data.find(element => element.name === 'tiktok');
+      const returnInstagramObject = res.data.find(element => element.name === 'instagram');
+      const returnTwitterObject = res.data.find(element => element.name === 'twitter');
+      const returnFacebookObject = res.data.find(element => element.name === 'facebook');
+      const returnSnapchatObject = res.data.find(element => element.name === 'snapchat');
+      
+      
+      if(returnAppleObject != undefined){
+        this.appleMusicLink = returnAppleObject.url;
+      }
+      if(returnBandcampObject != undefined){
+        this.bandcampLink = returnBandcampObject.url;
+      }
+      if(returnSpotifypObject != undefined){
+        this.spotifyLink = returnSpotifypObject.url;
+      }
+      if(returnDeezerObject != undefined){
+        this.deezerLink = returnDeezerObject.url;
+      }
+      if(returnYoutubeObject != undefined){
+        this.youtubeLink = returnYoutubeObject.url;
+      }
+      if(returnSoundcloudObject != undefined){
+        this.soundcloudLink = returnSoundcloudObject.url;
+      }
+      if(returnTiktokObject != undefined){
+        this.tiktokLink = returnTiktokObject.url;
+      }
+      if(returnInstagramObject != undefined){
+        this.instagramLink = returnInstagramObject.url;
+      }
+      if(returnTwitterObject != undefined){
+        this.twitterLink = returnTwitterObject.url;
+      }
+      if(returnFacebookObject != undefined){
+        this.facebookLink = returnFacebookObject.url;
+      }
+      if(returnSnapchatObject != undefined){
+        this.snapchatLink = returnSnapchatObject.url;
+      }
     });
   },
 };
