@@ -1246,11 +1246,18 @@ export default {
     },
 
     submitBioForm() {
-      // console.log(this.profileBio);
 
       if (this.bioCharactersRemaining >= 0) {
         this.bioDialogVisible = false;
         this.confirmedBio = this.profileBio;
+
+        axios
+          .post("/api/add_bio",{
+            "bio": this.confirmedBio
+          })
+          .then((res) => {
+            console.log(res)
+          });
       }
     },
 
@@ -1489,13 +1496,17 @@ export default {
     const url = this.$route.params.profileURL;
     this.profileDataLoading = true;
     axios.get("/api/profile/" + url).then((res) => {
+      console.log(res)
       this.profileImageURL = res.data.image_url;
       this.profileID = res.data.id;
       this.profileName = res.data.name;
       this.profileEmail = res.data.email;
       this.profilePlayerURL = res.data.embed_url;
       this.profileLocation = res.data.location;
+      this.profileBio = res.data.bio;
+      this.confirmedBio = res.data.bio;
       this.profileDataLoading = false;
+      
 
       if (
         this.$store.state.loggedIn &&
