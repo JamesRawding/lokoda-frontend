@@ -14,8 +14,8 @@
     </div>
     <slot name="status"></slot>
     <div class="show-card__buttons" v-if="$store.state.loggedIn && $store.state.userID == profileID">
-      <base-icon-button @click.stop="editShow" mode="icon-button icon-button--ellipsis" ariaLabel="Edit show"></base-icon-button>
-      <base-icon-button @click.stop="deleteShow" mode="icon-button icon-button--trash" ariaLabel="Delete show"></base-icon-button>
+      <base-icon-button @click.stop="editShow" @keypress.stop="editShow" mode="icon-button icon-button--ellipsis" ariaLabel="Edit show"></base-icon-button>
+      <base-icon-button @click.stop="deleteShow" @keypress.stop="deleteShow" mode="icon-button icon-button--trash" ariaLabel="Delete show"></base-icon-button>
     </div>
   </base-card>
 </template>

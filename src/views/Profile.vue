@@ -311,8 +311,10 @@
               ariaLabel="edit shows"
             ></base-icon-button>
             <show-card
+              role="button"
               tabindex="0"
               @click="fullShowDetails(show)"
+              @keypress.enter="fullShowDetails(show)"
               @editThisShow="editShow(show)"
               @deleteThisShow="cancelShow(show)"
               v-for="show in profileShowsResults"
@@ -2090,6 +2092,11 @@ dialog .cta--primary {
 
     &:first-of-type {
       margin-top: $spacing-m;
+    }
+
+    span{
+      display: block;
+      line-height: 1.5;
     }
   }
 
