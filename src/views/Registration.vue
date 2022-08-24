@@ -3,8 +3,10 @@
     <div class="grid-parent">
       <div class="form-column">
         <!-- <img src="../assets/images/lokoda-logo-reverse.svg" alt="lokoda logo"> -->
-        <img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo-reverse_bjnnfx.svg" alt="lokoda logo">
-
+        <router-link to="/">
+          <img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo-reverse_bjnnfx.svg" alt="lokoda logo">
+          <span class="sr-text">Discover</span>
+        </router-link>
         <h1>Register Now</h1>
         <p>Create an account today. Already a user? <router-link to="/login">Log in here</router-link></p>
         <form @submit.prevent="submitForm">
@@ -64,8 +66,10 @@
           KEEPING LOCAL MUSIC ALIVE
         </p>
         <!-- <img src="../assets/images/lokoda-logo-reverse.svg" alt="lokoda logo"> -->
-        <img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo-reverse_bjnnfx.svg" alt="lokoda logo">
-
+        <router-link to="/">
+          <img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo-reverse_bjnnfx.svg" alt="lokoda logo">
+          <span class="sr-text">Discover</span>
+        </router-link>
       </div>
     </div>
   </main>

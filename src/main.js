@@ -12,6 +12,7 @@ const store = createStore({
   state(){
     return {
       loggedIn: false,
+      loggedInTime: '',
       userID: '',
       cookieID: '',
       token: '',
@@ -46,6 +47,7 @@ const store = createStore({
       state.loggedIn = true;
       state.userID = payload.userID;
       state.token = payload.token;
+      state.loggedInTime = Date.now();
     },
     loggedIn(state){
       function getCookie(cname) {
@@ -94,6 +96,7 @@ const store = createStore({
         document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
       }
       deleteCookie('loggedIn')
+      state.loggedInTime = '';
 
     },
     messagesUnreadIncrement(state){

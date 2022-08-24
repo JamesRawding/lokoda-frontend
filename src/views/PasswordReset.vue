@@ -1,8 +1,10 @@
 <template>
 <main>
     <!-- <img src="../assets/images/lokoda-logo-reverse.svg" alt="lokoda logo"> -->
-    <img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo-reverse_bjnnfx.svg" alt="lokoda logo">
-
+     <router-link to="/">
+        <img src="https://res.cloudinary.com/dgddraffq/image/upload/v1645182101/lokoda-logo-reverse_bjnnfx.svg" alt="lokoda logo">
+        <span class="sr-text">Discover</span>
+    </router-link>
     <h1>Password Reset</h1>
     <div v-if="!confirmMessage">
       <p>Reset your password to get back on track.</p>
@@ -109,13 +111,13 @@ export default {
     text-align:center;
   }
 
-  a{
-    @include cta;
-    @include cta--primary;
-    text-decoration: none;
-    display: inline-block;
-    margin-top:$spacing-l;
-  }
+  // a{
+  //   @include cta;
+  //   @include cta--primary;
+  //   text-decoration: none;
+  //   display: inline-block;
+  //   margin-top:$spacing-l;
+  // }
 
   
 </style>
