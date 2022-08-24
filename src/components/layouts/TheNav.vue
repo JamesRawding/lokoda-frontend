@@ -1,15 +1,31 @@
 <template>
   <nav>
     <div v-if="$store.state.loggedIn">
-      <router-link class="header-link header-link--profile" :to="'/profile/'+this.$store.state.userID"><span class="sr-only">user profile</span></router-link>
-      <router-link class="header-link header-link--discover" to="/"><span class="header-link__text">Discover</span></router-link>
-      <router-link v-if="$store.state.messagesUnread < 1" class="header-link header-link--messages" to="/messages"><span class="header-link__text">Messages</span></router-link>
-      <router-link v-else class="header-link header-link--message" to="/messages"><span class="header-link__message-count">{{$store.state.messagesUnread}}</span><span class="header-link__text">Messages</span></router-link>
+      <div>
+        <router-link class="header-link header-link--profile" :to="'/profile/'+this.$store.state.userID"><span class="sr-only">user profile</span></router-link>
+        <span class="mobile-nav-label">Profile</span>
+      </div>
+      <div>
+        <router-link class="header-link header-link--discover" to="/"><span class="header-link__text">Discover</span></router-link>
+        <span class="mobile-nav-label">Discover</span>
+      </div>
+      <div>
+         <router-link v-if="$store.state.messagesUnread < 1" class="header-link header-link--messages" to="/messages"><span class="header-link__text">Messages</span></router-link>
+         <router-link v-else class="header-link header-link--message" to="/messages"><span class="header-link__message-count">{{$store.state.messagesUnread}}</span><span class="header-link__text">Messages</span></router-link>
+         <span class="mobile-nav-label">Messages</span>
+      </div>
+     
     </div>
     <div v-else>
       <!-- <router-link class="header-link header-link--home" to="/login"><span class="header-link__text">log in</span></router-link> -->
-      <router-link class="header-link header-link--discover" to="/"><span class="header-link__text">Discover</span></router-link>
-      <router-link class="header-link header-link--login" to="/login"><span class="header-link__text">Log In</span></router-link>
+      <div>
+        <router-link class="header-link header-link--discover" to="/"><span class="header-link__text">Discover</span></router-link>
+        <span class="mobile-nav-label">Discover</span>
+      </div>
+      <div>
+         <router-link class="header-link header-link--login" to="/login"><span class="header-link__text">Log In</span></router-link>
+         <span class="mobile-nav-label">Log In</span>
+      </div>
     </div>
   </nav>
 </template>
@@ -35,6 +51,8 @@
     div{
       display: flex;
       justify-content: space-around;
+      flex-wrap: wrap;
+      text-align: center;
     }
   }
 
@@ -165,6 +183,18 @@
     .header-link__text:after{
         background-color: $dark-green;
       }
+    }
+
+    .mobile-nav-label{
+      color:#fff;
+      font-size: $copy-mobile-xs;
+      display: block;
+      flex:1 0 100%;
+
+      @media(min-width:$desktop){
+        display: none;
+      }
+          
     }
   
 
