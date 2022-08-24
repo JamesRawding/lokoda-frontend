@@ -99,6 +99,7 @@ export default {
     margin-right:rem(-16);
     padding: 0 $spacing-s;
     margin-top:$spacing-m;
+    background-color:$lightergrey;
 
     @media(min-width:$desktop){
       box-shadow: none;
@@ -114,6 +115,7 @@ export default {
     margin-left:rem(-16);
     margin-right:rem(-16);
     padding: 0 $spacing-s;
+    background-color: #fff;
 
     @media(min-width:$desktop){
       height: auto;

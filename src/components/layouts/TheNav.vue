@@ -101,7 +101,7 @@
 
     &--discover{
       &:before{
-        content: '\f8eb';
+        content: '\f2b9';
         font-size: rem(30);
       }
     }

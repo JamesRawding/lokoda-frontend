@@ -7,8 +7,8 @@
   <main class="page-container">
     
     <section class="discover-intro">
-      <h1>Discover</h1>
-      <p>Find artists/promoters in your area. Search by <strong>city</strong> or by <strong>name</strong>.</p>
+      <h1 class="h3">Discover</h1>
+      <p>Find artists/promoters in your area.</p>
     </section>
     <the-filters @changedNameSearch="enteredNameSearch" @changedLocationSearch="enteredLocationSearch" @changedGenre="selectedGenre" @changedDistance="selectedDistance"></the-filters>
     <div class="segmented-controls segmented-controls--mobile">

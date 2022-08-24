@@ -11,8 +11,8 @@
               href="javascript:history.go(-1)"
               ><span class="sr-only"> Go Back</span></a
             >
-            <h1 v-if="messagesToDelete">Delete Chats</h1>
-            <h1 v-else>Chats</h1>
+            <h1 class="h3" v-if="messagesToDelete">Delete Chats</h1>
+            <h1 class="h3" v-else>Chats</h1>
             <div class="messages-header__button-container">
               <base-text-icon-button
                 v-if="!messagesToDelete"
@@ -214,9 +214,9 @@
               mode="icon-button icon-button--back"
               ariaLabel="back to messages"
             ></base-icon-button> -->
-            <h1 v-if="contactsToBlock">Block Contacts</h1>
-            <h1 v-else-if="contactsToDelete">Delete Contacts</h1>
-            <h1 v-else>New Chat</h1>
+            <h1 class="h3" v-if="contactsToBlock">Block Contacts</h1>
+            <h1 class="h3" v-else-if="contactsToDelete">Delete Contacts</h1>
+            <h1 class="h3" v-else>New Chat</h1>
             <div class="messages-header__button-container">
               <base-text-icon-button
                 @click="showMessageList"
@@ -409,7 +409,7 @@
               mode="icon-button icon-button--back"
               ariaLabel="back to contacts"
             ></base-icon-button> -->
-            <h1>New Group Chat</h1>
+            <h1 class="h3">New Group Chat</h1>
             <div class="messages-header__button-container">
               <base-text-icon-button
                 @click="showContacts"
@@ -1723,7 +1723,7 @@ footer {
 
     @media (min-width: $desktop) {
       color: $copy;
-      font-size: $copy-desktop-l;
+      font-size: $copy-desktop-m;
     }
   }
 

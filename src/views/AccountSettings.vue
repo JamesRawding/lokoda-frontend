@@ -6,7 +6,7 @@
   <the-header></the-header>
   <main class="page-container">
     <section class="settings-intro">
-      <h1>Account</h1>
+      <h1 class="h3">Account</h1>
       <p>Change details on your account</p>
     </section>
     

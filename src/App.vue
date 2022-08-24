@@ -294,10 +294,10 @@ a{
     max-width: rem(1200);
     margin: 0 auto;
     width:100%;
-    padding: $spacing-l $spacing-s rem(90) $spacing-s;
+    padding: $spacing-m $spacing-s rem(90) $spacing-s;
 
     @media(min-width:$desktop){
-      padding: $spacing-l $spacing-m;
+      padding: $spacing-m;
     }
   }
 
