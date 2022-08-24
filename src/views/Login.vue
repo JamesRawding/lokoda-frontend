@@ -77,6 +77,10 @@ export default {
                   });
                   setCookie('loggedIn',res.data.id, 2 );
                   this.$router.push('/profile/' + res.data.id);
+
+                  setTimeout(() => {
+                     this.$store.commit('logout');
+                  }, "3600000")
                 }
            
             });

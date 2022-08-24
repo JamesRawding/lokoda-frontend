@@ -11,7 +11,7 @@ export default {
  created(){
 
    return this.$store.commit('loggedIn')
- },
+ }
 }
 </script>
 
@@ -247,6 +247,20 @@ a{
 
   .v-enter-from,
   .v-leave-to {
+    opacity: 0;
+  }
+
+  .account-enter-active,
+  .account-leave-active {
+    transition: opacity 0.5s ease;
+
+    @media(min-width:$desktop){
+      transition: none;
+    }
+  }
+
+  .account-enter-from,
+  .account-leave-to {
     opacity: 0;
   }
 

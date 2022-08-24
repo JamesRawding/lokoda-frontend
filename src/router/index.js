@@ -144,6 +144,6 @@ router.beforeEach((to, __, next) => {
   } else {
     next() // does not require auth, make sure to always call next()!
   }
-})
+}) 
 
 export default router

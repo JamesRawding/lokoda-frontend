@@ -20,7 +20,7 @@
           <strong>Location</strong> <span>{{profileLocation}}</span>
         </div>
         
-          <transition>
+          <transition name="account">
             <base-dialog v-if="photoDialogVisible"  @closeDialog="hideSettingsDialog('Profile Picture')">
               
               <strong>Edit Photo</strong>
@@ -39,7 +39,7 @@
                 <base-button @click="hideSettingsDialog('Profile Picture')" buttonType="button" mode="cta cta--primary">Save</base-button>
             </base-dialog>
             </transition>
-            <transition>
+            <transition name="account">
             <base-dialog v-if="passwordDialogVisible"  @closeDialog="hideSettingsDialog('Manage Password')">
               <strong>Manage Password</strong>
               <form @submit.prevent="submitForm">
@@ -62,7 +62,7 @@
               </form>
             </base-dialog>
             </transition>
-            <transition>
+            <transition name="account">
             <base-dialog v-if="nameDialogVisible"  @closeDialog="hideSettingsDialog('Change Name')">
               <strong>Change Name</strong>
               <form @submit.prevent="submitName">
@@ -73,7 +73,7 @@
               </form>
             </base-dialog>
             </transition>
-            <transition>
+            <transition name="account">
             <base-dialog v-if="locationDialogVisible"  @closeDialog="hideSettingsDialog('Change Location')">
               <strong>Change Location</strong>
               <form @submit.prevent="submitLocation">
@@ -84,7 +84,7 @@
               </form>
             </base-dialog>
             </transition>
-            <transition>
+            <transition name="account">
             <base-dialog mode="modal-dialog modal-dialog--warning" v-if="deleteAccountDialogVisible"  @closeDialog="hideSettingsDialog('Delete Account')">
               <strong>Delete Account</strong>
               <p>Are you sure? This cant be undone!</p>
@@ -123,6 +123,13 @@
 
 
   </main>
+   <transition>
+      <base-dialog mode="modal-dialog modal-dialog--warning modal-dialog--login-warning" v-if="!$store.state.loggedIn">
+        <strong>Your session has expired</strong>
+        <p>Log in to access this page</p>
+        <router-link class="cta cta--primary" to="/login"><span class="header-link__text">Log In</span></router-link>
+      </base-dialog>
+      </transition>
   <the-footer></the-footer>
   </div>
 </template>
@@ -360,13 +367,16 @@ export default {
           this.confirmDeleteAccountDialogVisible = false
           this.$router.push('/registration');
         });
-    }
+    },
   },
   directives: {
     clickOutside: vClickOutside.directive
   },
 
   mounted() {
+    if(!this.$store.state.loggedIn){
+      this.$router.push('/');
+    }
     this.profileDataLoading = true;
     axios.get("/api/profile/" + this.$store.state.userID).then((res) => {
       this.profileID = res.data.id;
@@ -378,6 +388,7 @@ export default {
       this.profileLocation = res.data.location;
       this.profileDataLoading = false;
     });
+
   }
 }
 </script>
@@ -531,6 +542,17 @@ export default {
   .incorrect-password{
     margin-top:$spacing-m;
   }
+
+.modal-dialog--login-warning{
+  text-align: center;
+  a.cta--primary{
+    @include cta;
+    @include cta--primary;
+    display:inline-block;
+    text-decoration: none;
+    margin-top:$spacing-m;
+  }
+}
 
 
 </style>

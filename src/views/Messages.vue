@@ -101,7 +101,8 @@
                 <div class="messages-list__item-details">
                   <!-- <h2 class="messages-list__item-name"><span v-for="recipientName in messageThread.messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h2> -->
                   <h2 class="messages-list__item-name">
-                    {{ messageThread.name }}
+                    <!-- {{ messageThread.name }} -->
+                    {{ messageThreadName(messageThread) }}
                   </h2>
                   <!-- <p class="messages-list__item-preview">{{messageThread.latestMessage}}</p> -->
                   <p class="messages-list__item-preview">
@@ -157,7 +158,8 @@
                 <div class="messages-list__item-details">
                   <!-- <h2 class="messages-list__item-name"><span v-for="recipientName in messageThread.messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h2> -->
                   <h2 class="messages-list__item-name">
-                    {{ messageThread.name }}
+                    <!-- {{ messageThread.name }} -->
+                    {{messageThreadName(messageThread)}}
                   </h2>
                   <!-- <p class="messages-list__item-preview">{{messageThread.latestMessage}}</p> -->
                   <p class="messages-list__item-preview">
@@ -695,11 +697,21 @@
             </li>
           </ul>
           <div class="new-message-input-container">
-            <new-message-input
+            <!-- <new-message-input
               @sendNewMessage="submitStartChat"
               ariaLabel="Send new message"
               inputId="newMessage"
-            ></new-message-input>
+            ></new-message-input> -->
+            <form @submit.prevent="submitStartChat" class="new-message-input">
+              <input 
+                ref="activeMessageInput"
+                v-model="thisUserNewMessage" 
+                type="text" 
+                ariaLabel="Send new message"
+                id="newChatInput"
+                placeholder="New Message">
+                <base-icon-button  buttonType="submit" mode="icon-button icon-button--send" ariaLabel="send message"></base-icon-button>
+            </form>
           </div>
         </section>
 
@@ -711,7 +723,8 @@
               mode="icon-button icon-button--back"
               ariaLabel="close message"
             ></base-icon-button>
-            <h3 class="messages-list__item-name">{{ chatName }}</h3>
+            <!-- <h3 class="messages-list__item-name">{{ chatName }}</h3> -->
+            <h3 class="messages-list__item-name">{{oneToOneChatName()}}</h3>
 
             <base-icon-button
               @click="manageActiveMessage"
@@ -768,7 +781,7 @@
               </div>
             </base-dialog>
           </transition>
-          <ul class="active-messages__messages-list">
+          <ul class="active-messages__messages-list" tabindex="0" ref="activeMessageList">
             <li
               v-for="message in selectedMessagesArray.slice().reverse()"
               :key="message.id"
@@ -798,15 +811,35 @@
             </li>
           </ul>
           <div class="new-message-input-container">
-            <new-message-input
+            <!-- <new-message-input
+              ref="activeMessageInput"
               @sendNewMessage="submitNewMessage"
               ariaLabel="Send new message"
               inputId="newMessage"
-            ></new-message-input>
+            ></new-message-input> -->
+            <form @submit.prevent="submitNewMessage" class="new-message-input">
+              <input 
+                ref="activeMessageInput"
+                v-model="thisUserNewMessage" 
+                type="text" 
+                ariaLabel="Send new message"
+                id="newMessageInput"
+                placeholder="New Message">
+                <base-icon-button  buttonType="submit" mode="icon-button icon-button--send" ariaLabel="send message"></base-icon-button>
+            </form>
           </div>
         </section>
       </div>
     </main>
+
+
+    <transition>
+      <base-dialog mode="modal-dialog modal-dialog--warning modal-dialog--login-warning" v-if="!$store.state.loggedIn">
+        <strong>Your session has expired</strong>
+        <p>Log in to access this page</p>
+        <router-link class="cta cta--primary" to="/login"><span class="header-link__text">Log In</span></router-link>
+      </base-dialog>
+      </transition>
     <the-footer></the-footer>
   </div>
 </template>
@@ -818,7 +851,6 @@ import TheFooter from "../components/layouts/TheFooter.vue";
 import BaseButton from "../components/UI/BaseButton.vue";
 import BaseTextIconButton from "../components/UI/BaseTextIconButton.vue";
 import BaseIconButton from "../components/UI/BaseIconButton.vue";
-import NewMessageInput from "../components/UI/NewMessageInput.vue";
 import SearchBar from "../components/UI/SearchBar.vue";
 import BaseInput from "../components/UI/BaseInput.vue";
 import BaseDialog from "../components/UI/BaseDialog.vue";
@@ -832,7 +864,6 @@ export default {
     BaseIconButton,
     SearchBar,
     BaseInput,
-    NewMessageInput,
     BaseDialog,
   },
   props: ["profileID"],
@@ -905,6 +936,10 @@ export default {
       this.groupContactsListVisible = false;
       this.newMessage = false;
       this.chatName = chosenMessage.name;
+      this.selectedMessagesUsers = chosenMessage.users;
+      this.$nextTick(function () {
+        this.$refs.activeMessageInput.focus()
+      })
       axios.get("api/get_group/" + chosenMessage.id).then((res) => {
         this.selectedMessagesArray = res.data.messages;
         this.selectedMessagesUsers = res.data.users;
@@ -961,6 +996,17 @@ export default {
       }
     },
 
+    messageThreadName(val){
+      for (let i = 0; i < val.users.length; i++) {
+        if (val.users.length == 2){
+          const recipientName = val.users.find(user => user.id !== this.thisUserID).name
+          return recipientName
+        }else{
+          return val.name
+        }
+      }
+    },
+
     lastMessagePreview(val) {
       for (let i = 0; i < val.messages.length; i++) {
         return val.messages[i].message;
@@ -974,7 +1020,19 @@ export default {
       }
     },
 
-    submitStartChat(val) {
+    oneToOneChatName(){
+      const usersInGroup = this.selectedMessagesUsers
+      for (let i = 0; i < usersInGroup.length; i++) {
+        if (usersInGroup.length == 2){
+          const recipientName = usersInGroup.find(user => user.id !== this.thisUserID).name
+          return recipientName
+        }else{
+          return this.chatName
+        }
+      }
+    },
+
+    submitStartChat() {
       if(this.groupChatContactsIDs.length > 1){
           axios
         .post("/api/create_group", {
@@ -987,7 +1045,7 @@ export default {
           axios
             .post("api/add_message", {
               group_id: this.newChatID,
-              message: val,
+              message: this.thisUserNewMessage,
             })
             .then(() => {
               axios.get("api/get_groups").then((res) => {
@@ -1009,7 +1067,7 @@ export default {
           axios
             .post("api/add_message", {
               group_id: this.newChatID,
-              message: val,
+              message: this.thisUserNewMessage,
             })
             .then(() => {
               axios.get("api/get_groups").then((res) => {
@@ -1024,7 +1082,7 @@ export default {
    
     },
 
-    submitNewMessage(val) {
+    submitNewMessage() {
       const latestMessageInfo = this.messages.find(
         (message) => message.messageActive == true
       );
@@ -1052,7 +1110,7 @@ export default {
       const currentDay = currentDate.getDay();
       const currentDayFormatted = currentDay + nth(currentDay);
       const currentDayMonth = currentDayFormatted + " " + currentMonth;
-      this.thisUserNewMessage = val;
+     // this.thisUserNewMessage = val;
 
       if (this.thisUserNewMessage !== "" && this.thisUserNewMessage !== " ") {
         latestMessageInfo.latestMessage = this.thisUserNewMessage;
@@ -1068,6 +1126,7 @@ export default {
             axios.get("api/get_groups").then((res) => {
               this.messages = res.data;
               this.selectedMessage(currentMessageID);
+              this.thisUserNewMessage = '';
             });
           });
       }
@@ -1393,11 +1452,29 @@ export default {
     },
 
     leaveGroup() {
-      const activeMessageID = this.messages.find(
+      const groupToLeave = this.messages.find(
         (message) => message.messageActive == true
       ).id;
+      axios
+        .post("api/add_message", {
+          group_id: groupToLeave,
+          message: this.thisUserName + " left the group.",
+        })
+        .then(() => {
+          axios.get("api/leave_group/" + groupToLeave).then(() => {
+            axios.get("api/get_groups").then((res) => {
+              this.messages = res.data;
+              this.messagesSelected = false;
+              this.isActiveMessageOptionsDisplayed = false;
+              })
+          });
+        });
+      
+      // const activeMessageID = this.messages.find(
+      //   (message) => message.messageActive == true
+      // ).id;
 
-      console.log(activeMessageID)
+      // console.log(activeMessageID)
 
       //  axios
       //     .post("api/add_message", {
@@ -1490,6 +1567,9 @@ export default {
     }
   },
   mounted() {
+    if(!this.$store.state.loggedIn){
+      this.$router.push('/');
+    }
     // for (let i = 0; i < this.messages.length; i++) {
     //   if (this.messages[i].messageRead == false) {
     //   }
@@ -2317,4 +2397,45 @@ footer {
     margin: $spacing-m 0;
   }
 }
+
+.new-message-input{
+  position: relative;
+
+  input{
+    @include baseInput;
+    margin-top:0;
+    padding-right: rem(44);
+
+    @media(min-width:$desktop){
+      padding-right: rem(50);
+    }
+  }
+
+
+  .icon-button{
+    position: absolute;
+    bottom:0;
+    right: 0;
+    color: $copy;
+    background-color: transparent;
+    margin-right: $spacing-xs;
+
+    @media(min-width:$desktop){
+      bottom: rem(4);
+    }    
+  }
+}
+
+.modal-dialog--login-warning{
+  text-align: center;
+  a.cta--primary{
+    @include cta;
+    @include cta--primary;
+    display:inline-block;
+    text-decoration: none;
+    margin-top:$spacing-m;
+  }
+}
+  
+  
 </style>

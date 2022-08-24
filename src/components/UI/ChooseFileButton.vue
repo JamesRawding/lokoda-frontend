@@ -1,15 +1,20 @@
 <template>
-  <div>
+  <div @keypress.enter="triggerButton" role="button" tabindex="0">
     <label :for="fileUploadID">
       <slot></slot>
     </label>
-    <input @input="$emit('update:modelValue', $event.target.value)" :class="mode" accept="image/png, image/jpeg" type="file" :id="fileUploadID" :name="fileUploadName">
+    <input ref="upload" @input="$emit('update:modelValue', $event.target.value)" :class="mode" accept="image/png, image/jpeg" type="file" :id="fileUploadID" :name="fileUploadName">
   </div> 
 </template>
 
 <script>
 export default {
-  props: ['mode', 'fileUploadID', 'fileUploadName', 'modelValue']
+  props: ['mode', 'fileUploadID', 'fileUploadName', 'modelValue'],
+  methods:{
+    triggerButton(){
+      this.$refs.upload.click()
+    },
+  },
 }
 </script>
 

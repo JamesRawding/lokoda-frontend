@@ -107,8 +107,14 @@ export default {
       &:hover{
         background-color: $lightergrey;
       }
+
+     
     }    
   }
+
+   dialog .input-container +  .text-icon-button{
+      margin-top: $spacing-s;
+    }
 
   .sidebar-nav .text-icon-button{
     @media(min-width:$desktop){

@@ -241,7 +241,7 @@
         </transition>
 
         <div>
-          <section class="bio" v-if="confirmedBio.length">
+          <section class="bio" v-if="confirmedBio !== null">
             <h2>Bio</h2>
             <base-icon-button
               v-if="$store.state.loggedIn && userID == profileID"
