@@ -1,7 +1,7 @@
 <template>
   <div class="page-outer messages-page">
     <the-header></the-header>
-    <main class="page-container">
+    <main ref="messagesPageBody" class="page-container">
       <div class="page-grid">
         <section v-if="messagesListVisible">
           <div class="messages-header">
@@ -349,7 +349,10 @@
 
             <ul v-else class="contacts-list">
               <li
+                role="button"
+                tabindex="0"
                 @click="startGroupMessage"
+                @keypress.enter="startGroupMessage"
                 class="contacts-list__item contacts-list__item--new-group"
               >
                 New Group Chat
@@ -429,6 +432,7 @@
             <ul class="group-contacts-list group-contacts-list--manage">
               <li
                 @click="addGroupRecipient(contact.id)"
+                @keypress.enter="addGroupRecipient(contact.id)"
                 class="group-contacts-list__item"
                 v-for="contact in alphabetisedContacts"
                 :key="contact.id"
@@ -615,7 +619,7 @@
           >
         </div>
 
-        <div class="group-chat-start" v-if="groupChatContacts.length > 0">
+        <div class="group-chat-start" v-if="groupChatContacts.length > 1">
           <base-input
             inputId="groupName"
             inputType="text"
@@ -659,12 +663,13 @@
 
         <section v-if="newMessage" class="active-messages active-messages--new">
           <div class="active-messages__header">
-            <base-button
+            <!-- <base-button
               @click="cancelMessage"
               buttonType="button"
               mode="active-messages__cancel-btn"
               >Cancel <span class="sr-only">new chat</span></base-button
-            >
+            > -->
+            <button ref="firstButtonFocus" @click="cancelMessage" class="active-messages__cancel-btn">Cancel <span class="sr-only">new chat</span></button>
             <h3 class="messages-list__item-name">{{ chatName }}</h3>
           </div>
           <ul class="active-messages__messages-list">
@@ -697,21 +702,11 @@
             </li>
           </ul>
           <div class="new-message-input-container">
-            <!-- <new-message-input
+            <new-message-input
               @sendNewMessage="submitStartChat"
               ariaLabel="Send new message"
               inputId="newMessage"
-            ></new-message-input> -->
-            <form @submit.prevent="submitStartChat" class="new-message-input">
-              <input 
-                ref="activeMessageInput"
-                v-model="thisUserNewMessage" 
-                type="text" 
-                ariaLabel="Send new message"
-                id="newChatInput"
-                placeholder="New Message">
-                <base-icon-button  buttonType="submit" mode="icon-button icon-button--send" ariaLabel="send message"></base-icon-button>
-            </form>
+            ></new-message-input>
           </div>
         </section>
 
@@ -726,12 +721,13 @@
             <!-- <h3 class="messages-list__item-name">{{ chatName }}</h3> -->
             <h3 class="messages-list__item-name">{{oneToOneChatName()}}</h3>
 
-            <base-icon-button
+            <!-- <base-icon-button
               @click="manageActiveMessage"
               buttonType="button"
               mode="icon-button icon-button--ellipsis"
               ariaLabel="more options"
-            ></base-icon-button>
+            ></base-icon-button> -->
+            <button @click="manageActiveMessage" ref="firstButtonFocus" class="icon-button icon-button--ellipsis" ariaLabel="more options"><span class="sr-text">Show options</span></button>
           </div>
           <transition>
             <base-dialog
@@ -781,7 +777,7 @@
               </div>
             </base-dialog>
           </transition>
-          <ul class="active-messages__messages-list" tabindex="0" ref="activeMessageList">
+          <ul class="active-messages__messages-list" tabindex="0">
             <li
               v-for="message in selectedMessagesArray.slice().reverse()"
               :key="message.id"
@@ -811,22 +807,13 @@
             </li>
           </ul>
           <div class="new-message-input-container">
-            <!-- <new-message-input
-              ref="activeMessageInput"
+            <new-message-input
+             
               @sendNewMessage="submitNewMessage"
               ariaLabel="Send new message"
               inputId="newMessage"
-            ></new-message-input> -->
-            <form @submit.prevent="submitNewMessage" class="new-message-input">
-              <input 
-                ref="activeMessageInput"
-                v-model="thisUserNewMessage" 
-                type="text" 
-                ariaLabel="Send new message"
-                id="newMessageInput"
-                placeholder="New Message">
-                <base-icon-button  buttonType="submit" mode="icon-button icon-button--send" ariaLabel="send message"></base-icon-button>
-            </form>
+            ></new-message-input>
+            
           </div>
         </section>
       </div>
@@ -851,6 +838,7 @@ import TheFooter from "../components/layouts/TheFooter.vue";
 import BaseButton from "../components/UI/BaseButton.vue";
 import BaseTextIconButton from "../components/UI/BaseTextIconButton.vue";
 import BaseIconButton from "../components/UI/BaseIconButton.vue";
+import NewMessageInput from "../components/UI/NewMessageInput.vue";
 import SearchBar from "../components/UI/SearchBar.vue";
 import BaseInput from "../components/UI/BaseInput.vue";
 import BaseDialog from "../components/UI/BaseDialog.vue";
@@ -861,6 +849,7 @@ export default {
     TheFooter,
     BaseButton,
     BaseTextIconButton,
+    NewMessageInput,
     BaseIconButton,
     SearchBar,
     BaseInput,
@@ -938,7 +927,7 @@ export default {
       this.chatName = chosenMessage.name;
       this.selectedMessagesUsers = chosenMessage.users;
       this.$nextTick(function () {
-        this.$refs.activeMessageInput.focus()
+        this.$refs.firstButtonFocus.focus()
       })
       axios.get("api/get_group/" + chosenMessage.id).then((res) => {
         this.selectedMessagesArray = res.data.messages;
@@ -1032,7 +1021,8 @@ export default {
       }
     },
 
-    submitStartChat() {
+    submitStartChat(val) {
+      this.thisUserNewMessage = val;
       if(this.groupChatContactsIDs.length > 1){
           axios
         .post("/api/create_group", {
@@ -1049,6 +1039,7 @@ export default {
             })
             .then(() => {
               axios.get("api/get_groups").then((res) => {
+                this.thisUserNewMessage = "";
                 this.messages = res.data;
                 this.newMessage = false;
                 this.selectedMessage(this.newChatID);
@@ -1071,6 +1062,7 @@ export default {
             })
             .then(() => {
               axios.get("api/get_groups").then((res) => {
+                this.thisUserNewMessage = "";
                 this.messages = res.data;
                 this.newMessage = false;
                 this.selectedMessage(this.newChatID);
@@ -1082,7 +1074,7 @@ export default {
    
     },
 
-    submitNewMessage() {
+    submitNewMessage(val) {
       const latestMessageInfo = this.messages.find(
         (message) => message.messageActive == true
       );
@@ -1110,7 +1102,7 @@ export default {
       const currentDay = currentDate.getDay();
       const currentDayFormatted = currentDay + nth(currentDay);
       const currentDayMonth = currentDayFormatted + " " + currentMonth;
-     // this.thisUserNewMessage = val;
+      this.thisUserNewMessage = val;
 
       if (this.thisUserNewMessage !== "" && this.thisUserNewMessage !== " ") {
         latestMessageInfo.latestMessage = this.thisUserNewMessage;
@@ -1133,6 +1125,12 @@ export default {
     },
     showContacts() {
       this.hideCounts();
+      this.$nextTick(function () {
+        this.$refs.messagesPageBody.classList.remove('add-recipients-active')
+      })
+      this.$nextTick(function () {
+        this.$refs.messagesPageBody.classList.remove('manage-recipients-active')
+      })
       this.groupChatContacts = [];
       this.groupChatContactsIDs = [];
       this.groupChatCount = 0;
@@ -1150,6 +1148,13 @@ export default {
     showMessageList() {
       this.contactsListVisible = false;
       this.messagesListVisible = true;
+      this.groupChatContacts = [];
+      this.$nextTick(function () {
+        this.$refs.messagesPageBody.classList.remove('add-recipients-active')
+      })
+      this.$nextTick(function () {
+        this.$refs.messagesPageBody.classList.remove('manage-recipients-active')
+      })
       this.hideCounts();
     },
     startGroupMessage() {
@@ -1179,6 +1184,9 @@ export default {
         }
 
         this.newMessage = true;
+        this.$nextTick(function () {
+          this.$refs.firstButtonFocus.focus()
+        })
         const chosenContact = this.contacts.find(
           (contact) => contact.id === val
         );
@@ -1224,6 +1232,9 @@ export default {
 
             this.groupContactsListVisible = false;
             this.newMessage = true;
+            this.$nextTick(function () {
+              this.$refs.firstButtonFocus.focus()
+            })
             this.messagesListVisible = true;
             this.messageRecipientNames = groupContacts;
             this.groupChatContacts = [];
@@ -1245,6 +1256,16 @@ export default {
         groupArray.splice(groupArray.indexOf(contact), 1);
         groupIDsArray.splice(groupIDsArray.indexOf(val), 1);
         this.groupChatCount -= 1;
+      }
+
+      if(groupArray.length > 1){
+        this.$nextTick(function () {
+          this.$refs.messagesPageBody.classList.add('add-recipients-active')
+        })
+      }else{
+        this.$nextTick(function () {
+          this.$refs.messagesPageBody.classList.remove('add-recipients-active')
+        })
       }
     },
     cancelMessage() {
@@ -1351,6 +1372,16 @@ export default {
         blockContactsArray.splice(blockContactsArray.indexOf(val), 1);
         this.blockContactsCount -= 1;
       }
+
+      if(blockContactsArray.length > 0){
+        this.$nextTick(function () {
+          this.$refs.messagesPageBody.classList.add('manage-recipients-active')
+        })
+      }else{
+        this.$nextTick(function () {
+          this.$refs.messagesPageBody.classList.remove('manage-recipients-active')
+        })
+      }
     },
 
     blockSelectedContacts() {
@@ -1385,6 +1416,16 @@ export default {
       } else {
         deleteContactsArray.splice(deleteContactsArray.indexOf(val), 1);
         this.deleteContactsCount -= 1;
+      }
+
+      if(deleteContactsArray.length > 0){
+        this.$nextTick(function () {
+          this.$refs.messagesPageBody.classList.add('manage-recipients-active')
+        })
+      }else{
+        this.$nextTick(function () {
+          this.$refs.messagesPageBody.classList.remove('manage-recipients-active')
+        })
       }
     },
 
@@ -1643,6 +1684,19 @@ export default {
 
   @media (min-width: $desktop) {
     padding-top: $spacing-m;
+    padding-bottom: $spacing-m;
+  }
+}
+
+.add-recipients-active{
+  padding-bottom:rem(300);
+  @media (min-width: $desktop){
+    padding-bottom: $spacing-m;
+  }
+}
+.manage-recipients-active{
+  padding-bottom:rem(160);
+  @media (min-width: $desktop){
     padding-bottom: $spacing-m;
   }
 }
@@ -2068,6 +2122,7 @@ footer {
     max-height: rem(535);
     height: 100%;
     min-height: rem(550);
+    min-width:0;
   }
 
   &__header {
@@ -2084,8 +2139,32 @@ footer {
     }
 
     .icon-button {
+      width:rem(44);
+      height: rem(44);
+      border: rem(2) solid transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background-color: transparent;
       color: #fff;
+
+      &:hover{
+        border-color: $dark-green;
+      }
+
+
+      &:before{
+        font-family: "Font Awesome 5 Pro";
+        font-weight: 300;
+        text-align: center;
+      }
+
+      &--ellipsis{
+        &:before{
+          content:'\f141';
+          font-size: rem(30);
+        }
+      }
     }
 
     .icon-button--back {
@@ -2336,6 +2415,7 @@ footer {
   &__list-item {
     display: inline-block;
     margin-left: rem(-10);
+    vertical-align:middle;
 
 
     &:first-of-type {
@@ -2372,6 +2452,7 @@ footer {
   }
 
   img {
+    vertical-align:bottom;
     width: rem(25);
     height: rem(25);
     overflow: hidden;
@@ -2395,34 +2476,6 @@ footer {
     border: none;
     background-color: $lightgrey;
     margin: $spacing-m 0;
-  }
-}
-
-.new-message-input{
-  position: relative;
-
-  input{
-    @include baseInput;
-    margin-top:0;
-    padding-right: rem(44);
-
-    @media(min-width:$desktop){
-      padding-right: rem(50);
-    }
-  }
-
-
-  .icon-button{
-    position: absolute;
-    bottom:0;
-    right: 0;
-    color: $copy;
-    background-color: transparent;
-    margin-right: $spacing-xs;
-
-    @media(min-width:$desktop){
-      bottom: rem(4);
-    }    
   }
 }
 
