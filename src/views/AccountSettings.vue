@@ -3,7 +3,7 @@
    <div><span class="spinner"></span>Settings loading</div>
 </div>
 <div class="page-outer" v-else>
-  <the-header></the-header>
+  <the-header :unreadMessageCounter="messageCount"></the-header>
   <main class="page-container">
     <section class="settings-intro">
       <h1 class="h3">Account</h1>
@@ -183,6 +183,7 @@ export default {
       nameUpdatedToast: false,
       locationUpdatedToast: false,
       passwordUpdatedToast: false,
+      messageCount: 0,
       // avatarAddedToast: false,
       // avatarDeletedToast: false,
 
@@ -388,6 +389,18 @@ export default {
       this.profileLocation = res.data.location;
       this.profileDataLoading = false;
     });
+
+    if(this.$store.state.loggedIn){
+    axios.get("/api/unread_messages").then((res) => {
+      this.messageCount = res.data
+      })
+
+    setInterval(() => {
+      axios.get("/api/unread_messages").then((res) => {
+        this.messageCount = res.data;
+      })
+    }, 60000);
+    }
 
   }
 }

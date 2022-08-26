@@ -10,8 +10,8 @@
         <span class="mobile-nav-label">Discover</span>
       </div>
       <div>
-         <router-link v-if="$store.state.messagesUnread < 1" class="header-link header-link--messages" to="/messages"><span class="header-link__text">Messages</span></router-link>
-         <router-link v-else class="header-link header-link--message" to="/messages"><span class="header-link__message-count">{{$store.state.messagesUnread}}</span><span class="header-link__text">Messages</span></router-link>
+         <router-link v-if=" navMessageCounter < 1" class="header-link header-link--messages" to="/messages"><span class="header-link__text">Messages</span></router-link>
+         <router-link v-else class="header-link header-link--message" to="/messages"><span class="header-link__message-count">{{navMessageCounter}}</span><span class="header-link__text">Messages</span></router-link>
          <span class="mobile-nav-label">Messages</span>
       </div>
      
@@ -27,8 +27,20 @@
          <span class="mobile-nav-label">Log In</span>
       </div>
     </div>
+
   </nav>
 </template>
+
+<script>
+
+ 
+export default {
+  
+  props:['navMessageCounter'],
+}
+</script>
+
+
  
 
 <style lang="scss" scoped>

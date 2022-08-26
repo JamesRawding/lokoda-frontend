@@ -6,7 +6,7 @@
     <div><span class="spinner"></span>Profile loading</div>
   </div>
   <div class="page-outer" v-else>
-    <the-header></the-header>
+    <the-header :unreadMessageCounter="messageCount"></the-header>
     <main class="page-container">
       <section class="hero-section">
         <div
@@ -663,7 +663,7 @@
           <h2 class="h3">Follow {{ profileName }} on:</h2>
 
           <div class="social-block__icon-container">
-            <base-icon-link
+            <!-- <base-icon-link
               v-for="link in profileSocialLinks"
               :key="link.name"
               mode="icon-link icon-link--round"
@@ -675,7 +675,21 @@
                 class="fab"
                 :class="'fa-' + link.name"
               ></span>
-            </base-icon-link>
+            </base-icon-link> -->
+            <a 
+              v-for="link in profileSocialLinks"
+              :key="link.name"
+              class="icon-link icon-link--round"
+              :href="link.url"
+              >
+              <span class="sr-text">{{ link.name }} account</span>
+              <span
+                aria-hidden="true"
+                class="fab"
+                :class="'fa-' + link.name"
+              ></span>
+
+            </a>
           </div>
         </div>
       </section>
@@ -858,7 +872,6 @@ import BaseDialog from "../components/UI/BaseDialog.vue";
 import ChooseFileButton from "../components/UI/ChooseFileButton.vue";
 import BaseButton from "../components/UI/BaseButton.vue";
 import BaseIconButton from "../components/UI/BaseIconButton.vue";
-import BaseIconLink from "../components/UI/BaseIconLink.vue";
 import BasePill from "../components/UI/BasePill.vue";
 import BasePillButton from "../components/UI/BasePillButton.vue";
 import BaseInput from "../components/UI/BaseInput.vue";
@@ -873,7 +886,6 @@ export default {
     ChooseFileButton,
     BaseButton,
     BaseIconButton,
-    BaseIconLink,
     BasePill,
     BasePillButton,
     BaseInput,
@@ -993,6 +1005,7 @@ export default {
       twitterLink: "",
       facebookLink: "",
       snapchatLink: "",
+      messageCount: 0,
     };
   },
   methods: {
@@ -1684,6 +1697,18 @@ export default {
         this.snapchatLink = returnSnapchatObject.url;
       }
     });
+
+    if(this.$store.state.loggedIn){
+    axios.get("/api/unread_messages").then((res) => {
+      this.messageCount = res.data
+      })
+
+    setInterval(() => {
+      axios.get("/api/unread_messages").then((res) => {
+        this.messageCount = res.data;
+      })
+    }, 60000);
+    }
   },
 };
 </script>
@@ -2203,8 +2228,43 @@ dialog .cta--primary {
     justify-content: center;
     flex-wrap: wrap;
 
-    a {
+    .icon-link{
+      width:rem(44);
+      height: rem(44);
+      border: none;
+      background-color:#fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $copy;
+      position: relative;
+      text-indent: -100000px;
+      text-decoration: none;
       margin: $spacing-s;
+
+
+      &--round{
+        border-radius:100%;
+        box-shadow: $box-shadow;
+
+        @media(min-width:$desktop){
+          &:after{
+            content:'';
+            border-radius: 100%;
+            border: rem(2) solid transparent;
+            position: absolute;
+            left: rem(-4);
+            right: rem(-4);
+            top: rem(-4);
+            bottom: rem(-4);
+            transition: .25s all ease-in-out;
+          }
+
+          &:hover:after{
+            border-color: $dark-green;
+          }
+        }
+      }
     }
   }
 

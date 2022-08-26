@@ -7,7 +7,7 @@
       <router-link class="cta cta--primary" v-if="!$store.state.loggedIn" to="/registration">Register</router-link>
     </div>
     <div class="header-nav-items">
-      <header-nav></header-nav>
+      <header-nav :navMessageCounter="unreadMessageCounter"></header-nav>
       <router-link class="cta cta--primary" v-if="!$store.state.loggedIn" to="/registration">Register</router-link>
 
       <button @click="showProfileDialog" class="profile-settings-button" aria-label="view profile settings" v-if="$store.state.loggedIn && isProfileDialogDisplayed">
@@ -29,7 +29,7 @@
         <base-text-icon-button @click="logout" mode="text-icon-button text-icon-button--logout">Log Out</base-text-icon-button>
       </base-dialog>
     </transition>  
-    </div>  
+    </div> 
   </header>
 </template>
 
@@ -50,6 +50,7 @@ export default {
     BaseTextIconLink
   },
   //emits:['loggedOut'],
+  props:['unreadMessageCounter'],
   data(){
     return {
       isProfileDialogDisplayed: false,
@@ -68,6 +69,7 @@ export default {
       this.$router.push('/');
     }
   },
+  
   directives: {
     clickOutside: vClickOutside.directive
   }

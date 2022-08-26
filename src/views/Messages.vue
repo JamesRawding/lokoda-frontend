@@ -1,6 +1,6 @@
 <template>
   <div class="page-outer messages-page">
-    <the-header></the-header>
+    <the-header :unreadMessageCounter="messageCount"></the-header>
     <main ref="messagesPageBody" class="page-container">
       <div class="page-grid">
         <section v-if="messagesListVisible">
@@ -865,7 +865,7 @@ export default {
       messagesSelected: false,
       newMessage: false,
       thisUserID: this.$store.state.userID,
-      thisUserName: "Down To Folk",
+      thisUserName: this.$store.state.profile.profileName,
       thisUserNewMessage: "",
       thisUserNewMessageDate: "",
       thisUserNewMessageTime: "",
@@ -900,6 +900,7 @@ export default {
       isActiveMessageOptionsDisplayed: false,
       contacts: [],
       messages: [],
+      messageCount: 0,
     };
   },
   methods: {
@@ -932,6 +933,12 @@ export default {
       axios.get("api/get_group/" + chosenMessage.id).then((res) => {
         this.selectedMessagesArray = res.data.messages;
         this.selectedMessagesUsers = res.data.users;
+        // axios.get("/api/unread_messages").then((res) => {
+        //   this.$store.commit("updateUnreadMessage", res.data);
+        // })
+        axios.get("/api/unread_messages").then((res) => {
+          this.messageCount = res.data
+        })
 
         if (this.selectedMessagesArray && this.selectedMessagesArray.length) {
           this.selectedMessagesArray.map(function (value, index, elements) {
@@ -1662,6 +1669,19 @@ export default {
         }
       });
     });
+    
+    if(this.$store.state.loggedIn){
+    axios.get("/api/unread_messages").then((res) => {
+      this.messageCount = res.data
+      })
+
+    setInterval(() => {
+      axios.get("/api/unread_messages").then((res) => {
+        this.messageCount = res.data;
+      })
+    }, 60000);
+    }
+  
 
     this.getGroupsInterval();
   },

@@ -16,7 +16,8 @@ const store = createStore({
       userID: '',
       cookieID: '',
       token: '',
-      messagesUnread: 2,
+     // messagesUnread: '',
+      messagesUnreadInterval: null,
       newContact: {
         contactID: '',
         contactName: '',
@@ -99,12 +100,11 @@ const store = createStore({
       state.loggedInTime = '';
 
     },
-    messagesUnreadIncrement(state){
-      state.messagesUnread += 1;
-    },
-    messagesUnreadDecrement(state){
-      state.messagesUnread -=1;
-    },
+    // updateUnreadMessage(state,payload){
+    //   state.messagesUnread = payload;
+    //   console.log('fired')
+    //   console.log(payload)
+    // },
     createNewContact(state, payload){
       state.newContact.contactID = payload.contactID;
       state.newContact.contactName = payload.contactName;

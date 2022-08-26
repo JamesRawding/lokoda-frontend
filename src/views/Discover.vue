@@ -3,7 +3,7 @@
     <div><span class="spinner"></span>Results loading</div>
   </div>
   <div v-else class="page-outer">
-  <the-header></the-header>
+  <the-header :unreadMessageCounter="messageCount"></the-header>
   <main class="page-container">
     
     <section class="discover-intro">
@@ -115,6 +115,7 @@ export default {
       bands:[],
       promoters:[],
       resultsLoading: false,
+      messageCount: 0,
     }
   },
   methods:{
@@ -223,6 +224,18 @@ export default {
     }).then((res) => {
       this.promoters = res.data;
     });
+
+    if(this.$store.state.loggedIn){
+    axios.get("/api/unread_messages").then((res) => {
+      this.messageCount = res.data
+      })
+
+    setInterval(() => {
+      axios.get("/api/unread_messages").then((res) => {
+        this.messageCount = res.data;
+      })
+    }, 60000);
+    }
   }
 
   
