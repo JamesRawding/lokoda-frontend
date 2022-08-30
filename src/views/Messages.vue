@@ -109,7 +109,10 @@
                     {{ lastMessagePreview(messageThread) }}
                   </p>
                 </div>
-                <span class="messages-list__item-date">{{
+                <span v-if="messageThread.unread > 0" class="messages-list__item-unread">
+                  {{messageThread.unread}}
+                </span>
+                <span v-else class="messages-list__item-date">{{
                   lastMessageDate(messageThread)
                 }}</span>
               </li>
@@ -921,6 +924,7 @@ export default {
       this.cancelActiveMessage();
       const chosenMessage = this.messages.find((message) => message.id === val);
       chosenMessage.messageActive = true;
+      chosenMessage.unread = 0;
       this.messagesSelected = true;
       this.messagesListVisible = true;
       this.groupContactsListVisible = false;
@@ -1669,7 +1673,7 @@ export default {
         }
       });
     });
-    
+
     if(this.$store.state.loggedIn){
     axios.get("/api/unread_messages").then((res) => {
       this.messageCount = res.data
@@ -2038,6 +2042,7 @@ footer {
   &__item-details {
     overflow: hidden;
     padding-left: $spacing-s;
+    padding-right: $spacing-s;
     flex: 1;
   }
 
@@ -2086,6 +2091,23 @@ footer {
     @media (min-width: $desktop) {
       font-size: $copy-desktop-xs;
       flex: 0 0 rem(70);
+    }
+  }
+
+  &__item-unread {
+    background-color: $primary;
+    font-size: $copy-mobile-xs;
+    width: rem(24);
+    height: rem(24);
+    border-radius:100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color:$copy;
+
+    @media (min-width: $desktop) {
+      font-size: $copy-desktop-xs;
     }
   }
 
