@@ -175,7 +175,7 @@
       </section>
 
       <div class="profile-body">
-        <section class="player-embed-block" v-if="profilePlayerURL">
+        <section class="player-embed-block" v-if="profilePlayerURL && $store.state.thirdPartyAcceptedState">
           <iframe
             title="music player"
             :src="profilePlayerURL"
@@ -191,6 +191,12 @@
             mode="icon-button icon-button--edit icon-button--round"
             ariaLabel="edit music player embed"
           ></base-icon-button>
+        </section>
+        <section class="player-embed-block player-embed-block--no-cookies" v-else-if="profilePlayerURL && !$store.state.thirdPartyAcceptedState">
+          <div>
+            <strong>Third party cookies need to be enabled to listen to this artists tracks.</strong>
+            <base-button @click="enableThirdPartyCookies" mode="cta cta--secondary-reverse">Enable Third-Party Cookies</base-button>
+          </div>
         </section>
         <div
           class="add-player-embed"
@@ -1579,6 +1585,19 @@ export default {
       document.body.classList.remove("print-qr-page");
       this.printQRPage = false;
     },
+    enableThirdPartyCookies(){
+      function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays += 3600000*24*30));
+        let expires = "expires="+d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      }
+      setCookie('cookiesAccepted',true, 2 );
+      setCookie('thirdPartyAccepted',true, 2 );
+      this.$store.commit("thirdPartyAcceptedState",true);
+      this.$store.commit("cookiesAcceptedState",true);
+      window.location.reload()
+    }
   },
   computed: {
     profileShowsResults() {
@@ -1945,6 +1964,20 @@ export default {
     position: absolute;
     top: $spacing-m;
     right: 0;
+  }
+
+  &--no-cookies{
+    div{
+      background-color: $mid-grey;
+      color:#fff;
+      border-radius:$border-radius-reg;
+      padding:$spacing-m;
+      text-align: center;
+    }
+
+    .cta{
+      margin-top:$spacing-m;
+    }
   }
 }
 

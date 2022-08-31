@@ -141,5 +141,30 @@ export default {
       top:0;
     }
   }
+
+  .modal-dialog--cookies{
+    top: auto;
+    height: auto;
+    background-color: transparent;
+
+
+    .dialog-inner{
+      box-shadow: $box-shadow;
+      background-color: $mid-grey;
+      color:#fff;
+
+      @media(min-width:$desktop){
+        max-width: none;
+        border-radius: 0;
+        display: flex;
+      }
+    }
+  }
+
+  .modal-dialog--cookies .icon-button,
+  .modal-dialog--manage-cookies .icon-button{
+    display: none;
+  }
+  
   
 </style>

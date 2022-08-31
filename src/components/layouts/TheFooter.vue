@@ -9,10 +9,15 @@
     </div>
     
   </footer>
+  <the-cookie-banner></the-cookie-banner>
 </template>
 
 <script>
+import TheCookieBanner from '../layouts/TheCookieBanner.vue';
 export default ({
+  components:{
+    TheCookieBanner
+  },
   data() {
     return{
       copyrightYear: ''

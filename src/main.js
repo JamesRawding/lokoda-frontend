@@ -13,6 +13,8 @@ const store = createStore({
     return {
       loggedIn: false,
       loggedInTime: '',
+      cookiesAcceptedState: '',
+      thirdPartyAcceptedState: '',
       userID: '',
       cookieID: '',
       token: '',
@@ -99,6 +101,12 @@ const store = createStore({
       deleteCookie('loggedIn')
       state.loggedInTime = '';
 
+    },
+    cookiesAcceptedState(state, payload){
+      state.cookiesAcceptedState = payload;
+    },
+    thirdPartyAcceptedState(state, payload){
+      state.thirdPartyAcceptedState = payload;
     },
     // updateUnreadMessage(state,payload){
     //   state.messagesUnread = payload;

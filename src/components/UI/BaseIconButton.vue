@@ -108,4 +108,6 @@ export default {
       font-size: rem(20);
     }
   }
+
+
 </style>
