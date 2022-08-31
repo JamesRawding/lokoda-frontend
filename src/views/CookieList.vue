@@ -141,7 +141,7 @@ export default ({
 <style lang="scss" scoped>
 
 table{
-  margin-top: $spacing-l;
+  margin-top: $spacing-m;
   table-layout: fixed;
   overflow-x: auto;
   width: 100%;
