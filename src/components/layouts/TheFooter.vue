@@ -4,24 +4,37 @@
       <nav>
         <router-link  to="/privacy-policy">Privacy Policy</router-link>
         <router-link  to="/terms-and-conditions">Terms &amp; Conditions</router-link>
+        <base-button mode="link-button link-button--reverse" @click="showCookieSettings">Manage Cookie Settings</base-button>
       </nav>
       <span>&copy; Lokoda {{copyrightYear}}</span>
     </div>
     
   </footer>
-  <the-cookie-banner></the-cookie-banner>
+  <the-cookie-banner @updateBannerActiveStatus="showCookieSettings" :banner-active-status="activateCookieSettings"></the-cookie-banner>
 </template>
 
 <script>
 import TheCookieBanner from '../layouts/TheCookieBanner.vue';
+import BaseButton from '../UI/BaseButton.vue';
 export default ({
   components:{
-    TheCookieBanner
+    TheCookieBanner,
+    BaseButton
   },
   data() {
     return{
-      copyrightYear: ''
+      copyrightYear: '',
+      activateCookieSettings: false
     }  
+  },
+  methods:{
+    showCookieSettings(){      
+      if(this.activateCookieSettings){
+        this.activateCookieSettings = false;
+      }else{
+        this.activateCookieSettings = true;
+      }
+    }
   },
   mounted(){
     this.copyrightYear = new Date().getFullYear()
@@ -47,6 +60,14 @@ footer{
     display: block;
 
     @media(min-width: $desktop){
+      padding: rem(14) 0;
+      margin-right: $spacing-m;
+    }
+  }
+
+  button{
+    padding: rem(15) 0;
+     @media(min-width: $desktop){
       padding: rem(14) 0;
       margin-right: $spacing-m;
     }

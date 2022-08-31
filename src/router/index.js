@@ -103,6 +103,14 @@ const routes = [
     }
   },
   {
+    path: '/cookie-list',
+    name: 'CookieList',
+    component: () => import('../views/CookieList.vue'),
+    meta: {
+      title: 'Cookie List',
+    }
+  },
+  {
     path: '/:notFound(.*)',
     redirect: '/404',
   },

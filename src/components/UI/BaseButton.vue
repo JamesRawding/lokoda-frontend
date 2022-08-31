@@ -32,6 +32,27 @@ export default {
     }
   }
 
+  .link-button{
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-thickness: rem(1);
+    text-underline-offset: 0.1em;
+    font-size: inherit;
+
+    &:hover{
+      text-decoration-thickness: rem(2);
+    }
+    &--default{
+       color: $link;
+    }
+
+    &--reverse{
+      color:#fff;
+    }
+  }
+
   button:disabled,
   button[disabled]{
     opacity: .5;

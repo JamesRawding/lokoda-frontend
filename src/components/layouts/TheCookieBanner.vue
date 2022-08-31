@@ -73,6 +73,8 @@ import BasePillButton from "../UI/BasePillButton.vue";
 
 
 export default ({
+  props:['bannerActiveStatus'],
+  emits:['updateBannerActiveStatus'],
   components:{
     BaseButton,
     BaseDialog,
@@ -81,7 +83,7 @@ export default ({
   data(){
     return {
       bannerActive: false,
-      manageCookiesActive: false,
+      manageCookiesActive: this.bannerActiveStatus,
       thirdPartyCookiesAccepted: false,
     }
   },
@@ -115,6 +117,7 @@ export default ({
         setCookie('thirdPartyAccepted',true, 2 );
       }else{
         setCookie('cookiesAccepted',true, 2 );
+        setCookie('thirdPartyAccepted',false, 2 );
       }
       if (window.location.href.indexOf("profile") > -1) {
         window.location.reload() 
@@ -151,8 +154,10 @@ export default ({
       }
 
       if (thirdPartyAcceptedValue === 'true') {
+        this.thirdPartyCookiesAccepted = true;
         this.$store.commit("thirdPartyAcceptedState",true);
       }else{
+        this.thirdPartyCookiesAccepted = false;
         this.$store.commit("thirdPartyAcceptedState",false);
       }
 
@@ -162,11 +167,15 @@ export default ({
       this.manageCookiesActive = true;
     },
     cancelManageCookies(){
-      this.manageCookiesActive = false;
-      this.bannerActive = true;
+      if(this.bannerActiveStatus){
+        this.manageCookiesActive = false;
+        this.$emit('updateBannerActiveStatus', false);
+      }else{
+        this.manageCookiesActive = false;
+        this.bannerActive = true;
+      }
     },
     toggleCookie(){
-
       if(this.thirdPartyCookiesAccepted){
         this.thirdPartyCookiesAccepted = false
       }else{
@@ -177,6 +186,9 @@ export default ({
   },
   mounted(){
     this.checkCookie();
+  },
+  updated() {
+    this.manageCookiesActive = this.bannerActiveStatus;
   }
   
 })

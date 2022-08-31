@@ -1,6 +1,6 @@
 <template>
 <div class="page-outer">
-  <the-header></the-header>
+  <the-header :unreadMessageCounter="messageCount"></the-header>
   <main class="page-container">
     <h1><strong>Terms and Conditions</strong></h1>
 
@@ -134,7 +134,7 @@
 
 
 <script>
-
+import axios from "axios";
 import TheHeader from '../components/layouts/TheHeader.vue';
 import TheFooter from '../components/layouts/TheFooter.vue';
 
@@ -142,6 +142,25 @@ export default ({
   components:{
     TheHeader,
     TheFooter
+  },
+  data(){
+    return {
+      messageCount: 0,
+    }
+    
+  },
+  mounted(){
+    if(this.$store.state.loggedIn){
+      axios.get("/api/unread_messages").then((res) => {
+        this.messageCount = res.data
+        })
+
+      setInterval(() => {
+        axios.get("/api/unread_messages").then((res) => {
+          this.messageCount = res.data;
+        })
+      }, 60000);
+      }
   }
 })
 

@@ -1,6 +1,6 @@
 <template>
   <div class="page-outer">
-    <the-header></the-header>
+    <the-header :unreadMessageCounter="messageCount"></the-header>
     <main class="page-container">
       <h1>Privacy Policy</h1>
       <strong class="last-updated">Last updated May 09, 2022</strong>
@@ -336,7 +336,8 @@
         We may use cookies and similar tracking technologies (like web beacons
         and pixels) to access or store information. Specific information about
         how we use such technologies and how you can refuse certain cookies is
-        set out in our Cookie Notice .
+        set out in our Cookie Notice. A full list of our cookies can be found on our <router-link to="/cookie-list"
+          >cookie list page</router-link>.
       </p>
       <h2 id="inforetain">How long do we keep your information?</h2>
       <p>
@@ -815,6 +816,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import TheHeader from "../components/layouts/TheHeader.vue";
 import TheFooter from "../components/layouts/TheFooter.vue";
 
@@ -823,6 +825,25 @@ export default {
     TheHeader,
     TheFooter,
   },
+  data(){
+    return {
+      messageCount: 0,
+    }
+    
+  },
+  mounted(){
+    if(this.$store.state.loggedIn){
+      axios.get("/api/unread_messages").then((res) => {
+        this.messageCount = res.data
+        })
+
+      setInterval(() => {
+        axios.get("/api/unread_messages").then((res) => {
+          this.messageCount = res.data;
+        })
+      }, 60000);
+      }
+  }
 };
 </script>
 
