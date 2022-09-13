@@ -1628,6 +1628,7 @@ export default {
     // }
 
     axios.get("api/get_groups").then((res) => {
+      console.log(res.data)
       this.messages = res.data;
       this.messagesLoading = false;
 
