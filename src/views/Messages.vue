@@ -1112,28 +1112,57 @@ export default {
         });
       }else{
         //1-2-1 chat
-        axios
-        .post("/api/chat/chat", {
-          name: this.$store.state.newContact.contactName,
-          users: [this.$store.state.newContact.contactID],
-        })
-        .then((res) => {
-          this.newChatID = res.data.id;
-          axios
-            .post("/api/chat/"+this.newChatID+"/messages", {
-              group_id: this.newChatID,
-              message: this.thisUserNewMessage,
+        if(this.$store.state.newContact.contactID !== ''){
+           axios
+            .post("/api/chat/chat", {
+              name: this.$store.state.newContact.contactName,
+              users: [this.$store.state.newContact.contactID],
             })
-            .then(() => {
-              axios.get("api/groups/").then((res) => {
-                this.thisUserNewMessage = "";
-                this.messages = res.data;
-                this.newMessage = false;
-                this.selectedMessage(this.newChatID);
-                this.newChatID = "";
-              });
+            .then((res) => {
+              this.newChatID = res.data.id;
+              axios
+                .post("/api/chat/"+this.newChatID+"/messages", {
+                  group_id: this.newChatID,
+                  message: this.thisUserNewMessage,
+                })
+                .then(() => {
+                  axios.get("api/groups/").then((res) => {
+                    this.thisUserNewMessage = "";
+                    this.messages = res.data;
+                    this.newMessage = false;
+                    this.selectedMessage(this.newChatID);
+                    this.newChatID = "";
+                    this.chatName = "";
+                    this.$store.commit("resetNewContact")
+                  });
+                });
             });
-        });
+        }else{
+          axios
+            .post("/api/chat/chat", {
+              name: this.chatName,
+              users: [this.newChatID],
+            })
+            .then((res) => {
+              this.newChatID = res.data.id;
+              axios
+                .post("/api/chat/"+this.newChatID+"/messages", {
+                  group_id: this.newChatID,
+                  message: this.thisUserNewMessage,
+                })
+                .then(() => {
+                  axios.get("api/groups/").then((res) => {
+                    this.thisUserNewMessage = "";
+                    this.messages = res.data;
+                    this.newMessage = false;
+                    this.selectedMessage(this.newChatID);
+                    this.newChatID = "";
+                    this.chatName = "";
+                  });
+                });
+            });
+        }
+       
       }
    
     },
@@ -1274,18 +1303,20 @@ export default {
         );
         this.messageRecipientNames = chosenContact.name;
         this.chatName = chosenContact.name;
+        this.newChatID = chosenContact.id
 
-        axios
-          .post("/api/create_group", {
-            name: chosenContact.name,
-            users: [chosenContact.id],
-          })
-          .then((res) => {
-            this.newChatID = res.data.id;
-            axios.get("api/groups/").then((res) => {
-              this.messages = res.data;
-            });
-          });
+
+        // axios
+        //   .post("/api/chat/chat", {
+        //     name: chosenContact.name,
+        //     users: [chosenContact.id],
+        //   })
+        //   .then((res) => {
+        //     this.newChatID = res.data.id;
+        //     axios.get("api/groups/").then((res) => {
+        //       this.messages = res.data;
+        //     });
+        //   });
 
         return true;
       } else {
@@ -1351,17 +1382,17 @@ export default {
       }
     },
     cancelMessage() {
-      this.messages.shift();
+     // this.messages.shift();
       this.newMessage = false;
       this.cancelActiveMessage();
 
-      axios.get("api/leave_group/" + this.newChatID).then((res) => {
-        this.messages = res.data.messages;
+      // axios.get("api/leave_group/" + this.newChatID).then((res) => {
+      //   this.messages = res.data.messages;
 
-        axios.get("api/groups/").then((res) => {
-          this.messages = res.data;
-        });
-      });
+      //   axios.get("api/groups/").then((res) => {
+      //     this.messages = res.data;
+      //   });
+      // });
 
       this.chatName = "";
 
