@@ -16,6 +16,7 @@ const store = createStore({
       cookiesAcceptedState: '',
       thirdPartyAcceptedState: '',
       userID: '',
+     // userName: '',
       cookieID: '',
       token: '',
      // messagesUnread: '',

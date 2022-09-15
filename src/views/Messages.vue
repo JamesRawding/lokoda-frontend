@@ -868,7 +868,7 @@ export default {
       messagesSelected: false,
       newMessage: false,
       thisUserID: this.$store.state.userID,
-      thisUserName: this.$store.state.profile.profileName,
+      //thisUserName: this.$store.state.profile.profileName,
       thisUserNewMessage: "",
       thisUserNewMessageDate: "",
       thisUserNewMessageTime: "",
@@ -934,7 +934,10 @@ export default {
       this.$nextTick(function () {
         this.$refs.firstButtonFocus.focus()
       })
-      axios.get("api/get_group/" + chosenMessage.id).then((res) => {
+
+      if(chosenMessage.users.length == 2){
+        //1-2-1 chat
+        axios.get("/api/chat/" + chosenMessage.id).then((res) => {
         this.selectedMessagesArray = res.data.messages;
         this.selectedMessagesUsers = res.data.users;
         // axios.get("/api/unread_messages").then((res) => {
@@ -956,6 +959,54 @@ export default {
           });
         }
       });
+
+      }else{
+        //group chat
+        axios.get("/api/groups/" + chosenMessage.id).then((res) => {
+          this.selectedMessagesArray = res.data.messages;
+          this.selectedMessagesUsers = res.data.users;
+          // axios.get("/api/unread_messages").then((res) => {
+          //   this.$store.commit("updateUnreadMessage", res.data);
+          // })
+          axios.get("/api/unread_messages").then((res) => {
+            this.messageCount = res.data
+          })
+
+          if (this.selectedMessagesArray && this.selectedMessagesArray.length) {
+            this.selectedMessagesArray.map(function (value, index, elements) {
+              let next = elements[index + 1];
+
+              if (elements.length - 1 === index) {
+                // do nothing
+              } else if (value.user_id === next.user_id) {
+                value.doubleMessage = true;
+              }
+            });
+          }
+        });
+      }
+      // axios.get("api/get_group/" + chosenMessage.id).then((res) => {
+      //   this.selectedMessagesArray = res.data.messages;
+      //   this.selectedMessagesUsers = res.data.users;
+      //   // axios.get("/api/unread_messages").then((res) => {
+      //   //   this.$store.commit("updateUnreadMessage", res.data);
+      //   // })
+      //   axios.get("/api/unread_messages").then((res) => {
+      //     this.messageCount = res.data
+      //   })
+
+      //   if (this.selectedMessagesArray && this.selectedMessagesArray.length) {
+      //     this.selectedMessagesArray.map(function (value, index, elements) {
+      //       let next = elements[index + 1];
+
+      //       if (elements.length - 1 === index) {
+      //         // do nothing
+      //       } else if (value.user_id === next.user_id) {
+      //         value.doubleMessage = true;
+      //       }
+      //     });
+      //   }
+      // });
     },
     nameMatch(val) {
       let userName = "";
@@ -1035,8 +1086,9 @@ export default {
     submitStartChat(val) {
       this.thisUserNewMessage = val;
       if(this.groupChatContactsIDs.length > 1){
+        //group chat
           axios
-        .post("/api/create_group", {
+        .post("/api/groups/", {
           name: this.chatName,
           users:this.groupChatContactsIDs
         })
@@ -1044,12 +1096,12 @@ export default {
           this.groupChatContactsIDs = [];
           this.newChatID = res.data.id;
           axios
-            .post("api/add_message", {
+            .post("/api/groups/"+this.newChatID+"/messages", {
               group_id: this.newChatID,
               message: this.thisUserNewMessage,
             })
             .then(() => {
-              axios.get("api/get_groups").then((res) => {
+              axios.get("api/groups/").then((res) => {
                 this.thisUserNewMessage = "";
                 this.messages = res.data;
                 this.newMessage = false;
@@ -1059,20 +1111,21 @@ export default {
             });
         });
       }else{
+        //1-2-1 chat
         axios
-        .post("/api/create_group", {
+        .post("/api/chat/chat", {
           name: this.$store.state.newContact.contactName,
           users: [this.$store.state.newContact.contactID],
         })
         .then((res) => {
           this.newChatID = res.data.id;
           axios
-            .post("api/add_message", {
+            .post("/api/chat/"+this.newChatID+"/messages", {
               group_id: this.newChatID,
               message: this.thisUserNewMessage,
             })
             .then(() => {
-              axios.get("api/get_groups").then((res) => {
+              axios.get("api/groups/").then((res) => {
                 this.thisUserNewMessage = "";
                 this.messages = res.data;
                 this.newMessage = false;
@@ -1120,18 +1173,36 @@ export default {
         latestMessageInfo.latestMessageDate = currentDayMonth;
         latestMessageInfo.latestMessageTimestamp = new Date().getTime();
         this.newMessage = false;
-        axios
-          .post("api/add_message", {
+
+        if(latestMessageInfo.users.length == 2){
+          //1-2-1 chat
+          axios
+          .post(" /api/chat/"+currentMessageID+"/messages", {
             group_id: currentMessageID,
             message: this.thisUserNewMessage,
           })
           .then(() => {
-            axios.get("api/get_groups").then((res) => {
+            axios.get("api/groups/").then((res) => {
               this.messages = res.data;
               this.selectedMessage(currentMessageID);
               this.thisUserNewMessage = '';
             });
           });
+        }else{
+          //group chat
+          axios
+          .post(" /api/groups/"+currentMessageID+"/messages", {
+            group_id: currentMessageID,
+            message: this.thisUserNewMessage,
+          })
+          .then(() => {
+            axios.get("api/groups/").then((res) => {
+              this.messages = res.data;
+              this.selectedMessage(currentMessageID);
+              this.thisUserNewMessage = '';
+            });
+          });
+        }
       }
     },
     showContacts() {
@@ -1211,7 +1282,7 @@ export default {
           })
           .then((res) => {
             this.newChatID = res.data.id;
-            axios.get("api/get_groups").then((res) => {
+            axios.get("api/groups/").then((res) => {
               this.messages = res.data;
             });
           });
@@ -1287,7 +1358,7 @@ export default {
       axios.get("api/leave_group/" + this.newChatID).then((res) => {
         this.messages = res.data.messages;
 
-        axios.get("api/get_groups").then((res) => {
+        axios.get("api/groups/").then((res) => {
           this.messages = res.data;
         });
       });
@@ -1314,7 +1385,7 @@ export default {
     },
     messageForDeletion(val) {
       axios.get("api/leave_group/" + val.id).then(() => {
-        axios.get("api/get_groups").then((res) => {
+        axios.get("api/groups/").then((res) => {
           this.messages = res.data;
           this.messagesToDelete = false;
           this.cancelActiveMessage();
@@ -1488,8 +1559,8 @@ export default {
         (message) => message.messageActive == true
       ).id;
 
-       axios.get("api/leave_group/" + messageToDelete).then(() => {
-        axios.get("api/get_groups").then((res) => {
+       axios.get("api/chat/"+messageToDelete+"/leave").then(() => {
+        axios.get("api/groups/").then((res) => {
           this.messages = res.data;
           this.messagesSelected = false;
           this.isActiveMessageOptionsDisplayed = false;
@@ -1507,14 +1578,20 @@ export default {
       const groupToLeave = this.messages.find(
         (message) => message.messageActive == true
       ).id;
+      const groupToLeaveUsers = this.messages.find(
+        (message) => message.messageActive == true
+      ).users;
+      const thisUserName = groupToLeaveUsers.find(
+        (user) => user.id == this.thisUserID
+      ).name;
       axios
-        .post("api/add_message", {
+        .post("api/groups/"+groupToLeave+"/messages", {
           group_id: groupToLeave,
-          message: this.thisUserName + " left the group.",
+          message: thisUserName + " left the group.",
         })
         .then(() => {
-          axios.get("api/leave_group/" + groupToLeave).then(() => {
-            axios.get("api/get_groups").then((res) => {
+          axios.get("api/groups/" + groupToLeave +"/leave").then(() => {
+            axios.get("api/groups/").then((res) => {
               this.messages = res.data;
               this.messagesSelected = false;
               this.isActiveMessageOptionsDisplayed = false;
@@ -1582,7 +1659,7 @@ export default {
 
     getGroupsInterval() {
       setInterval(function () {
-        axios.get("api/get_groups").then((res) => {
+        axios.get("api/groups/").then((res) => {
           this.messages = res.data;
         });
       }, 60000);
@@ -1627,8 +1704,7 @@ export default {
     //   }
     // }
 
-    axios.get("api/get_groups").then((res) => {
-      console.log(res.data)
+    axios.get("api/groups/").then((res) => {
       this.messages = res.data;
       this.messagesLoading = false;
 
@@ -2374,6 +2450,9 @@ footer {
       top: rem(-20);
       left: 0;
       text-transform: capitalize;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
       @media (min-width: $desktop) {
         font-size: $copy-desktop-xs;
