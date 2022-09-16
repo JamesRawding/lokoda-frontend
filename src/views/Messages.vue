@@ -1557,7 +1557,8 @@ export default {
 
       let contactToBlock = usersInChat.find(
         (user) => user.id !== this.thisUserID
-      )
+      ).id
+
 
 
       axios.get("api/blockcontact/" + contactToBlock).then(() => {
