@@ -387,6 +387,7 @@
                 <div class="messages-list__item-details">
                   <h2 class="messages-list__item-name">{{ contact.name }}</h2>
                 </div>
+                <span class="messages-list__blocked-contact" v-if="contact.blocked == true">(Blocked)</span>
               </li>
             </ul>
           </div>
@@ -2210,6 +2211,18 @@ footer {
 
     @media (min-width: $desktop) {
       font-size: $copy-desktop-xs;
+    }
+  }
+
+  &__blocked-contact{
+    font-weight: normal;
+    flex: 0 0 rem(60);
+    text-align: right;
+    font-size: $copy-mobile-xs;
+
+    @media (min-width: $desktop) {
+      font-size: $copy-desktop-xs;
+      flex: 0 0 rem(70);
     }
   }
 
