@@ -5,7 +5,7 @@
       mode="modal-dialog modal-dialog--cookies"
     >
 
-    <p>By clicking “Accept”, you agree to the storing of cookies on your device from Spotify and Soundcloud.</p>
+    <p>By clicking “Accept”, you agree to the storing of cookies on your device from Spotify, Soundcloud &amp; Bandcamp.</p>
     <div class="modal-dialog__cta-container">
       <base-button mode="cta cta--secondary-reverse" @click="manageCookies" @keypress.enter="manageCookies">Manage</base-button>
       <base-button mode="cta cta--primary" @click="acceptCookies" @keypress.enter="acceptCookies">Accept</base-button>

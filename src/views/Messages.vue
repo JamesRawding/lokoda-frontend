@@ -11,7 +11,7 @@
               href="javascript:history.go(-1)"
               ><span class="sr-only"> Go Back</span></a
             >
-            <h1 class="h3" v-if="messagesToDelete">Delete Chats</h1>
+            <h1 class="h3" v-if="messagesToDelete">Remove Chats</h1>
             <h1 class="h3" v-else>Chats</h1>
             <div class="messages-header__button-container">
               <base-text-icon-button
@@ -44,7 +44,7 @@
                   <base-text-icon-button
                     @click="selectMessagesToDelete"
                     mode="text-icon-button text-icon-button--trash"
-                    >Delete Chat</base-text-icon-button
+                    >Remove Chat</base-text-icon-button
                   >
                 </base-dialog>
               </transition>
@@ -752,6 +752,7 @@
                 >Block Sender</base-text-icon-button
               >
               <base-text-icon-button
+                v-if="selectedMessagesUsers.length == 2"
                 @click="deleteActiveMessage"
                 @keypress.enter="deleteActiveMessage"
                 mode="text-icon-button text-icon-button--trash"
@@ -1415,7 +1416,7 @@ export default {
       this.hideMessagesOptions();
     },
     messageForDeletion(val) {
-      axios.get("api/leave_group/" + val.id).then(() => {
+      axios.get("api/groups/"+val.id+"/leave").then(() => {
         axios.get("api/groups/").then((res) => {
           this.messages = res.data;
           this.messagesToDelete = false;
