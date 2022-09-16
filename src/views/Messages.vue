@@ -1307,18 +1307,6 @@ export default {
         this.newChatID = chosenContact.id
 
 
-        // axios
-        //   .post("/api/chat/chat", {
-        //     name: chosenContact.name,
-        //     users: [chosenContact.id],
-        //   })
-        //   .then((res) => {
-        //     this.newChatID = res.data.id;
-        //     axios.get("api/groups/").then((res) => {
-        //       this.messages = res.data;
-        //     });
-        //   });
-
         return true;
       } else {
         if (this.messages.find((message) => message.id === val)) {
@@ -1424,15 +1412,6 @@ export default {
           })
       });
 
-
-      // const deleteMessagesArray = this.deleteMessagesIDs;
-      // if (!deleteMessagesArray.includes(val)) {
-      //   deleteMessagesArray.push(val);
-      //   this.deleteMessagesCount += 1;
-      // } else {
-      //   deleteMessagesArray.splice(deleteMessagesArray.indexOf(val), 1);
-      //   this.deleteMessagesCount -= 1;
-      // }
     },
 
     // deleteSelectedMessages() {
@@ -1499,7 +1478,6 @@ export default {
     },
 
     blockSelectedContacts() {
-
       let arrayOfIDs = []
       this.contactsToBlock = false;
       this.blockContactsCount = 0;
@@ -1571,13 +1549,20 @@ export default {
     },
 
     blockSender() {
-      let contactToBlock = this.messages.find(
+      let usersInChat = this.messages.find(
         (message) => message.messageActive == true
-      ).id;
+      ).users;
+
+
+      let contactToBlock = usersInChat.find(
+        (user) => user.id !== this.thisUserID
+      )
+
 
       axios.get("api/blockcontact/" + contactToBlock).then(() => {
         axios.get("api/get_contacts").then((res) => {
           this.contacts = res.data;
+          usersInChat = '';
           contactToBlock = '';
           this.messagesSelected = false;
           this.isActiveMessageOptionsDisplayed = false;
@@ -1741,6 +1726,7 @@ export default {
       this.messagesLoading = false;
 
       axios.get("api/get_contacts").then((res) => {
+        console.log(res.data)
         this.contacts = res.data;
         this.messagesLoading = false;
 
@@ -1798,6 +1784,13 @@ export default {
 
     this.getGroupsInterval();
   },
+  watch:{
+    messageCount(){
+      axios.get("api/groups/").then((res) => {
+          this.messages = res.data;
+        });
+    }
+  }
 };
 </script>
 
