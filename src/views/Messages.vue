@@ -1176,6 +1176,8 @@ export default {
       const currentMessageID = this.messages.find(
         (message) => message.messageActive == true
       ).id;
+      console.log('here')
+      console.log(currentMessageID)
 
       const nth = function (d) {
         if (d > 3 && d < 21) return "th";
@@ -1786,13 +1788,13 @@ export default {
 
     this.getGroupsInterval();
   },
-  watch:{
-    messageCount(){
-      axios.get("api/groups/").then((res) => {
-          this.messages = res.data;
-        });
-    }
-  }
+  // watch:{
+  //   messageCount(){
+  //     axios.get("api/groups/").then((res) => {
+  //         this.messages = res.data;
+  //       });
+  //   }
+  // }
 };
 </script>
 
