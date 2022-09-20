@@ -99,12 +99,9 @@
                 ></div>
 
                 <div class="messages-list__item-details">
-                  <!-- <h2 class="messages-list__item-name"><span v-for="recipientName in messageThread.messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h2> -->
                   <h2 class="messages-list__item-name">
-                    <!-- {{ messageThread.name }} -->
                     {{ messageThreadName(messageThread) }}
                   </h2>
-                  <!-- <p class="messages-list__item-preview">{{messageThread.latestMessage}}</p> -->
                   <p class="messages-list__item-preview">
                     {{ lastMessagePreview(messageThread) }}
                   </p>
@@ -159,12 +156,9 @@
                 ></div>
 
                 <div class="messages-list__item-details">
-                  <!-- <h2 class="messages-list__item-name"><span v-for="recipientName in messageThread.messageRecipientNames" :key="recipientName + messageID">{{recipientName}}</span></h2> -->
                   <h2 class="messages-list__item-name">
-                    <!-- {{ messageThread.name }} -->
                     {{messageThreadName(messageThread)}}
                   </h2>
-                  <!-- <p class="messages-list__item-preview">{{messageThread.latestMessage}}</p> -->
                   <p class="messages-list__item-preview">
                     {{ lastMessagePreview(messageThread) }}
                   </p>
@@ -176,15 +170,6 @@
                   mode="icon-button icon-button--trash"
                   ariaLabel="delete this message"
                 ></base-icon-button>
-
-                <!-- <div
-                  class="group-contacts-list__item-checked-status contacts-list__item-checked-status--checked"
-                  v-if="deleteMessagesIDs.includes(messageThread)"
-                ></div>
-                <div
-                  class="group-contacts-list__item-checked-status"
-                  v-else
-                ></div> -->
               </li>
             </ul>
           </div>
@@ -212,11 +197,6 @@
 
         <section v-else-if="contactsListVisible">
           <div class="messages-header">
-            <!-- <base-icon-button
-              @click="showMessageList"
-              mode="icon-button icon-button--back"
-              ariaLabel="back to messages"
-            ></base-icon-button> -->
             <h1 class="h3" v-if="contactsToBlock">Block Contacts</h1>
             <h1 class="h3" v-else-if="contactsToDelete">Delete Contacts</h1>
             <h1 class="h3" v-else>New Chat</h1>
@@ -261,12 +241,6 @@
           ></search-bar>
           <div>
             <ul v-if="contactsToBlock" class="contacts-list contacts-list--manage">
-              <!-- <li
-                @click="startGroupMessage"
-                class="contacts-list__item contacts-list__item--new-group"
-              >
-                New Group Chat
-              </li> -->
               <li
                 @click="contactForBlocking(contact)"
                 @keypress.enter="contactForBlocking(contact)"
@@ -306,12 +280,6 @@
               </li>
             </ul>
             <ul v-else-if="contactsToDelete" class="contacts-list contacts-list--manage">
-              <!-- <li
-                @click="startGroupMessage"
-                class="contacts-list__item contacts-list__item--new-group"
-              >
-                New Group Chat
-              </li> -->
               <li
                 @click="contactForDeletion(contact)"
                 @keypress.enter="contactForDeletion(contact)"
@@ -411,11 +379,6 @@
 
         <section v-else-if="groupContactsListVisible">
           <div class="messages-header">
-            <!-- <base-icon-button
-              @click="showContacts"
-              mode="icon-button icon-button--back"
-              ariaLabel="back to contacts"
-            ></base-icon-button> -->
             <h1 class="h3">New Group Chat</h1>
             <div class="messages-header__button-container">
               <base-text-icon-button
@@ -499,53 +462,7 @@
           </div>
         </section>
 
-        <!-- <div class="delete-messages-count" v-if="messagesToDelete">
-          <span
-            >{{ deleteMessagesCount }} message<span
-              v-if="deleteMessagesIDs.length > 1"
-              >s</span
-            >
-            selected</span
-          >
-          <ul class="delete-messages-count__list">
-            <li
-              class="delete-messages-count__list-item"
-              v-for="message in deleteMessagesIDs"
-              :key="message.messageID"
-            >
-              <div v-if="message.users.length === 2">
-                <div v-for="user in message.users" :key="user.id">
-                  <div
-                    class="delete-messages-count__list-item--fallback"
-                    v-if="user.id !== thisUserID && user.avatar_url == null"
-                  >
-                    {{ user.name.slice(0, 1) }}
-                  </div>
-                  <img
-                    v-else-if="
-                      user.id !== thisUserID && user.avatar_url !== null
-                    "
-                    :src="
-                      'https://res.cloudinary.com/dgddraffq/image/upload/w_60,h_60,c_limit,f_auto,q_auto:best,c_fill,g_faces/' +
-                      user.avatar_url
-                    "
-                    alt=""
-                  />
-                </div>
-              </div>
-              <div class="delete-messages-count__list-item--group" v-else></div>
-            </li>
-          </ul>
-          <base-button
-            v-if="deleteMessagesIDs.length >= 1"
-            @click="deleteSelectedMessages"
-            role="button"
-            mode="cta cta--primary"
-            >Delete Message<span v-if="deleteMessagesIDs.length > 1"
-              >s</span
-            ></base-button
-          >
-        </div> -->
+    
 
         <div class="block-contacts-count" v-if="contactsToBlock">
           <span
@@ -667,12 +584,6 @@
 
         <section v-if="newMessage" class="active-messages active-messages--new">
           <div class="active-messages__header">
-            <!-- <base-button
-              @click="cancelMessage"
-              buttonType="button"
-              mode="active-messages__cancel-btn"
-              >Cancel <span class="sr-only">new chat</span></base-button
-            > -->
             <button ref="firstButtonFocus" @click="cancelMessage" class="active-messages__cancel-btn">Cancel <span class="sr-only">new chat</span></button>
             <h3 class="messages-list__item-name">{{ chatName }}</h3>
           </div>
@@ -722,15 +633,9 @@
               mode="icon-button icon-button--back"
               ariaLabel="close message"
             ></base-icon-button>
-            <!-- <h3 class="messages-list__item-name">{{ chatName }}</h3> -->
             <h3 class="messages-list__item-name">{{oneToOneChatName()}}</h3>
 
-            <!-- <base-icon-button
-              @click="manageActiveMessage"
-              buttonType="button"
-              mode="icon-button icon-button--ellipsis"
-              ariaLabel="more options"
-            ></base-icon-button> -->
+            
             <button @click="manageActiveMessage" ref="firstButtonFocus" class="icon-button icon-button--ellipsis" ariaLabel="more options"><span class="sr-text">Show options</span></button>
           </div>
           <transition>
@@ -868,9 +773,9 @@ export default {
       messagesLoading: true,
       messagesListVisible: true,
       messagesSelected: false,
+      messagesSelectedID: "",
       newMessage: false,
       thisUserID: this.$store.state.userID,
-      //thisUserName: this.$store.state.profile.profileName,
       thisUserNewMessage: "",
       thisUserNewMessageDate: "",
       thisUserNewMessageTime: "",
@@ -881,20 +786,15 @@ export default {
       newChatID: "",
       selectedMessagesArray: [],
       selectedMessagesUsers: [],
-      //selectedMessageLatestSender: '',
       contactsListVisible: false,
       groupContactsListVisible: false,
       groupChatContacts: [],
       groupChatContactsIDs: [],
-      //the above is very hacky
       groupChatCount: 0,
       groupChatName: "",
       groupContactsIDs:[],
-      //newGroupMessage: false,
       isMessagesOptionsDisplayed: false,
       messagesToDelete: false,
-      //deleteMessagesIDs: [],
-      //deleteMessagesCount: 0,
       isContactsOptionsDisplayed: false,
       contactsToBlock: false,
       blockContactsIDs: [],
@@ -915,6 +815,7 @@ export default {
         this.messages[i].messageActive = false;
       }
       this.messageRecipientNames = [];
+      this.messagesSelectedID = "";
     },
     closeMessage() {
       this.messagesSelected = false;
@@ -927,6 +828,7 @@ export default {
       const chosenMessage = this.messages.find((message) => message.id === val);
       chosenMessage.messageActive = true;
       chosenMessage.unread = 0;
+      this.messagesSelectedID = val;
       this.messagesSelected = true;
       this.messagesListVisible = true;
       this.groupContactsListVisible = false;
@@ -942,9 +844,6 @@ export default {
         axios.get("/api/chat/" + chosenMessage.id).then((res) => {
         this.selectedMessagesArray = res.data.messages;
         this.selectedMessagesUsers = res.data.users;
-        // axios.get("/api/unread_messages").then((res) => {
-        //   this.$store.commit("updateUnreadMessage", res.data);
-        // })
         axios.get("/api/unread_messages").then((res) => {
           this.messageCount = res.data
         })
@@ -967,9 +866,6 @@ export default {
         axios.get("/api/groups/" + chosenMessage.id).then((res) => {
           this.selectedMessagesArray = res.data.messages;
           this.selectedMessagesUsers = res.data.users;
-          // axios.get("/api/unread_messages").then((res) => {
-          //   this.$store.commit("updateUnreadMessage", res.data);
-          // })
           axios.get("/api/unread_messages").then((res) => {
             this.messageCount = res.data
           })
@@ -987,28 +883,7 @@ export default {
           }
         });
       }
-      // axios.get("api/get_group/" + chosenMessage.id).then((res) => {
-      //   this.selectedMessagesArray = res.data.messages;
-      //   this.selectedMessagesUsers = res.data.users;
-      //   // axios.get("/api/unread_messages").then((res) => {
-      //   //   this.$store.commit("updateUnreadMessage", res.data);
-      //   // })
-      //   axios.get("/api/unread_messages").then((res) => {
-      //     this.messageCount = res.data
-      //   })
 
-      //   if (this.selectedMessagesArray && this.selectedMessagesArray.length) {
-      //     this.selectedMessagesArray.map(function (value, index, elements) {
-      //       let next = elements[index + 1];
-
-      //       if (elements.length - 1 === index) {
-      //         // do nothing
-      //       } else if (value.user_id === next.user_id) {
-      //         value.doubleMessage = true;
-      //       }
-      //     });
-      //   }
-      // });
     },
     nameMatch(val) {
       let userName = "";
@@ -1176,8 +1051,7 @@ export default {
       const currentMessageID = this.messages.find(
         (message) => message.messageActive == true
       ).id;
-      console.log('here')
-      console.log(currentMessageID)
+     
 
       const nth = function (d) {
         if (d > 3 && d < 21) return "th";
@@ -1350,7 +1224,6 @@ export default {
     addGroupRecipient(val) {
       const groupArray = this.groupChatContacts;
       const groupIDsArray = this.groupChatContactsIDs;
-      //the above is a little hacky
       const contact = this.contacts.find((contact) => contact.id === val);
 
       if (!groupArray.includes(contact)) {
@@ -1374,17 +1247,8 @@ export default {
       }
     },
     cancelMessage() {
-     // this.messages.shift();
       this.newMessage = false;
       this.cancelActiveMessage();
-
-      // axios.get("api/leave_group/" + this.newChatID).then((res) => {
-      //   this.messages = res.data.messages;
-
-      //   axios.get("api/groups/").then((res) => {
-      //     this.messages = res.data;
-      //   });
-      // });
 
       this.chatName = "";
 
@@ -1417,21 +1281,6 @@ export default {
 
     },
 
-    // deleteSelectedMessages() {
-    //   const messageArray = this.messages;
-    //   this.messagesToDelete = false;
-    //   this.deleteMessagesCount = 0;
-
-    //   for (let i = 0; i < this.deleteMessagesIDs.length; i++) {
-    //     let selectedMessage = this.deleteMessagesIDs[i];
-    //     messageArray.splice(
-    //       messageArray.findIndex((v) => v.messageID === selectedMessage),
-    //       1
-    //     );
-    //   }
-    //   this.deleteMessagesIDs = [];
-    // },
-
     hideCounts() {
       this.contactsToBlock = false;
       this.blockContactsCount = 0;
@@ -1440,8 +1289,6 @@ export default {
       this.deleteContactsCount = 0;
       this.deleteContactsIDs = [];
       this.messagesToDelete = false;
-      // this.deleteMessagesCount = 0;
-      // this.deleteMessagesIDs = [];
     },
 
     showContactsOptions() {
@@ -1586,13 +1433,7 @@ export default {
           this.messagesSelected = false;
           this.isActiveMessageOptionsDisplayed = false;
           })
-      });
-      // const messageArray = this.messages;
-      // messageArray.splice(
-      //   messageArray.findIndex((v) => v.messageID === messageToDelete),
-      //   1
-      // );
-      
+      });     
     },
 
     leaveGroup() {
@@ -1620,71 +1461,20 @@ export default {
           });
         });
       
-      // const activeMessageID = this.messages.find(
-      //   (message) => message.messageActive == true
-      // ).id;
-
-      // console.log(activeMessageID)
-
-      //  axios
-      //     .post("api/add_message", {
-      //       group_id: currentMessageID,
-      //       message: this.thisUserNewMessage,
-      //     })
-      //     .then(() => {
-      //       axios.get("api/get_groups").then((res) => {
-      //         this.messages = res.data;
-      //         this.selectedMessage(currentMessageID);
-      //       });
-      //     });
-     // const activeMessageRecipientsIDArray = activeMessage.users;
-
-      //console.log(activeMessageRecipientsIDArray)
-
-      // for (let i = 0; i < activeMessageRecipientsIDArray.length; i++) {
-      //   console.log(activeMessageRecipientsIDArray[i].id) 
-      // }
-      // const activeMessageRecipientsNamesArray =
-      //   activeMessage.messageRecipientNames;
-
-      // if (activeMessageRecipientsIDArray.includes(this.thisUserID)) {
-      //   this.deleteActiveMessage();
-      //   // activeMessage.recipientMessages.push({
-      //   //   messageSenderID: "memberLeftGroup",
-      //   //   message: this.thisUserName + " left the group.",
-      //   // });
-      //   activeMessageRecipientsIDArray.splice(
-      //     activeMessageRecipientsIDArray.findIndex(
-      //       (v) => v.recipientID === this.thisUserID
-      //     ),
-      //     1
-      //   );
-      //   activeMessageRecipientsNamesArray.splice(
-      //     activeMessageRecipientsNamesArray.findIndex(
-      //       (v) => v.recipientName === this.thisUserName
-      //     ),
-      //     1
-      //   );
-      // }
-
-
-
-
-      // this.messagesSelected = false;
-      // this.isActiveMessageOptionsDisplayed = false;
-      // this.cancelActiveMessage();
+     
     },
     searchContacts(val) {
       this.searchContactValue = val.toLowerCase();
     },
 
-    getGroupsInterval() {
-      setInterval(function () {
-        axios.get("api/groups/").then((res) => {
-          this.messages = res.data;
-        });
-      }, 60000);
-    },
+    // getGroupsInterval() {
+    //   setInterval(function () {
+    //     console.log('hello')
+    //     axios.get("api/groups/").then((res) => {
+    //       this.messages = res.data;
+    //     });
+    //   }, 60000);
+    // },
   },
   computed: {
     alphabetisedContacts() {
@@ -1698,13 +1488,6 @@ export default {
         );
       }
       return unblockedContacts
-      // return unblockedContacts
-      //   .filter((unblockedContacts) => unblockedContacts.name.toLowerCase())
-      //   .sort((a, b) => {
-      //     if (a.name < b.name) return -1;
-      //     if (a.name > b.name) return 1;
-      //     return 0;
-      //   });
 
     },
   },
@@ -1720,17 +1503,13 @@ export default {
     if(!this.$store.state.loggedIn){
       this.$router.push('/');
     }
-    // for (let i = 0; i < this.messages.length; i++) {
-    //   if (this.messages[i].messageRead == false) {
-    //   }
-    // }
+
 
     axios.get("api/groups/").then((res) => {
       this.messages = res.data;
       this.messagesLoading = false;
 
       axios.get("api/get_contacts").then((res) => {
-        console.log(res.data)
         this.contacts = res.data;
         this.messagesLoading = false;
 
@@ -1786,15 +1565,18 @@ export default {
     }
   
 
-    this.getGroupsInterval();
+    //this.getGroupsInterval();
   },
-  // watch:{
-  //   messageCount(){
-  //     axios.get("api/groups/").then((res) => {
-  //         this.messages = res.data;
-  //       });
-  //   }
-  // }
+  watch:{
+    messageCount(){
+      axios.get("api/groups/").then((res) => {
+          this.messages = res.data;
+          if(this.messagesSelectedID){
+            this.selectedMessage(this.messagesSelectedID);
+          }
+        });
+    }
+  }
 };
 </script>
 
