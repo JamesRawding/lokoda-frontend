@@ -48,7 +48,7 @@
         </base-card>
       </div>
       <div v-if="alphabetisedBandResults.length === 0">
-        <strong>No bands match that search.</strong>
+        <strong>No artists match that search.</strong>
       </div>     
     </div>
    
